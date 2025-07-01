@@ -46,3 +46,5 @@ const SubPage3 = () => (
     </form>
   </div>
 );
+
+export default SubPage3;

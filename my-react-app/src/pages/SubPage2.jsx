@@ -19,3 +19,5 @@ const SubPage2 = () => (
     </div>
   </div>
 );
+
+export default SubPage2;

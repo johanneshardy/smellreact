@@ -12,3 +12,5 @@ const NotFoundPage = () => (
     </button>
   </div>
 );
+
+export default NotFoundPage;

@@ -9,7 +9,7 @@ const HomePage = () => (
     </p>
     <div className="mt-8">
       <button
-        onClick={() => alert("Learn More button clicked!")} // Using alert for demo, replace with real action
+        onClick={() => alert("Learn More button clicked!")}
         className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition duration-300 hover:scale-105"
       >
         Learn More
@@ -17,3 +17,5 @@ const HomePage = () => (
     </div>
   </div>
 );
+
+export default HomePage;

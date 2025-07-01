@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-// These imports are now for components that are not default exported in this single file context,
-// but would be default exports from their respective files in a real project setup.
+// Import the page components
 import HomePage from './pages/HomePage';
 import SubPage1 from './pages/SubPage1';
 import SubPage2 from './pages/SubPage2';
@@ -12,45 +11,11 @@ const App = () => {
   const [userId, setUserId] = useState('');
   const [isAuthReady, setIsAuthReady] = useState(false);
 
-  // Utility function to get the current user ID.
-  const getUserId = () => {
-    const auth = typeof firebase !== 'undefined' && firebase.auth ? firebase.auth() : null;
-    return auth?.currentUser?.uid || 'anonymous-user-' + Math.random().toString(36).substring(2, 11);
-  };
-
-  // Initialize Firebase and handle authentication
+  // Simplified without Firebase for now
   useEffect(() => {
-    if (typeof __firebase_config !== 'undefined' && typeof __app_id !== 'undefined') {
-      try {
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(app);
-        window.firebase = { ...window.firebase, auth: () => auth }; // Expose auth globally
-
-        const unsub = firebase.auth().onAuthStateChanged(async (user) => {
-          if (!user) {
-            try {
-              if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                await firebase.auth().signInWithCustomToken(__initial_auth_token);
-              } else {
-                await firebase.auth().signInAnonymously();
-              }
-            } catch (error) {
-              console.error("Firebase Auth Error:", error);
-            }
-          }
-          setUserId(firebase.auth().currentUser?.uid || getUserId());
-          setIsAuthReady(true);
-        });
-        return () => unsub();
-      } catch (error) {
-        console.error("Failed to initialize Firebase:", error);
-        setIsAuthReady(true);
-      }
-    } else {
-      console.warn("Firebase configuration not found. Running without Firebase.");
-      setIsAuthReady(true);
-    }
+    // Set a simple user ID without Firebase
+    setUserId('user-' + Math.random().toString(36).substring(2, 11));
+    setIsAuthReady(true);
   }, []);
 
   const PageRouter = () => {
@@ -133,3 +98,6 @@ const App = () => {
     </div>
   );
 };
+
+// ADD THIS CRUCIAL EXPORT!
+export default App;
