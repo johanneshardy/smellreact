@@ -1,61 +1,188 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
-/* Reset and base styles */
+/* CRITICAL: Full screen reset */
 * {
-  margin: 0;
-  padding: 0;
+  margin: 0 !important;
+  padding: 0 !important;
   box-sizing: border-box;
 }
 
+html {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  scroll-behavior: smooth;
+}
+
 body {
+  height: 100vh;
+  width: 100vw;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
   font-family: 'Inter', sans-serif;
   line-height: 1.6;
   color: #333;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
-/* Custom animations */
+/* Ensure root container is truly full screen */
+#root {
+  height: 100vh !important;
+  width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* Force all containers to be full screen */
+.min-h-screen,
+.h-screen {
+  height: 100vh !important;
+  width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Enhanced animations */
 .animate-fade-in {
-  animation: fadeIn 0.8s ease-out forwards;
+  animation: fadeIn 1.2s ease-out forwards;
   opacity: 0;
 }
 
 .animate-fade-in-delay {
-  animation: fadeIn 0.8s ease-out 0.3s forwards;
+  animation: fadeIn 1.2s ease-out 0.4s forwards;
   opacity: 0;
 }
 
 .animate-slide-up {
-  animation: slideUp 0.6s ease-out forwards;
-  transform: translateY(20px);
+  animation: slideUp 1s ease-out 0.6s forwards;
+  transform: translateY(30px);
   opacity: 0;
 }
 
 .animate-slide-up-delay {
-  animation: slideUp 0.6s ease-out 0.2s forwards;
-  transform: translateY(20px);
+  animation: slideUp 1s ease-out 0.8s forwards;
+  transform: translateY(30px);
   opacity: 0;
 }
 
 .animate-zoom-in {
-  animation: zoomIn 0.5s ease-out forwards;
-  transform: scale(0.9);
+  animation: zoomIn 0.8s ease-out forwards;
+  transform: scale(0.95);
   opacity: 0;
 }
 
 .animate-zoom-in-delay {
-  animation: zoomIn 0.5s ease-out 0.2s forwards;
-  transform: scale(0.9);
+  animation: zoomIn 0.8s ease-out 0.3s forwards;
+  transform: scale(0.95);
   opacity: 0;
 }
 
+/* Keyframe animations */
 @keyframes fadeIn {
-  to { opacity: 1; }
+  to { 
+    opacity: 1; 
+  }
 }
 
 @keyframes slideUp {
-  to { transform: translateY(0); opacity: 1; }
+  to { 
+    transform: translateY(0); 
+    opacity: 1; 
+  }
 }
 
 @keyframes zoomIn {
-  to { transform: scale(1); opacity: 1; }
+  to { 
+    transform: scale(1); 
+    opacity: 1; 
+  }
+}
+
+/* Custom pulse animation for background elements */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.5;
+  }
+}
+
+/* Hover effects for better interactivity */
+.transform-gpu {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Backdrop blur support */
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+}
+
+.backdrop-blur {
+  backdrop-filter: blur(8px);
+}
+
+.backdrop-blur-md {
+  backdrop-filter: blur(12px);
+}
+
+/* Custom gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Smooth transitions for all interactive elements */
+button, a, .transition-all {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Focus styles for accessibility */
+button:focus,
+a:focus {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+/* Hide scrollbars completely */
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Loading animation for better UX */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
 }
