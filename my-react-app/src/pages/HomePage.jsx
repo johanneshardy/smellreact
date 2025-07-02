@@ -31,23 +31,24 @@ const HomePage = ({ onNavigate }) => {
   }, []);
 
   return (
-    <div className="h-screen w-screen flex flex-col relative overflow-hidden full-screen-page">
-      
+    <div className="h-screen w-screen flex flex-col relative overflow-hidden full-screen-page select-none">
       {/* Academic Header with Logo */}
       <div className="z-50 bg-white/5 backdrop-blur-md border-b border-white/10">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          {/* Logo and Institution Name */}
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
-              <span className="text-slate-800 font-bold text-sm">UWC</span>
+          <div className="flex items-center justify-center space-x-2">
+            <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 shadow-lg">
+              <img 
+              src="https://bluetiger.sjtu.edu.cn/wp-content/uploads/2020/03/last2-WRITING-CENTER-LOGO-e1746460777646-2022x2048.png" 
+              alt="UWC Logo" 
+              className="w-full h-full object-cover"
+              />
             </div>
-            <div className="text-white">
+            <div className="text-white ">
               <h2 className="text-lg font-bold tracking-wide">UM-SJTU</h2>
-              <p className="text-xs text-white/80 uppercase tracking-wider">Writing Center</p>
+              <p className="text-xs text-white/80 uppercase mb-0">Writing Center</p>
             </div>
           </div>
-          
-          {/* Academic Navigation */}
+              
           <nav className="hidden md:flex items-center space-x-6 text-sm text-white/80">
             <a href="#" className="hover:text-white transition-colors">About</a>
             <a href="#" className="hover:text-white transition-colors">Services</a>
@@ -58,13 +59,13 @@ const HomePage = ({ onNavigate }) => {
       </div>
 
       {/* Enhanced animated background */}
-      <div className="absolute inset-0 -z-10">
+      {/* <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800"></div>
         <div className="absolute inset-0 bg-gradient-to-tr from-blue-800/20 via-transparent to-purple-800/20"></div>
         <div className="absolute inset-0 opacity-30">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/15 via-purple-500/15 to-pink-500/15 animate-pulse"></div>
         </div>
-      </div>
+      </div> */}
 
       {/* Floating geometric shapes */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -87,7 +88,6 @@ const HomePage = ({ onNavigate }) => {
           }}
         />
         
-        {/* Smaller animated particles */}
         {[...Array(12)].map((_, i) => (
           <div
             key={i}
