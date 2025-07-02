@@ -38,7 +38,7 @@ const HomePage = ({ onNavigate }) => {
           <div className="flex items-center justify-center space-x-2">
             <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 shadow-lg">
               <img 
-              src="https://bluetiger.sjtu.edu.cn/wp-content/uploads/2020/03/last2-WRITING-CENTER-LOGO-e1746460777646-2022x2048.png" 
+              src="/src/assets/last2-WRITING-CENTER-LOGO-e1746460777646.png" 
               alt="UWC Logo" 
               className="w-full h-full object-cover"
               />
