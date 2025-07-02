@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 
 const HomePage = ({ onNavigate }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [currentTime, setCurrentTime] = useState(new Date());
   const [isVisible, setIsVisible] = useState(false);
   const [hoveredCard, setHoveredCard] = useState(null);
   const [scrollY, setScrollY] = useState(0);
@@ -26,11 +25,11 @@ const HomePage = ({ onNavigate }) => {
     };
   }, []);
 
-  // Real-time clock
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
+  // Real-time clock - REMOVED
+  // useEffect(() => {
+  //   const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+  //   return () => clearInterval(timer);
+  // }, []);
 
   // Entrance animation
   useEffect(() => {
@@ -38,17 +37,51 @@ const HomePage = ({ onNavigate }) => {
     return () => clearTimeout(timer);
   }, []);
 
-  const formatTime = (date) => {
-    return date.toLocaleTimeString('en-US', { 
-      hour12: false, 
-      hour: '2-digit', 
-      minute: '2-digit',
-      second: '2-digit'
-    });
-  };
+  // formatTime function - REMOVED
+  // const formatTime = (date) => {
+  //   return date.toLocaleTimeString('en-US', { 
+  //     hour12: false, 
+  //     hour: '2-digit', 
+  //     minute: '2-digit',
+  //     second: '2-digit'
+  //   });
+  // };
 
   return (
-    <div className="fixed inset-0 flex flex-col justify-center items-center relative overflow-auto full-screen-page">
+    <div className="fixed inset-0 w-screen h-screen flex flex-col justify-center items-center relative overflow-hidden full-screen-page">
+      
+      {/* Academic Header with Logo */}
+      <div className="absolute top-0 left-0 right-0 z-50 bg-white/5 backdrop-blur-md border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          {/* Logo and Institution Name */}
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
+              <span className="text-slate-800 font-bold text-sm">UWC</span>
+            </div>
+            <div className="text-white">
+              <h2 className="text-lg font-bold tracking-wide">UM-SJTU</h2>
+              <p className="text-xs text-white/80 uppercase tracking-wider">Writing Center</p>
+            </div>
+          </div>
+          
+          {/* Academic Navigation */}
+          <nav className="hidden md:flex items-center space-x-6 text-sm text-white/80">
+            <a href="#" className="hover:text-white transition-colors">About</a>
+            <a href="#" className="hover:text-white transition-colors">Services</a>
+            <a href="#" className="hover:text-white transition-colors">Resources</a>
+            <a href="#" className="hover:text-white transition-colors">Contact</a>
+          </nav>
+        </div>
+      </div>
+
+      {/* Simple Academic Footer */}
+      <div className="absolute bottom-0 left-0 right-0 z-50 bg-slate-900/60 backdrop-blur-sm border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-6 py-4 text-center">
+          <p className="text-white/70 text-sm">
+            &copy; {new Date().getFullYear()} UM-SJTU Joint Institute. All rights reserved.
+          </p>
+        </div>
+      </div>
       {/* Enhanced animated background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800"></div>
@@ -95,101 +128,96 @@ const HomePage = ({ onNavigate }) => {
         ))}
       </div>
 
-      {/* Time display - positioned properly */}
-      <div className="absolute top-6 right-6 bg-white/20 backdrop-blur-md text-white text-sm font-mono px-4 py-2 rounded-full border border-white/30 shadow-xl z-50">
-        <div className="flex items-center space-x-2">
-          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-          <span>{formatTime(currentTime)}</span>
-        </div>
-      </div>
+      {/* Time display - REMOVED */}
 
-      {/* Main content container - properly centered */}
-      <div className={`relative z-10 w-full max-w-6xl mx-auto px-8 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+      {/* Main content container - adjusted for header */}
+      <div className={`relative z-10 w-full max-w-6xl mx-auto px-8 pt-20 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
         
-        {/* Title section - better spacing */}
-        <div className="text-center mb-20">
-          <div className="relative mb-8">
-            <h1 className="absolute inset-0 text-4xl md:text-6xl font-black text-white/5 blur-sm scale-110 animate-pulse">
-              title
-            </h1>
-            <h1 className="relative text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-200 to-purple-200 tracking-tight leading-none animate-fade-in">
-              title
+        {/* Academic Title section - more professional */}
+        <div className="text-center mb-8">
+          <div className="relative mb-6">
+            <h1 className="relative text-5xl md:text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-slate-200 tracking-tight leading-none animate-fade-in">
+              Academic Excellence
             </h1>
           </div>
           
-          {/* Decorative line - centered properly */}
-          <div className="relative w-20 h-0.5 mx-auto mb-6">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent rounded-full"></div>
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 rounded-full animate-pulse"></div>
+          {/* Professional subtitle */}
+          <p className="text-xl md:text-2xl text-white/90 font-light mb-6 tracking-wide animate-fade-in-delay">
+            Advancing Knowledge Through Writing & Research
+          </p>
+          
+          {/* Institution decorative line */}
+          <div className="relative w-40 h-0.5 mx-auto mb-4">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-400/60 to-transparent rounded-full"></div>
           </div>
         </div>
 
-        {/* Main CTA - better positioned */}
-        <div className="text-center mb-24">
+        {/* Professional CTA - more academic */}
+        <div className="text-center mb-12">
           <button 
             onClick={() => onNavigate('subpage1')}
-            className="group relative text-2xl md:text-3xl font-bold text-white leading-tight px-8 py-4 rounded-2xl transition-all duration-500 hover:scale-110 transform-gpu overflow-hidden bg-white/15 backdrop-blur-md border border-white/30 hover:border-white/50 shadow-xl hover:shadow-2xl"
+            className="group relative text-2xl md:text-3xl font-semibold text-white leading-tight px-12 py-6 md:px-16 md:py-8 rounded-2xl transition-all duration-500 hover:scale-105 transform-gpu overflow-hidden bg-slate-800/40 backdrop-blur-md border border-amber-400/30 hover:border-amber-400/60 shadow-2xl hover:shadow-3xl"
             onMouseEnter={() => setHoveredCard('main')}
             onMouseLeave={() => setHoveredCard(null)}
           >
-            {/* Enhanced background effects */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-pink-500/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-400/40 via-purple-400/40 to-pink-400/40 opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm scale-105" />
+            {/* Professional background effects */}
+            <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-amber-600/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
             
-            <span className="relative group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-200 group-hover:via-purple-200 group-hover:to-pink-200 transition-all duration-500">
-              start your journey
+            <span className="relative group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-amber-200 group-hover:to-orange-200 transition-all duration-500">
+              Explore Our Programs
             </span>
             
             <span className="inline-block ml-4 transform group-hover:translate-x-2 transition-all duration-300 opacity-0 group-hover:opacity-100">
-              <span className="text-white drop-shadow-lg">→</span>
+              <span className="text-amber-200 drop-shadow-lg text-2xl">→</span>
             </span>
           </button>
         </div>
 
-        {/* Navigation cards - improved grid layout */}
-        <div className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+        {/* Academic service cards - more professional */}
+        <div className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           
-          {/* Project card */}
+          {/* Writing Services card - Academic focused */}
           <div 
             className="group relative"
-            onMouseEnter={() => setHoveredCard('project')}
+            onMouseEnter={() => setHoveredCard('services')}
             onMouseLeave={() => setHoveredCard(null)}
           >
             <button 
               onClick={() => onNavigate('subpage2')}
-              className="w-full text-left p-8 rounded-2xl bg-white/15 backdrop-blur-md border border-white/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:bg-white/25 transform-gpu overflow-hidden h-full flex flex-col"
+              className="w-full text-left p-6 rounded-xl bg-slate-800/30 backdrop-blur-md border border-amber-400/20 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:bg-slate-800/40 transform-gpu overflow-hidden h-full flex flex-col"
             >
-              {/* Card effects */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-400/40 via-purple-400/40 to-pink-400/40 opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
+              {/* Academic card effects */}
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-600/10 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300" />
               
-              {/* Card number badge */}
-              <div className="absolute top-6 right-6 w-8 h-8 bg-blue-400/30 backdrop-blur-sm text-blue-200 rounded-full flex items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-all duration-500 border border-blue-300/40">
-                01
+              {/* Service icon */}
+              <div className="absolute top-4 right-4 w-8 h-8 bg-amber-400/20 backdrop-blur-sm text-amber-200 rounded-full flex items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-all duration-300 border border-amber-300/30">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
               </div>
               
               <div className="relative flex-grow flex flex-col justify-between">
                 <div>
-                  <h3 className="text-xl md:text-2xl font-bold text-white leading-tight mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-200 group-hover:to-purple-200 transition-all duration-500">
-                    introduction to the project
+                  <h3 className="text-lg md:text-xl font-semibold text-white leading-tight mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-amber-200 group-hover:to-orange-200 transition-all duration-300">
+                    Writing Services
                   </h3>
                   
-                  {/* Progress bar */}
-                  <div className="w-full bg-white/25 rounded-full h-1 mb-6 opacity-0 group-hover:opacity-100 transition-all duration-500 overflow-hidden">
-                    <div className="bg-gradient-to-r from-blue-300 to-purple-300 h-1 rounded-full transition-all duration-1000 group-hover:w-3/4 w-0 shadow-lg"></div>
+                  {/* Academic progress indicator */}
+                  <div className="w-full bg-white/20 rounded-full h-0.5 mb-3 opacity-0 group-hover:opacity-100 transition-all duration-300 overflow-hidden">
+                    <div className="bg-gradient-to-r from-amber-300 to-orange-300 h-0.5 rounded-full transition-all duration-1000 group-hover:w-4/5 w-0"></div>
                   </div>
                   
-                  <p className="text-white/80 text-sm opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 group-hover:translate-y-0 mb-4">
-                    Discover the vision behind our initiative and learn about our innovative approach to solving complex challenges.
+                  <p className="text-white/80 text-sm opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-1 group-hover:translate-y-0 mb-2">
+                    Professional writing support and academic guidance
                   </p>
                 </div>
                 
                 <div className="flex items-center justify-between mt-auto">
-                  <span className="text-white/60 text-xs font-medium opacity-0 group-hover:opacity-100 transition-all duration-500">
-                    Explore Details
+                  <span className="text-white/60 text-xs font-medium opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    Learn More
                   </span>
-                  <div className="text-white/60 group-hover:text-white transition-all duration-500 transform group-hover:scale-110">
-                    <svg className="w-6 h-6 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="text-white/60 group-hover:text-amber-200 transition-all duration-300 transform group-hover:scale-110">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </div>
@@ -198,65 +226,54 @@ const HomePage = ({ onNavigate }) => {
             </button>
           </div>
           
-          {/* Smell card */}
+          {/* Research Resources card - Academic focused */}
           <div 
             className="group relative"
-            onMouseEnter={() => setHoveredCard('smell')}
+            onMouseEnter={() => setHoveredCard('research')}
             onMouseLeave={() => setHoveredCard(null)}
           >
             <button 
               onClick={() => onNavigate('subpage3')}
-              className="w-full text-left p-8 rounded-2xl bg-white/15 backdrop-blur-md border border-white/30 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:bg-white/25 transform-gpu overflow-hidden h-full flex flex-col"
+              className="w-full text-left p-6 rounded-xl bg-slate-800/30 backdrop-blur-md border border-amber-400/20 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:bg-slate-800/40 transform-gpu overflow-hidden h-full flex flex-col"
             >
-              {/* Card effects */}
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-blue-500/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-400/40 via-pink-400/40 to-blue-400/40 opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
+              {/* Academic card effects */}
+              <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-yellow-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300" />
               
-              {/* Card number badge */}
-              <div className="absolute top-6 right-6 w-8 h-8 bg-purple-400/30 backdrop-blur-sm text-purple-200 rounded-full flex items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-all duration-500 border border-purple-300/40">
-                02
+              {/* Research icon */}
+              <div className="absolute top-4 right-4 w-8 h-8 bg-orange-400/20 backdrop-blur-sm text-orange-200 rounded-full flex items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-all duration-300 border border-orange-300/30">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
               </div>
               
               <div className="relative flex-grow flex flex-col justify-between">
                 <div>
-                  <h3 className="text-xl md:text-2xl font-bold text-white leading-tight mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-200 group-hover:to-pink-200 transition-all duration-500">
-                    something about smell
+                  <h3 className="text-lg md:text-xl font-semibold text-white leading-tight mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-orange-200 group-hover:to-yellow-200 transition-all duration-300">
+                    Research Resources
                   </h3>
                   
-                  {/* Progress bar */}
-                  <div className="w-full bg-white/25 rounded-full h-1 mb-6 opacity-0 group-hover:opacity-100 transition-all duration-500 overflow-hidden">
-                    <div className="bg-gradient-to-r from-purple-300 to-pink-300 h-1 rounded-full transition-all duration-1000 group-hover:w-2/3 w-0 shadow-lg"></div>
+                  {/* Academic progress indicator */}
+                  <div className="w-full bg-white/20 rounded-full h-0.5 mb-3 opacity-0 group-hover:opacity-100 transition-all duration-300 overflow-hidden">
+                    <div className="bg-gradient-to-r from-orange-300 to-yellow-300 h-0.5 rounded-full transition-all duration-1000 group-hover:w-3/4 w-0"></div>
                   </div>
                   
-                  <p className="text-white/80 text-sm opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 group-hover:translate-y-0 mb-4">
-                    Explore olfactory experiences and discover how scents can trigger memories and emotions in unique ways.
+                  <p className="text-white/80 text-sm opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-1 group-hover:translate-y-0 mb-2">
+                    Access comprehensive research tools and databases
                   </p>
                 </div>
                 
                 <div className="flex items-center justify-between mt-auto">
-                  <span className="text-white/60 text-xs font-medium opacity-0 group-hover:opacity-100 transition-all duration-500">
-                    Discover Scents
+                  <span className="text-white/60 text-xs font-medium opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    Explore Resources
                   </span>
-                  <div className="text-white/60 group-hover:text-white transition-all duration-500 transform group-hover:scale-110">
-                    <svg className="w-6 h-6 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="text-white/60 group-hover:text-orange-200 transition-all duration-300 transform group-hover:scale-110">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </div>
                 </div>
               </div>
             </button>
-          </div>
-        </div>
-
-        {/* Footer indicator - properly positioned */}
-        <div className="flex justify-center">
-          <div className="text-center">
-            <div className="text-white/60 text-xs font-medium tracking-wider mb-3 animate-pulse">
-              Click to explore
-            </div>
-            <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center backdrop-blur-sm mx-auto">
-              <div className="w-1 h-3 bg-white/50 rounded-full mt-2 animate-bounce"></div>
-            </div>
           </div>
         </div>
       </div>
