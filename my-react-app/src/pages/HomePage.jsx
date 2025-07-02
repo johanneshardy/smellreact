@@ -244,22 +244,6 @@ const HomePage = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* Starfield effect */}
-      <div className="absolute inset-0 pointer-events-none -z-10">
-        {[...Array(50)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-px h-px bg-white/30 rounded-full animate-pulse"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${2 + Math.random() * 2}s`
-            }}
-          />
-        ))}
-      </div>
-
       {/* Simple Academic Footer */}
       <div className="z-50 bg-slate-900/60 backdrop-blur-sm border-t border-white/10">
         <div className="max-w-7xl mx-auto px-6 py-4 text-center">
