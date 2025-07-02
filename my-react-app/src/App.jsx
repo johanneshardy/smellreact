@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+
 // Import the page components
 import HomePage from './pages/HomePage';
 import SubPage1 from './pages/SubPage1';
@@ -11,41 +12,71 @@ const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
   const [userId, setUserId] = useState('');
   const [isAuthReady, setIsAuthReady] = useState(false);
+  const [isPageTransitioning, setIsPageTransitioning] = useState(false);
 
-  // Simplified without Firebase for now
+  // Initialize user session
   useEffect(() => {
-    // Set a simple user ID without Firebase
+    // Set a simple user ID without Firebase for now
     setUserId('user-' + Math.random().toString(36).substring(2, 11));
     setIsAuthReady(true);
   }, []);
 
+  // Handle page navigation with smooth transitions
+  const handleNavigate = (newPage) => {
+    if (newPage === currentPage) return;
+    
+    setIsPageTransitioning(true);
+    
+    // Small delay for smooth transition
+    setTimeout(() => {
+      setCurrentPage(newPage);
+      setIsPageTransitioning(false);
+    }, 150);
+  };
+
+  // Page component router
   const PageRouter = () => {
+    const pageProps = { 
+      onNavigate: handleNavigate,
+      isTransitioning: isPageTransitioning 
+    };
+
     switch (currentPage) {
       case 'home':
-        return <HomePage onNavigate={setCurrentPage} />;
+        return <HomePage {...pageProps} />;
       case 'subpage1':
-        return <SubPage1 onNavigate={setCurrentPage} />;
+        return <SubPage1 {...pageProps} />;
       case 'subpage2':
-        return <SubPage2 onNavigate={setCurrentPage} />;
+        return <SubPage2 {...pageProps} />;
       case 'subpage3':
-        return <SubPage3 onNavigate={setCurrentPage} />;
+        return <SubPage3 {...pageProps} />;
       default:
-        return <NotFoundPage onNavigate={setCurrentPage} />;
+        return <NotFoundPage {...pageProps} />;
     }
   };
 
   return (
-    <div className="fixed inset-0 w-screen h-screen overflow-hidden">
+    <div className="app-container">
       {/* User ID badge - only show on non-home pages */}
       {isAuthReady && userId && currentPage !== 'home' && (
-        <div className="fixed top-4 right-4 bg-black/20 backdrop-blur-sm text-white/80 text-xs px-3 py-1 rounded-full shadow-lg z-50">
-          User: {userId}
+        <div className="user-badge">
+          <div className="user-badge-content">
+            <div className="user-indicator" />
+            <span className="user-id">User: {userId}</span>
+          </div>
         </div>
       )}
 
-      {/* Full screen content */}
-      <main className="w-full h-full">
-        {PageRouter()}
+      {/* Page transition overlay */}
+      {isPageTransitioning && (
+        <div className="transition-overlay">
+          <div className="transition-spinner" />
+        </div>
+      )}
+
+      {/* Main page content - now supports scrolling */}
+      <main className={`main-content ${currentPage === 'home' ? 'full-screen-page' : 'scrollable-page'}`}>
+        <PageRouter />
       </main>
     </div>
   );
