@@ -112,7 +112,7 @@ const HomePage = ({ onNavigate }) => {
           <div className="text-center mb-8">
             <div className="relative mb-6">
               <h1 className="relative text-5xl md:text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-slate-200 tracking-tight leading-none animate-fade-in">
-                Academic Excellence
+                Smell Project
               </h1>
             </div>
             
@@ -137,7 +137,7 @@ const HomePage = ({ onNavigate }) => {
               <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-amber-600/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
               
               <span className="relative group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-amber-200 group-hover:to-orange-200 transition-all duration-500">
-                Explore Our Programs
+                Start Your Journey
               </span>
               
               <span className="inline-block ml-4 transform group-hover:translate-x-2 transition-all duration-300 opacity-0 group-hover:opacity-100">
@@ -168,7 +168,7 @@ const HomePage = ({ onNavigate }) => {
                 <div className="relative flex-grow flex flex-col justify-between">
                   <div>
                     <h3 className="text-lg md:text-xl font-semibold text-white leading-tight mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-amber-200 group-hover:to-orange-200 transition-all duration-300">
-                      Writing Services
+                      Project Introduction
                     </h3>
                     
                     {/* Academic progress indicator */}
@@ -214,7 +214,7 @@ const HomePage = ({ onNavigate }) => {
                 <div className="relative flex-grow flex flex-col justify-between">
                   <div>
                     <h3 className="text-lg md:text-xl font-semibold text-white leading-tight mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-orange-200 group-hover:to-yellow-200 transition-all duration-300">
-                      Research Resources
+                      Something about Smell
                     </h3>
                     
                     {/* Academic progress indicator */}
