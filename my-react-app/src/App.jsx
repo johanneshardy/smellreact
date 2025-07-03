@@ -57,16 +57,6 @@ const App = () => {
 
   return (
     <div className="app-container">
-      {/* User ID badge - only show on non-home pages */}
-      {isAuthReady && userId && currentPage !== 'home' && (
-        <div className="user-badge">
-          <div className="user-badge-content">
-            <div className="user-indicator" />
-            <span className="user-id">User: {userId}</span>
-          </div>
-        </div>
-      )}
-
       {/* Page transition overlay */}
       {isPageTransitioning && (
         <div className="transition-overlay">
