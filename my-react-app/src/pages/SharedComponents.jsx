@@ -6,7 +6,20 @@ export const NavigationHeader = ({ onNavigate, currentPage = 'unknown' }) => {
     <div className="relative z-10 flex justify-between items-center p-6">
       <button 
         onClick={() => onNavigate('home')}
-        className="group flex items-center space-x-2 text-white/80 hover:text-white transition-all duration-300 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full shadow-lg hover:shadow-xl border border-white/30 hover:border-white/50"
+        className="group flex items-center space-x-2 transition-all duration-300 backdrop-blur-md px-4 py-2 rounded-full shadow-lg hover:shadow-xl border"
+        style={{
+          color: 'rgba(74, 55, 40, 0.8)',
+          backgroundColor: 'rgba(139, 115, 85, 0.2)',
+          borderColor: 'rgba(139, 115, 85, 0.3)'
+        }}
+        onMouseEnter={(e) => {
+          e.target.style.color = '#4A3728';
+          e.target.style.borderColor = 'rgba(139, 115, 85, 0.5)';
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.color = 'rgba(74, 55, 40, 0.8)';
+          e.target.style.borderColor = 'rgba(139, 115, 85, 0.3)';
+        }}
       >
         <svg className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -16,7 +29,20 @@ export const NavigationHeader = ({ onNavigate, currentPage = 'unknown' }) => {
       
       <button 
         onClick={() => onNavigate('home')}
-        className="group p-3 bg-white/20 backdrop-blur-md rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-white/80 hover:text-white border border-white/30 hover:border-white/50"
+        className="group p-3 backdrop-blur-md rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border"
+        style={{
+          color: 'rgba(74, 55, 40, 0.8)',
+          backgroundColor: 'rgba(139, 115, 85, 0.2)',
+          borderColor: 'rgba(139, 115, 85, 0.3)'
+        }}
+        onMouseEnter={(e) => {
+          e.target.style.color = '#4A3728';
+          e.target.style.borderColor = 'rgba(139, 115, 85, 0.5)';
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.color = 'rgba(74, 55, 40, 0.8)';
+          e.target.style.borderColor = 'rgba(139, 115, 85, 0.3)';
+        }}
         title="Return to Home"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -29,26 +55,44 @@ export const NavigationHeader = ({ onNavigate, currentPage = 'unknown' }) => {
 
 // Reusable Background Component
 export const PageBackground = ({ 
-  primaryColor = 'blue', 
-  secondaryColor = 'purple', 
+  primaryColor = 'beige', 
+  secondaryColor = 'taupe', 
   children 
 }) => {
   const colorMap = {
-    blue: { primary: 'blue-800/20', secondary: 'purple-800/20', accent1: 'blue-500/8', accent2: 'purple-500/8' },
-    purple: { primary: 'purple-800/20', secondary: 'pink-800/20', accent1: 'purple-500/8', accent2: 'pink-500/8' },
-    emerald: { primary: 'emerald-800/20', secondary: 'teal-800/20', accent1: 'emerald-500/8', accent2: 'teal-500/8' },
-    red: { primary: 'red-800/20', secondary: 'orange-800/20', accent1: 'red-500/8', accent2: 'orange-500/8' }
+    beige: { 
+      primary: 'rgba(201, 169, 110, 0.2)', 
+      secondary: 'rgba(180, 160, 130, 0.2)', 
+      accent1: 'rgba(139, 115, 85, 0.08)', 
+      accent2: 'rgba(201, 169, 110, 0.08)' 
+    },
+    taupe: { 
+      primary: 'rgba(160, 145, 108, 0.2)', 
+      secondary: 'rgba(181, 160, 130, 0.2)', 
+      accent1: 'rgba(160, 145, 108, 0.08)', 
+      accent2: 'rgba(181, 160, 130, 0.08)' 
+    },
+    nude: { 
+      primary: 'rgba(212, 196, 168, 0.2)', 
+      secondary: 'rgba(230, 215, 195, 0.2)', 
+      accent1: 'rgba(212, 196, 168, 0.08)', 
+      accent2: 'rgba(230, 215, 195, 0.08)' 
+    }
   };
 
-  const colors = colorMap[primaryColor] || colorMap.blue;
+  const colors = colorMap[primaryColor] || colorMap.beige;
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800 flex flex-col relative overflow-auto">
+    <div className="fixed inset-0 flex flex-col relative overflow-auto"
+         style={{background: 'linear-gradient(135deg, #F5F0E8 0%, #E6D7C3 50%, #D4C4A8 100%)'}}>
       {/* Background effects */}
       <div className="absolute inset-0">
-        <div className={`absolute inset-0 bg-gradient-to-tr from-${colors.primary} via-transparent to-${colors.secondary}`}></div>
-        <div className={`absolute top-20 right-20 w-96 h-96 bg-${colors.accent1} rounded-full blur-3xl`}></div>
-        <div className={`absolute bottom-20 left-20 w-80 h-80 bg-${colors.accent2} rounded-full blur-2xl`}></div>
+        <div className="absolute inset-0"
+             style={{background: `linear-gradient(45deg, ${colors.primary} 0%, transparent 50%, ${colors.secondary} 100%)`}}></div>
+        <div className="absolute top-20 right-20 w-96 h-96 rounded-full blur-3xl"
+             style={{backgroundColor: colors.accent1}}></div>
+        <div className="absolute bottom-20 left-20 w-80 h-80 rounded-full blur-2xl"
+             style={{backgroundColor: colors.accent2}}></div>
       </div>
       {children}
     </div>
@@ -59,17 +103,20 @@ export const PageBackground = ({
 export const PageTitle = ({ 
   title, 
   subtitle, 
-  gradient = 'from-white via-blue-200 to-purple-200',
-  lineGradient = 'from-blue-300 to-purple-400'
+  gradient = 'linear-gradient(135deg, #4A3728 0%, #8B7355 50%, #A0916C 100%)',
+  lineGradient = 'linear-gradient(90deg, #C9A96E 0%, #8B7355 100%)'
 }) => {
   return (
     <div className="text-center mb-12">
-      <h1 className={`text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r ${gradient} mb-6 animate-fade-in`}>
+      <h1 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text mb-6 animate-fade-in"
+          style={{backgroundImage: gradient}}>
         {title}
       </h1>
-      <div className={`w-24 h-0.5 bg-gradient-to-r ${lineGradient} mx-auto rounded-full mb-6`}></div>
+      <div className="w-24 h-0.5 mx-auto rounded-full mb-6"
+           style={{background: lineGradient}}></div>
       {subtitle && (
-        <p className="text-lg md:text-xl text-white/90 leading-relaxed max-w-3xl mx-auto animate-fade-in-delay">
+        <p className="text-lg md:text-xl leading-relaxed max-w-3xl mx-auto animate-fade-in-delay"
+           style={{color: 'rgba(74, 55, 40, 0.9)'}}>
           {subtitle}
         </p>
       )}
@@ -86,14 +133,26 @@ export const NavigationButton = ({
   className = ''
 }) => {
   const variants = {
-    primary: 'bg-white/15 backdrop-blur-md hover:bg-white/20 border-white/30 hover:border-white/50',
-    secondary: 'bg-white/10 backdrop-blur-md hover:bg-white/15 border-white/20 hover:border-white/40'
+    primary: {
+      backgroundColor: 'rgba(139, 115, 85, 0.15)',
+      borderColor: 'rgba(139, 115, 85, 0.3)',
+      hoverBg: 'rgba(139, 115, 85, 0.25)',
+      hoverBorder: 'rgba(139, 115, 85, 0.5)'
+    },
+    secondary: {
+      backgroundColor: 'rgba(139, 115, 85, 0.1)',
+      borderColor: 'rgba(139, 115, 85, 0.2)',
+      hoverBg: 'rgba(139, 115, 85, 0.2)',
+      hoverBorder: 'rgba(139, 115, 85, 0.4)'
+    }
   };
 
   const gradients = {
-    primary: 'from-blue-600/20 via-purple-600/20 to-pink-600/20',
-    secondary: 'from-purple-600/20 via-pink-600/20 to-blue-600/20'
+    primary: 'linear-gradient(135deg, rgba(201, 169, 110, 0.2) 0%, rgba(180, 160, 130, 0.2) 50%, rgba(139, 115, 85, 0.2) 100%)',
+    secondary: 'linear-gradient(135deg, rgba(180, 160, 130, 0.2) 0%, rgba(201, 169, 110, 0.2) 50%, rgba(139, 115, 85, 0.2) 100%)'
   };
+
+  const style = variants[variant];
 
   const ArrowIcon = () => (
     <svg className={`w-4 h-4 transform transition-transform duration-300 ${
@@ -109,9 +168,23 @@ export const NavigationButton = ({
   return (
     <button 
       onClick={onClick}
-      className={`group relative ${variants[variant]} text-white font-bold py-3 px-6 rounded-2xl shadow-xl transform transition-all duration-300 hover:scale-105 hover:shadow-2xl border overflow-hidden ${className}`}
+      className={`group relative font-bold py-3 px-6 rounded-2xl shadow-xl transform transition-all duration-300 hover:scale-105 hover:shadow-2xl border overflow-hidden ${className}`}
+      style={{
+        color: '#4A3728',
+        backgroundColor: style.backgroundColor,
+        borderColor: style.borderColor
+      }}
+      onMouseEnter={(e) => {
+        e.target.style.backgroundColor = style.hoverBg;
+        e.target.style.borderColor = style.hoverBorder;
+      }}
+      onMouseLeave={(e) => {
+        e.target.style.backgroundColor = style.backgroundColor;
+        e.target.style.borderColor = style.borderColor;
+      }}
     >
-      <div className={`absolute inset-0 bg-gradient-to-r ${gradients[variant]} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+           style={{background: gradients[variant]}}></div>
       <span className="relative flex items-center space-x-2">
         {direction === 'back' && <ArrowIcon />}
         <span>{children}</span>
@@ -126,21 +199,42 @@ export const FeatureCard = ({
   icon, 
   title, 
   description, 
-  gradient = 'from-blue-500 to-blue-600',
+  gradient = 'linear-gradient(135deg, #C9A96E 0%, #8B7355 100%)',
   onClick,
   className = ''
 }) => {
   return (
-    <div className={`bg-white/15 backdrop-blur-md rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 border border-white/30 hover:border-white/50 ${className}`}>
-      <div className={`w-14 h-14 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg`}>
+    <div className={`backdrop-blur-md rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 border ${className}`}
+         style={{
+           backgroundColor: 'rgba(139, 115, 85, 0.15)',
+           borderColor: 'rgba(139, 115, 85, 0.3)'
+         }}
+         onMouseEnter={(e) => {
+           e.target.style.borderColor = 'rgba(139, 115, 85, 0.5)';
+         }}
+         onMouseLeave={(e) => {
+           e.target.style.borderColor = 'rgba(139, 115, 85, 0.3)';
+         }}>
+      <div className="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg"
+           style={{background: gradient}}>
         {icon}
       </div>
-      <h3 className="text-xl font-bold text-white mb-3 text-center">{title}</h3>
-      <p className="text-white/70 text-sm text-center">{description}</p>
+      <h3 className="text-xl font-bold mb-3 text-center" style={{color: '#4A3728'}}>{title}</h3>
+      <p className="text-sm text-center" style={{color: 'rgba(74, 55, 40, 0.7)'}}>{description}</p>
       {onClick && (
         <button 
           onClick={onClick}
-          className="w-full mt-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-300 text-white text-sm font-medium"
+          className="w-full mt-4 py-2 rounded-lg transition-all duration-300 text-sm font-medium"
+          style={{
+            backgroundColor: 'rgba(139, 115, 85, 0.1)',
+            color: '#4A3728'
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = 'rgba(139, 115, 85, 0.2)';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = 'rgba(139, 115, 85, 0.1)';
+          }}
         >
           Learn More
         </button>

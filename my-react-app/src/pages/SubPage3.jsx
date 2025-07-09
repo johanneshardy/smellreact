@@ -1,89 +1,206 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const SubPage3 = ({ onNavigate }) => {
   const [activeScent, setActiveScent] = useState(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [floatingElements, setFloatingElements] = useState([]);
+  const [scentAnimation, setScentAnimation] = useState({});
+
+  // Generate floating elements like homepage
+  useEffect(() => {
+    const elements = [];
+    const nudeColors = ['#C9A96E', '#B5A082', '#8B7355', '#A0916C', '#D4C4A8', '#E6D7C3'];
+    for (let i = 0; i < 12; i++) {
+      elements.push({
+        id: i,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: Math.random() * 16 + 8,
+        color: nudeColors[Math.floor(Math.random() * nudeColors.length)],
+        duration: Math.random() * 4 + 3,
+        delay: Math.random() * 2
+      });
+    }
+    setFloatingElements(elements);
+  }, []);
+
+  // Entrance animation
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), 200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Scent bubble animation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setScentAnimation(prev => ({
+        ...prev,
+        [Math.random()]: {
+          x: Math.random() * 100,
+          y: Math.random() * 100,
+          size: Math.random() * 30 + 10
+        }
+      }));
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const scentExperiences = [
     {
       id: 1,
       title: "Floral Essence",
       description: "Delicate rose and jasmine blend",
-      color: "from-pink-500 to-rose-600",
+      emoji: "🌸",
+      color: "#C9A96E",
+      bgGradient: "linear-gradient(135deg, rgba(201, 169, 110, 0.4) 0%, rgba(180, 160, 130, 0.4) 100%)",
       intensity: 75
     },
     {
       id: 2,
       title: "Citrus Burst",
       description: "Fresh lemon and orange zest",
-      color: "from-orange-500 to-yellow-600",
+      emoji: "🍊",
+      color: "#B5A082",
+      bgGradient: "linear-gradient(135deg, rgba(181, 160, 130, 0.4) 0%, rgba(160, 145, 108, 0.4) 100%)",
       intensity: 90
     },
     {
       id: 3,
       title: "Forest Deep",
       description: "Earthy pine and moss notes",
-      color: "from-green-500 to-emerald-600",
+      emoji: "🌲",
+      color: "#8B7355",
+      bgGradient: "linear-gradient(135deg, rgba(139, 115, 85, 0.4) 0%, rgba(201, 169, 110, 0.4) 100%)",
       intensity: 60
     },
     {
       id: 4,
       title: "Ocean Breeze",
       description: "Salty air and sea minerals",
-      color: "from-blue-500 to-cyan-600",
+      emoji: "🌊",
+      color: "#A0916C",
+      bgGradient: "linear-gradient(135deg, rgba(160, 145, 108, 0.4) 0%, rgba(212, 196, 168, 0.4) 100%)",
       intensity: 85
     }
   ];
 
   return (
-    <div className="fixed inset-0 w-screen h-screen bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800 flex flex-col relative overflow-hidden">
-      {/* Background effects */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-tr from-emerald-800/20 via-transparent to-teal-800/20"></div>
-        <div className="absolute top-20 right-20 w-96 h-96 bg-emerald-500/8 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 left-20 w-80 h-80 bg-teal-500/8 rounded-full blur-2xl"></div>
+    <div className="min-h-screen w-full relative overflow-hidden"
+         style={{
+           background: 'linear-gradient(135deg, #F5F0E8 0%, #E6D7C3 25%, #D4C4A8 50%, #C9A96E 75%, #B5A082 100%)'
+         }}>
+      
+      {/* Floating background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {floatingElements.map((element) => (
+          <div
+            key={element.id}
+            className="absolute rounded-full opacity-12 animate-pulse"
+            style={{
+              left: `${element.x}%`,
+              top: `${element.y}%`,
+              width: `${element.size}px`,
+              height: `${element.size}px`,
+              backgroundColor: element.color,
+              animationDuration: `${element.duration}s`,
+              animationDelay: `${element.delay}s`,
+              transform: 'translate(-50%, -50%)'
+            }}
+          />
+        ))}
       </div>
 
-      {/* Navigation header */}
+      {/* Scent bubbles animation */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {Object.entries(scentAnimation).map(([key, bubble]) => (
+          <div
+            key={key}
+            className="absolute rounded-full opacity-20 animate-ping"
+            style={{
+              left: `${bubble.x}%`,
+              top: `${bubble.y}%`,
+              width: `${bubble.size}px`,
+              height: `${bubble.size}px`,
+              backgroundColor: '#C9A96E',
+              animationDuration: '3s'
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Fun geometric shapes */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-24 left-20 w-24 h-24 rounded-full opacity-15 animate-bounce" 
+             style={{backgroundColor: '#C9A96E', animationDuration: '3s'}}></div>
+        <div className="absolute top-1/3 right-16 w-20 h-20 opacity-12 rotate-45 animate-spin" 
+             style={{backgroundColor: '#8B7355', animationDuration: '8s'}}></div>
+        <div className="absolute bottom-1/4 left-1/3 w-28 h-28 rounded-full opacity-15 animate-pulse" 
+             style={{backgroundColor: '#B5A082', animationDuration: '2s'}}></div>
+        <div className="absolute bottom-32 right-20 w-16 h-16 opacity-12 animate-bounce" 
+             style={{backgroundColor: '#A0916C', animationDuration: '4s'}}></div>
+      </div>
+
+      {/* Fun Navigation header */}
       <div className="relative z-10 flex justify-between items-center p-6">
         <button 
           onClick={() => onNavigate('home')}
-          className="group flex items-center space-x-2 text-white/80 hover:text-white transition-all duration-300 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full shadow-lg hover:shadow-xl border border-white/30 hover:border-white/50"
+          className="group flex items-center space-x-2 transition-all duration-300 backdrop-blur-md px-6 py-3 rounded-full shadow-lg hover:shadow-xl border-2 font-medium hover:scale-105"
+          style={{
+            color: '#4A3728',
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            borderColor: 'rgba(139, 115, 85, 0.3)'
+          }}
         >
           <svg className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          <span className="font-medium text-sm">Back to Home</span>
+          <span className="text-sm">Back to Home</span>
         </button>
         
-        <button 
-          onClick={() => onNavigate('home')}
-          className="group p-3 bg-white/20 backdrop-blur-md rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-white/80 hover:text-white border border-white/30 hover:border-white/50"
-          title="Return to Home"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-          </svg>
-        </button>
+        <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+          <h1 className="text-3xl font-bold text-transparent bg-clip-text"
+              style={{backgroundImage: 'linear-gradient(135deg, #4A3728 0%, #8B7355 50%, #C9A96E 100%)'}}>
+            Smell Magic Experience 🌸
+          </h1>
+        </div>
+        
+        <div className="w-12"></div>
       </div>
 
       {/* Main content */}
       <div className="relative z-10 flex-grow flex flex-col justify-center px-8 py-8">
         <div className="max-w-6xl w-full mx-auto">
           
-          {/* Header section - properly centered */}
-          <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-white to-teal-300 mb-6 animate-fade-in">
-              Olfactory Experience
+          {/* Fun Header section */}
+          <div className={`text-center mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <h1 className="text-5xl md:text-7xl font-black mb-6 drop-shadow-2xl"
+                style={{color: '#4A3728'}}>
+              {'Olfactory Wonder'.split('').map((letter, index) => (
+                letter === ' ' ? (
+                  <span key={index} className="inline-block mx-4">👃</span>
+                ) : (
+                  <span 
+                    key={index}
+                    className="inline-block hover:rotate-12 hover:scale-110 transition-transform duration-300 cursor-default"
+                    style={{animationDelay: `${index * 0.1}s`}}
+                  >
+                    {letter}
+                  </span>
+                )
+              ))}
             </h1>
-            <div className="w-24 h-0.5 bg-gradient-to-r from-emerald-400 to-teal-500 mx-auto rounded-full mb-6"></div>
-            <p className="text-lg md:text-xl text-white/90 leading-relaxed max-w-3xl mx-auto animate-fade-in-delay">
-              Dive into a world of scents and aromas. Discover how different fragrances 
-              can evoke memories, emotions, and transport you to different places.
+            <div className="w-24 h-0.5 mx-auto rounded-full mb-6"
+                 style={{background: 'linear-gradient(90deg, #C9A96E 0%, #8B7355 100%)'}}></div>
+            <p className="text-xl md:text-2xl leading-relaxed max-w-4xl mx-auto"
+               style={{color: 'rgba(74, 55, 40, 0.9)'}}>
+              Dive into a world of scents and aromas! Discover how different fragrances 
+              can evoke memories, emotions, and transport you to different places. 🌈✨
             </p>
           </div>
 
-          {/* Scent experience grid - properly aligned */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          {/* Scent experience grid */}
+          <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             {scentExperiences.map((scent) => (
               <div 
                 key={scent.id}
@@ -91,47 +208,69 @@ const SubPage3 = ({ onNavigate }) => {
                 onMouseEnter={() => setActiveScent(scent.id)}
                 onMouseLeave={() => setActiveScent(null)}
               >
-                <div className="bg-white/15 backdrop-blur-md rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 border border-white/30 hover:border-white/50 h-full flex flex-col">
+                <div className="bg-white/90 backdrop-blur-md rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-rotate-2 border-4 h-full flex flex-col"
+                     style={{
+                       borderColor: activeScent === scent.id ? 'rgba(139, 115, 85, 0.4)' : 'transparent'
+                     }}>
                   
-                  {/* Scent indicator */}
-                  <div className={`w-16 h-16 bg-gradient-to-br ${scent.color} rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg relative overflow-hidden`}>
-                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                    </svg>
+                  <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                       style={{background: scent.bgGradient}}></div>
+                  
+                  {/* Scent indicator with emoji */}
+                  <div className="relative text-center">
+                    <div className="w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg relative overflow-hidden text-2xl"
+                         style={{backgroundColor: scent.color, color: 'white'}}>
+                      {scent.emoji}
+                      
+                      {/* Animated scent waves */}
+                      {activeScent === scent.id && (
+                        <>
+                          <div className="absolute inset-0 border-2 border-white/30 rounded-xl animate-ping"></div>
+                          <div className="absolute inset-0 border-2 border-white/20 rounded-xl animate-ping" 
+                               style={{ animationDelay: '0.5s' }}></div>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-grow flex flex-col justify-between">
+                      <div>
+                        <h3 className="text-xl font-bold mb-2 transition-colors duration-300"
+                            style={{
+                              color: activeScent === scent.id ? scent.color : '#4A3728'
+                            }}>
+                          {scent.title}
+                        </h3>
+                        <p className="text-sm mb-4" style={{color: 'rgba(74, 55, 40, 0.7)'}}>
+                          {scent.description}
+                        </p>
+                      </div>
+
+                      {/* Intensity indicator */}
+                      <div className="w-full">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-xs font-medium" style={{color: 'rgba(74, 55, 40, 0.6)'}}>Intensity</span>
+                          <span className="text-xs font-medium" style={{color: 'rgba(74, 55, 40, 0.6)'}}>{scent.intensity}%</span>
+                        </div>
+                        <div className="w-full rounded-full h-2"
+                             style={{backgroundColor: 'rgba(139, 115, 85, 0.2)'}}>
+                          <div 
+                            className="h-2 rounded-full transition-all duration-1000"
+                            style={{ 
+                              width: activeScent === scent.id ? `${scent.intensity}%` : '0%',
+                              backgroundColor: scent.color
+                            }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
                     
-                    {/* Animated scent waves */}
                     {activeScent === scent.id && (
-                      <>
-                        <div className="absolute inset-0 border-2 border-white/30 rounded-xl animate-ping"></div>
-                        <div className="absolute inset-0 border-2 border-white/20 rounded-xl animate-ping" style={{ animationDelay: '0.5s' }}></div>
-                      </>
+                      <div className="absolute -top-2 -right-2 text-white text-xs px-3 py-1 rounded-full animate-bounce"
+                           style={{backgroundColor: scent.color}}>
+                        Smell it! 👃
+                      </div>
                     )}
-                  </div>
-
-                  {/* Content */}
-                  <div className="text-center flex-grow flex flex-col justify-between">
-                    <div>
-                      <h3 className="text-xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-emerald-200 group-hover:to-teal-200 transition-all duration-500">
-                        {scent.title}
-                      </h3>
-                      <p className="text-white/70 text-sm mb-4">
-                        {scent.description}
-                      </p>
-                    </div>
-
-                    {/* Intensity indicator */}
-                    <div className="w-full">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs text-white/60">Intensity</span>
-                        <span className="text-xs text-white/60">{scent.intensity}%</span>
-                      </div>
-                      <div className="w-full bg-white/20 rounded-full h-2">
-                        <div 
-                          className={`bg-gradient-to-r ${scent.color} h-2 rounded-full transition-all duration-1000`}
-                          style={{ width: activeScent === scent.id ? `${scent.intensity}%` : '0%' }}
-                        ></div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -139,54 +278,37 @@ const SubPage3 = ({ onNavigate }) => {
           </div>
 
           {/* Interactive section */}
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 mb-12 border border-white/20">
+          <div className={`bg-white/90 backdrop-blur-md rounded-3xl p-8 border shadow-xl transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+               style={{borderColor: 'rgba(139, 115, 85, 0.2)'}}>
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-white mb-4">Create Your Scent Profile</h2>
-              <p className="text-white/70 mb-6">
-                Hover over the scent cards above to explore different olfactory experiences
+              <h2 className="text-3xl font-bold mb-4 flex items-center justify-center space-x-3"
+                  style={{color: '#4A3728'}}>
+                <span>🎨</span>
+                <span>Create Your Scent Profile</span>
+                <span>✨</span>
+              </h2>
+              <p className="mb-6" style={{color: 'rgba(74, 55, 40, 0.7)'}}>
+                Hover over the scent cards above to explore different olfactory experiences and discover your favorites!
               </p>
               
               {activeScent && (
                 <div className="animate-fade-in">
-                  <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 inline-block">
-                    <p className="text-white font-medium">
-                      Currently exploring: <span className="text-emerald-300">
-                        {scentExperiences.find(s => s.id === activeScent)?.title}
+                  <div className="inline-block rounded-2xl p-4 border"
+                       style={{
+                         backgroundColor: 'rgba(201, 169, 110, 0.2)',
+                         borderColor: 'rgba(139, 115, 85, 0.3)'
+                       }}>
+                    <p className="font-medium flex items-center space-x-2"
+                       style={{color: '#4A3728'}}>
+                      <span>Currently exploring:</span>
+                      <span style={{color: scentExperiences.find(s => s.id === activeScent)?.color}}>
+                        {scentExperiences.find(s => s.id === activeScent)?.emoji} {scentExperiences.find(s => s.id === activeScent)?.title}
                       </span>
                     </p>
                   </div>
                 </div>
               )}
             </div>
-          </div>
-
-          {/* Navigation buttons - properly centered */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button 
-              onClick={() => onNavigate('subpage2')}
-              className="group relative bg-white/15 backdrop-blur-md hover:bg-white/20 text-white font-bold py-3 px-6 rounded-2xl shadow-xl transform transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-white/30 hover:border-white/50 overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/20 via-teal-600/20 to-cyan-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <span className="relative flex items-center space-x-2">
-                <svg className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-                <span>Back to Project</span>
-              </span>
-            </button>
-            
-            <button 
-              onClick={() => onNavigate('subpage1')}
-              className="group relative bg-white/15 backdrop-blur-md hover:bg-white/20 text-white font-bold py-3 px-6 rounded-2xl shadow-xl transform transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-white/30 hover:border-white/50 overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-teal-600/20 via-emerald-600/20 to-green-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <span className="relative flex items-center space-x-2">
-                <span>Return to Journey</span>
-                <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </span>
-            </button>
           </div>
         </div>
       </div>
