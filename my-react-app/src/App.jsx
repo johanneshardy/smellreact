@@ -1,7 +1,7 @@
 import { useState } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import './App.css';
 
-// Import the page components
 import HomePage from './pages/HomePage';
 import SubPage1 from './pages/SubPage1';
 import SubPage2 from './pages/SubPage2';
@@ -9,55 +9,38 @@ import SubPage3 from './pages/SubPage3';
 import NotFoundPage from './pages/NotFoundPage';
 
 const App = () => {
-  const [currentPage, setCurrentPage] = useState('home');
+  const navigate = useNavigate();
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
 
-  // Handle page navigation with smooth transitions
   const handleNavigate = (newPage) => {
-    if (newPage === currentPage) return;
-
     setIsPageTransitioning(true);
-
-    // Small delay for smooth transition
     setTimeout(() => {
-      setCurrentPage(newPage);
+      navigate(newPage === 'home' ? '/home' : `/${newPage}/`);
       setIsPageTransitioning(false);
     }, 150);
   };
 
-  // Page component router
-  const PageRouter = () => {
-    const pageProps = {
-      onNavigate: handleNavigate,
-      isTransitioning: isPageTransitioning
-    };
-
-    switch (currentPage) {
-      case 'home':
-        return <HomePage {...pageProps} />;
-      case 'subpage1':
-        return <SubPage1 {...pageProps} />;
-      case 'subpage2':
-        return <SubPage2 {...pageProps} />;
-      case 'subpage3':
-        return <SubPage3 {...pageProps} />;
-      default:
-        return <NotFoundPage {...pageProps} />;
-    }
+  const pageProps = {
+    onNavigate: handleNavigate,
+    isTransitioning: isPageTransitioning
   };
 
   return (
     <div className="app-container">
-      {/* Page transition overlay */}
       {isPageTransitioning && (
         <div className="transition-overlay">
           <div className="transition-spinner" />
         </div>
       )}
-
-      {/* Main page content - now supports scrolling */}
-      <main className={`main-content ${currentPage === 'home' ? 'full-screen-page' : 'scrollable-page'}`}>
-        <PageRouter />
+      <main className={`main-content`}>
+        <Routes>
+          <Route path="/home" element={<HomePage {...pageProps} />} />
+          <Route path="/1/" element={<SubPage1 {...pageProps} />} />
+          <Route path="/2/" element={<SubPage2 {...pageProps} />} />
+          <Route path="/3/" element={<SubPage3 {...pageProps} />} />
+          <Route path="/" element={<HomePage {...pageProps} />} />
+          <Route path="*" element={<NotFoundPage {...pageProps} />} />
+        </Routes>
       </main>
     </div>
   );

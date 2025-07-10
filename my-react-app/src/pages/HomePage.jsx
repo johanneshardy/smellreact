@@ -78,7 +78,7 @@ const HomePage = ({ onNavigate }) => {
           {/* CTA Button */}
           <div className={`mb-8 transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <button
-              onClick={() => onNavigate('subpage1')}
+              onClick={() => onNavigate('1')}
               className="bg-[#8cc5d5] hover:bg-blue-400 text-black font-bold text-[50px] px-[150px] py-[10px] rounded-full border-4 border-black transform transition-all duration-300 hover:scale-105"
               style={{
                 boxShadow: '0 4px 0 0 #8cc5d5'
@@ -103,8 +103,7 @@ const HomePage = ({ onNavigate }) => {
 
             {/* Our Vision Card */}
             <div
-              className="text-left cursor-pointer transform transition-all duration-300 hover:scale-105"
-              onClick={() => onNavigate('subpage2')}
+              className="text-left transform transition-all duration-300 hover:scale-105"
             >
               <h3 className="text-black font-bold text-[50px] mb-4">OUR VISION</h3>
               <div className="bg-yellow-300 border-4 border-black rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
@@ -116,13 +115,12 @@ const HomePage = ({ onNavigate }) => {
 
             {/* Our Team Card */}
             <div
-              className="text-left cursor-pointer transform transition-all duration-300 hover:scale-105"
-              onClick={() => onNavigate('subpage2')}
+              className="text-left transform transition-all duration-300 hover:scale-105"
             >
               <h3 className="text-black font-bold text-[50px] mb-4">OUR TEAM</h3>
               <div className="bg-yellow-300 border-4 border-black rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <p className="text-black font-bold text-[20px] leading-relaxed">
-                  The project is developed by a student team from the SJTU-U Writing Center.
+                  The project is developed by a student team from the UM-SJTU Writing Center.
                 </p>
               </div>
             </div>
