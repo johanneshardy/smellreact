@@ -2,27 +2,6 @@ import { useState, useEffect } from 'react';
 
 const HomePage = ({ onNavigate }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [activeCard, setActiveCard] = useState(null);
-  const [floatingElements, setFloatingElements] = useState([]);
-  const [hoveredNav, setHoveredNav] = useState(null);
-
-  // Generate random floating elements with nude color palette
-  useEffect(() => {
-    const elements = [];
-    const nudeColors = ['#C9A96E', '#B5A082', '#8B7355', '#A0916C', '#D4C4A8', '#E6D7C3', '#F5F0E8'];
-    for (let i = 0; i < 15; i++) {
-      elements.push({
-        id: i,
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        size: Math.random() * 20 + 10,
-        color: nudeColors[Math.floor(Math.random() * nudeColors.length)],
-        duration: Math.random() * 3 + 2,
-        delay: Math.random() * 2
-      });
-    }
-    setFloatingElements(elements);
-  }, []);
 
   // Entrance animation
   useEffect(() => {
@@ -30,250 +9,179 @@ const HomePage = ({ onNavigate }) => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Fun emoji reactions for cards
-  const cardEmojis = {
-    intro: ['📚', '🎨', '🌟', '💫'],
-    smell: ['🌸', '🍃', '🎭', '🌈']
-  };
-
-  const [emojiIndex, setEmojiIndex] = useState({
-    intro: 0,
-    smell: 0
-  });
-
-  // Rotate emojis every 2 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setEmojiIndex(prev => ({
-        intro: (prev.intro + 1) % cardEmojis.intro.length,
-        smell: (prev.smell + 1) % cardEmojis.smell.length
-      }));
-    }, 2000);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
-    <div className="min-h-screen w-full relative overflow-hidden" 
-         style={{
-           background: 'linear-gradient(135deg, #F5F0E8 0%, #E6D7C3 25%, #D4C4A8 50%, #C9A96E 75%, #B5A082 100%)'
-         }}>
+    <div className="min-h-screen w-full relative overflow-hidden bg-yellow-400">
       
-      {/* Floating background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {floatingElements.map((element) => (
-          <div
-            key={element.id}
-            className="absolute rounded-full opacity-15 animate-pulse"
-            style={{
-              left: `${element.x}%`,
-              top: `${element.y}%`,
-              width: `${element.size}px`,
-              height: `${element.size}px`,
-              backgroundColor: element.color,
-              animationDuration: `${element.duration}s`,
-              animationDelay: `${element.delay}s`,
-              transform: 'translate(-50%, -50%)'
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Fun geometric shapes with nude tones */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-20 w-32 h-32 rounded-full opacity-20 animate-bounce" 
-             style={{backgroundColor: '#C9A96E', animationDuration: '3s'}}></div>
-        <div className="absolute top-40 right-32 w-24 h-24 opacity-15 rotate-45 animate-spin" 
-             style={{backgroundColor: '#8B7355', animationDuration: '8s'}}></div>
-        <div className="absolute bottom-32 left-40 w-28 h-28 rounded-full opacity-20 animate-pulse" 
-             style={{backgroundColor: '#B5A082', animationDuration: '2s'}}></div>
-        <div className="absolute bottom-20 right-20 w-20 h-20 opacity-15 animate-bounce" 
-             style={{backgroundColor: '#A0916C', animationDuration: '4s'}}></div>
-      </div>
-
-      {/* Simple Header */}
-      <header className="relative z-10 p-6">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center animate-spin" 
-                 style={{animationDuration: '10s'}}>
-              <span className="text-2xl">🎓</span>
+      {/* Navigation Header */}
+      <header className="relative z-10 bg-orange-500 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <nav className="flex items-center justify-between">
+            {/* Logo */}
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-blue-400 rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-sm">US</span>
+              </div>
+              <div className="text-white font-bold text-lg">
+                UM-SJTU<br />
+                <span className="text-xs font-normal">Writing Center</span>
+              </div>
             </div>
-            <div>
-              <h2 className="text-xl font-bold drop-shadow-lg" style={{color: '#4A3728'}}>UM-SJTU</h2>
-              <p className="text-sm" style={{color: 'rgba(74, 55, 40, 0.8)'}}>Writing Center</p>
-            </div>
-          </div>
-          
-          <nav className="hidden md:flex space-x-6">
-            {['About', 'Services', 'Resources', 'Contact'].map((item, index) => (
-              <a 
-                key={item}
-                href="#" 
-                className="font-medium px-3 py-2 rounded-full transition-all duration-300 hover:scale-110"
-                style={{
-                  color: hoveredNav === item ? '#4A3728' : 'rgba(74, 55, 40, 0.8)',
-                  backgroundColor: hoveredNav === item ? 'rgba(139, 115, 85, 0.2)' : 'transparent'
-                }}
-                onMouseEnter={() => setHoveredNav(item)}
-                onMouseLeave={() => setHoveredNav(null)}
-              >
-                {item}
+            
+            {/* Navigation Menu */}
+            <div className="hidden md:flex space-x-8">
+              <a href="#" className="text-white hover:text-yellow-200 font-medium transition-colors duration-300">
+                SMELL MAP
               </a>
-            ))}
+              <a href="#" className="text-white hover:text-yellow-200 font-medium transition-colors duration-300">
+                SMELL DAILY
+              </a>
+              <a href="#" className="text-white hover:text-yellow-200 font-medium transition-colors duration-300">
+                SMELL LIBRARY
+              </a>
+              <a href="#" className="text-white hover:text-yellow-200 font-medium transition-colors duration-300">
+                CONTACT
+              </a>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button className="md:hidden text-white">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
           </nav>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="relative z-10 flex-1 flex flex-col justify-center px-6 py-12">
-        <div className="max-w-6xl mx-auto text-center">
+      {/* Main Hero Section */}
+      <main className="relative z-10 px-4 py-12">
+        <div className="max-w-4xl mx-auto text-center">
           
-          {/* Fun Title with Animation */}
-          <div className={`mb-12 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <h1 className="text-6xl md:text-8xl font-black mb-6 drop-shadow-2xl" style={{color: '#4A3728'}}>
-              {'Smell Project'.split('').map((letter, index) => (
-                letter === ' ' ? (
-                  <span key={index} className="inline-block mx-4">🌈</span>
-                ) : (
-                  <span 
-                    key={index}
-                    className="inline-block hover:rotate-12 hover:scale-110 transition-transform duration-300 cursor-default"
-                    style={{animationDelay: `${index * 0.1}s`}}
-                  >
-                    {letter}
-                  </span>
-                )
-              ))}
-            </h1>
-            <p className="text-2xl font-light mb-8 max-w-3xl mx-auto leading-relaxed" 
-               style={{color: 'rgba(74, 55, 40, 0.9)'}}>
-              Discover the magical world of scents, writing, and creativity! ✨
-            </p>
+          {/* Cartoon Character */}
+          <div className={`mb-8 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <div className="relative inline-block">
+              {/* Main Character Face */}
+              <div className="w-32 h-32 mx-auto mb-4 relative">
+                {/* Face */}
+                <div className="w-full h-full bg-yellow-300 rounded-full border-4 border-black relative overflow-hidden">
+                  {/* Eyes */}
+                  <div className="absolute top-8 left-8 w-4 h-6 bg-black rounded-full"></div>
+                  <div className="absolute top-8 right-8 w-4 h-6 bg-black rounded-full"></div>
+                  {/* Smile */}
+                  <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-8 h-4 border-b-4 border-black rounded-full"></div>
+                </div>
+                
+                {/* Mask */}
+                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-20 h-12 bg-blue-300 rounded-2xl border-3 border-black">
+                  {/* Breath lines */}
+                  <div className="absolute -right-8 top-1/2 transform -translate-y-1/2">
+                    <div className="w-6 h-0.5 bg-blue-400 mb-1 animate-pulse"></div>
+                    <div className="w-4 h-0.5 bg-blue-400 mb-1 animate-pulse" style={{animationDelay: '0.3s'}}></div>
+                    <div className="w-5 h-0.5 bg-blue-400 animate-pulse" style={{animationDelay: '0.6s'}}></div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Fun CTA Button */}
-          <div className={`mb-16 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          {/* Main Title */}
+          <div className={`mb-8 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <h1 className="text-6xl md:text-8xl font-black mb-4">
+              <span className="text-white">SMELL</span><br />
+              <span className="text-black">READY</span><br />
+              <span className="text-white">PROJECT</span><br />
+              <span className="text-black">TO SMELL ?</span>
+            </h1>
+          </div>
+
+          {/* CTA Button */}
+          <div className={`mb-8 transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <button 
               onClick={() => onNavigate('subpage1')}
-              className="group relative bg-white font-bold text-2xl px-12 py-6 rounded-full shadow-2xl hover:shadow-3xl transform transition-all duration-500 hover:scale-110 hover:-rotate-2 overflow-hidden border-2"
-              style={{
-                color: '#4A3728',
-                borderColor: 'rgba(139, 115, 85, 0.3)'
-              }}
+              className="bg-blue-300 hover:bg-blue-400 text-black font-bold text-2xl px-12 py-4 rounded-full border-4 border-black shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
             >
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                   style={{background: 'linear-gradient(135deg, rgba(201, 169, 110, 0.2) 0%, rgba(180, 160, 130, 0.2) 50%, rgba(139, 115, 85, 0.2) 100%)'}}></div>
-              <span className="relative transition-colors duration-500 flex items-center space-x-3">
-                <span>Start Adventure</span>
-                <span className="text-3xl group-hover:animate-bounce">🚀</span>
-              </span>
+              START
             </button>
           </div>
 
-          {/* Colorful Cards Grid */}
-          <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          {/* OR Divider */}
+          <div className={`mb-8 transition-all duration-1000 delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <p className="text-black font-bold text-lg">OR</p>
+          </div>
+
+          {/* Learn More Section */}
+          <div className={`mb-12 transition-all duration-1000 delay-900 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <h2 className="text-black font-bold text-2xl mb-8">LEARN MORE ABOUT US ...</h2>
+          </div>
+
+          {/* Info Cards Section */}
+          <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto transition-all duration-1000 delay-1100 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             
-            {/* Project Intro Card */}
+            {/* Our Vision Card */}
             <div 
-              className="group relative bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:rotate-2 cursor-pointer border-4"
+              className="text-left cursor-pointer transform transition-all duration-300 hover:scale-105"
               onClick={() => onNavigate('subpage2')}
-              onMouseEnter={() => setActiveCard('intro')}
-              onMouseLeave={() => setActiveCard(null)}
-              style={{
-                borderColor: activeCard === 'intro' ? 'rgba(201, 169, 110, 0.3)' : 'transparent'
-              }}
             >
-              <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-500"
-                   style={{background: 'linear-gradient(135deg, rgba(201, 169, 110, 0.4) 0%, rgba(180, 160, 130, 0.4) 100%)'}}></div>
-              
-              <div className="relative text-center">
-                <div className="text-6xl mb-4 transform group-hover:scale-125 transition-transform duration-500">
-                  {cardEmojis.intro[emojiIndex.intro]}
-                </div>
-                <h3 className="text-2xl font-bold mb-4 transition-colors duration-300"
-                    style={{color: activeCard === 'intro' ? '#C9A96E' : '#4A3728'}}>
-                  Learn More
-                </h3>
-                <p className="transition-colors duration-300"
-                   style={{color: 'rgba(74, 55, 40, 0.7)'}}>
-                  Discover our mission, vision, and the amazing team behind this project!
+              <h3 className="text-black font-bold text-2xl mb-4">OUR VISION</h3>
+              <div className="bg-yellow-300 border-4 border-black rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <p className="text-black text-sm leading-relaxed">
+                  This project aims to help modern people rediscover and experience the power of smell, exploring how olfaction influences our emotions and memories in this digital age.
                 </p>
-                
-                {activeCard === 'intro' && (
-                  <div className="absolute -top-2 -right-2 text-white text-xs px-3 py-1 rounded-full animate-bounce"
-                       style={{backgroundColor: '#C9A96E'}}>
-                    Discover! 🌟
-                  </div>
-                )}
               </div>
             </div>
 
-            {/* Smell Experience Card */}
+            {/* Our Team Card */}
             <div 
-              className="group relative bg-white/95 backdrop-blur-sm rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-rotate-2 cursor-pointer border-4"
-              onClick={() => onNavigate('subpage3')}
-              onMouseEnter={() => setActiveCard('smell')}
-              onMouseLeave={() => setActiveCard(null)}
-              style={{
-                borderColor: activeCard === 'smell' ? 'rgba(180, 160, 130, 0.3)' : 'transparent'
-              }}
+              className="text-left cursor-pointer transform transition-all duration-300 hover:scale-105"
+              onClick={() => onNavigate('subpage2')}
             >
-              <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-500"
-                   style={{background: 'linear-gradient(135deg, rgba(180, 160, 130, 0.4) 0%, rgba(160, 145, 108, 0.4) 100%)'}}></div>
-              
-              <div className="relative text-center">
-                <div className="text-6xl mb-4 transform group-hover:scale-125 transition-transform duration-500">
-                  {cardEmojis.smell[emojiIndex.smell]}
-                </div>
-                <h3 className="text-2xl font-bold mb-4 transition-colors duration-300"
-                    style={{color: activeCard === 'smell' ? '#B5A082' : '#4A3728'}}>
-                  Smell Magic
-                </h3>
-                <p className="transition-colors duration-300"
-                   style={{color: 'rgba(74, 55, 40, 0.7)'}}>
-                  Experience the wonderful world of scents and their amazing effects!
+              <h3 className="text-black font-bold text-2xl mb-4">OUR TEAM</h3>
+              <div className="bg-yellow-300 border-4 border-black rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <p className="text-black text-sm leading-relaxed">
+                  The project is developed by a student team from the SJTU-U Writing Center.
                 </p>
-                
-                {activeCard === 'smell' && (
-                  <div className="absolute -top-2 -right-2 text-white text-xs px-3 py-1 rounded-full animate-bounce"
-                       style={{backgroundColor: '#B5A082'}}>
-                    Smell it! 👃
-                  </div>
-                )}
               </div>
             </div>
           </div>
 
-          {/* Fun Stats Counter */}
-          <div className={`mt-16 transition-all duration-1000 delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 max-w-2xl mx-auto shadow-xl border"
-                 style={{borderColor: 'rgba(139, 115, 85, 0.2)'}}>
-              <div className="grid grid-cols-3 gap-6 text-center">
-                <div>
-                  <div className="text-3xl font-bold mb-1" style={{color: '#8B7355'}}>12+</div>
-                  <div className="text-sm" style={{color: 'rgba(74, 55, 40, 0.7)'}}>Cultural Sites</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold mb-1" style={{color: '#C9A96E'}}>100+</div>
-                  <div className="text-sm" style={{color: 'rgba(74, 55, 40, 0.7)'}}>Happy Users</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold mb-1" style={{color: '#B5A082'}}>∞</div>
-                  <div className="text-sm" style={{color: 'rgba(74, 55, 40, 0.7)'}}>Fun Moments</div>
-                </div>
+          {/* Additional Navigation Cards */}
+          <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto mt-12 transition-all duration-1000 delay-1300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            
+            {/* Calligraphy Explorer */}
+            <div 
+              className="bg-orange-400 border-4 border-black rounded-lg p-6 shadow-lg cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+              onClick={() => onNavigate('subpage1')}
+            >
+              <div className="text-center">
+                <div className="text-4xl mb-3">📚</div>
+                <h3 className="text-black font-bold text-lg mb-2">Explore Calligraphy</h3>
+                <p className="text-black text-sm">Discover ancient Chinese calligraphy and cultural sites</p>
+              </div>
+            </div>
+
+            {/* Smell Experience */}
+            <div 
+              className="bg-blue-300 border-4 border-black rounded-lg p-6 shadow-lg cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+              onClick={() => onNavigate('subpage3')}
+            >
+              <div className="text-center">
+                <div className="text-4xl mb-3">🌸</div>
+                <h3 className="text-black font-bold text-lg mb-2">Smell Experience</h3>
+                <p className="text-black text-sm">Explore different scents and their magical effects</p>
               </div>
             </div>
           </div>
         </div>
       </main>
 
-      {/* Simple Footer */}
-      <footer className="relative z-10 py-6 text-center">
-        <div className="backdrop-blur-sm rounded-2xl max-w-2xl mx-auto px-6 py-4"
-             style={{backgroundColor: 'rgba(139, 115, 85, 0.2)'}}>
-          <p className="text-sm" style={{color: 'rgba(74, 55, 40, 0.8)'}}>
-            Made with 💜 by UM-SJTU Writing Center © {new Date().getFullYear()}
-          </p>
+      {/* Footer */}
+      <footer className="relative z-10 py-6 mt-12">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="bg-orange-400 border-4 border-black rounded-lg px-6 py-4 shadow-lg">
+            <p className="text-black font-medium">
+              Made with 💛 by UM-SJTU Writing Center © {new Date().getFullYear()}
+            </p>
+          </div>
         </div>
       </footer>
     </div>
