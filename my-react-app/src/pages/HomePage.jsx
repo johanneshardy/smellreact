@@ -16,10 +16,7 @@ const HomePage = ({ onNavigate }) => {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <nav className="flex items-center justify-between">
             {/* Logo */}
-            <div className="flex items-center space-x-2">
-              {/* <div className="w-8 h-8 bg-blue-400 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">US</span>
-              </div> */}
+            <div className="flex items-center space-x-2 pl-2 pr-2 md:pl-4 md:pr-4 lg:px-8">
               <img src='/src/assets/writing-center-logo.png' alt="Logo" className='w-16 h-16' />
               <div className="text-white font-bold text-lg">
                 UM-SJTU<br />
@@ -59,7 +56,11 @@ const HomePage = ({ onNavigate }) => {
 
           {/* Cartoon Character */}
           <div className='flex justify-center items-center'>
-            <img src='/src/assets/smellcharacter.png' alt="Cartoon Character" className='w-100 h-100' />
+            <img
+              src='/src/assets/smellcharacter.png'
+              alt="Cartoon Character"
+              className={`w-100 h-100 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+            />
 
             {/* Main Title */}
             <div className={`mb-8 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
