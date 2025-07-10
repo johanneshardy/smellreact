@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import './App.css';
 
 // Import the page components
@@ -10,16 +10,7 @@ import NotFoundPage from './pages/NotFoundPage';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
-  const [userId, setUserId] = useState('');
-  const [isAuthReady, setIsAuthReady] = useState(false);
   const [isPageTransitioning, setIsPageTransitioning] = useState(false);
-
-  // Initialize user session
-  useEffect(() => {
-    // Set a simple user ID without Firebase for now
-    setUserId('user-' + Math.random().toString(36).substring(2, 11));
-    setIsAuthReady(true);
-  }, []);
 
   // Handle page navigation with smooth transitions
   const handleNavigate = (newPage) => {

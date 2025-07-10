@@ -58,40 +58,18 @@ const HomePage = ({ onNavigate }) => {
         <div className="max-w-4xl mx-auto text-center">
           
           {/* Cartoon Character */}
-          <div className={`mb-8 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <div className="relative inline-block">
-              {/* Main Character Face */}
-              <div className="w-32 h-32 mx-auto mb-4 relative">
-                {/* Face */}
-                <div className="w-full h-full bg-yellow-300 rounded-full border-4 border-black relative overflow-hidden">
-                  {/* Eyes */}
-                  <div className="absolute top-8 left-8 w-4 h-6 bg-black rounded-full"></div>
-                  <div className="absolute top-8 right-8 w-4 h-6 bg-black rounded-full"></div>
-                  {/* Smile */}
-                  <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-8 h-4 border-b-4 border-black rounded-full"></div>
-                </div>
-                
-                {/* Mask */}
-                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-20 h-12 bg-blue-300 rounded-2xl border-3 border-black">
-                  {/* Breath lines */}
-                  <div className="absolute -right-8 top-1/2 transform -translate-y-1/2">
-                    <div className="w-6 h-0.5 bg-blue-400 mb-1 animate-pulse"></div>
-                    <div className="w-4 h-0.5 bg-blue-400 mb-1 animate-pulse" style={{animationDelay: '0.3s'}}></div>
-                    <div className="w-5 h-0.5 bg-blue-400 animate-pulse" style={{animationDelay: '0.6s'}}></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <div className='flex justify-center items-center'>
+            <img src='/src/assets/smellcharacter.png' alt="Cartoon Character" className='w-100 h-100' />
 
-          {/* Main Title */}
-          <div className={`mb-8 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <h1 className="text-6xl md:text-8xl font-black mb-4">
-              <span className="text-white">SMELL</span><br />
-              <span className="text-black">READY</span><br />
-              <span className="text-white">PROJECT</span><br />
-              <span className="text-black">TO SMELL ?</span>
-            </h1>
+            {/* Main Title */}
+            <div className={`mb-8 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+              <h1 className="text-6xl md:text-8xl font-black mb-4">
+                <span className="text-white">SMELL</span><br />
+                <span className="text-black">READY</span><br />
+                <span className="text-white">PROJECT</span><br />
+                <span className="text-black whitespace-nowrap">TO SMELL ?</span>
+              </h1>
+            </div>
           </div>
 
           {/* CTA Button */}
