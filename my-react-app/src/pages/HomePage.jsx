@@ -55,21 +55,23 @@ const HomePage = ({ onNavigate }) => {
         <div className="max-w-4xl mx-auto text-center">
 
           {/* Cartoon Character */}
-          <div className='flex justify-center items-center'>
+          <div className='flex justify-center items-center select-none'>
             <img
               src='/src/assets/smellcharacter.png'
               alt="Cartoon Character"
-              className={`w-100 h-100 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+              className={`w-[400px] h-[400px] mr-[50px] transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
             />
 
             {/* Main Title */}
-            <div className={`mb-8 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <h1 className="text-6xl md:text-8xl font-black mb-4">
+            <div className={`w-[600px] h-[400px] flex flex-col justify-center relative transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+              <div className="text-6xl md:text-8xl font-black mb-4 absolute top-0 pl-[50px]" style={{ lineHeight: 1.4, textAlign: 'left' }}>
                 <span className="text-white">SMELL</span><br />
-                <span className="text-black">READY</span><br />
                 <span className="text-white">PROJECT</span><br />
+              </div>
+              <div className="text-6xl md:text-8xl font-black mb-4 absolute top-[60px]" style={{ lineHeight: 1.4, textAlign: 'center' }}>
+                <span className="text-black">READY</span><br />
                 <span className="text-black whitespace-nowrap">TO SMELL ?</span>
-              </h1>
+              </div>
             </div>
           </div>
 
