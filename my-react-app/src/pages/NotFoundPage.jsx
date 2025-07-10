@@ -62,7 +62,7 @@ const NotFoundPage = ({ onNavigate }) => {
                 404
               </h1>
               {/* Main 404 */}
-              <h1 className="relative text-8xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 mb-6 animate-fade-in">
+              <h1 className="relative text-8xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-orange-400 to-[#fcd71a] mb-6 animate-fade-in">
                 404
               </h1>
             </div>

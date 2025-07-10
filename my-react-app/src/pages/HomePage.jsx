@@ -10,35 +10,35 @@ const HomePage = ({ onNavigate }) => {
   }, []);
 
   return (
-    <div className="min-h-screen w-full relative overflow-hidden bg-yellow-400">
-
+    <div className="min-h-screen w-full relative overflow-hidden bg-[#fcd71a]">
       {/* Navigation Header */}
       <header className="relative z-10 bg-orange-500 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <nav className="flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-400 rounded-full flex items-center justify-center">
+              {/* <div className="w-8 h-8 bg-blue-400 rounded-full flex items-center justify-center">
                 <span className="text-white font-bold text-sm">US</span>
-              </div>
+              </div> */}
+              <img src='/src/assets/writing-center-logo.png' alt="Logo" className='w-16 h-16' />
               <div className="text-white font-bold text-lg">
                 UM-SJTU<br />
-                <span className="text-xs font-normal">Writing Center</span>
+                Writing Center
               </div>
             </div>
 
             {/* Navigation Menu */}
             <div className="hidden md:flex space-x-8">
-              <a href="#" className="text-white hover:text-yellow-200 font-medium transition-colors duration-300">
+              <a href="#" className="text-white hover:text-yellow-200 font-bold transition-colors duration-300">
                 SMELL MAP
               </a>
-              <a href="#" className="text-white hover:text-yellow-200 font-medium transition-colors duration-300">
+              <a href="#" className="text-white hover:text-yellow-200 font-bold transition-colors duration-300">
                 SMELL DAILY
               </a>
-              <a href="#" className="text-white hover:text-yellow-200 font-medium transition-colors duration-300">
+              <a href="#" className="text-white hover:text-yellow-200 font-bold transition-colors duration-300">
                 SMELL LIBRARY
               </a>
-              <a href="#" className="text-white hover:text-yellow-200 font-medium transition-colors duration-300">
+              <a href="#" className="text-white hover:text-yellow-200 font-bold transition-colors duration-300">
                 CONTACT
               </a>
             </div>
@@ -76,9 +76,9 @@ const HomePage = ({ onNavigate }) => {
           <div className={`mb-8 transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <button
               onClick={() => onNavigate('subpage1')}
-              className="bg-blue-300 hover:bg-blue-400 text-black font-bold text-2xl px-12 py-4 rounded-full border-4 border-black transform transition-all duration-300 hover:scale-105"
+              className="bg-[#8cc5d5] hover:bg-blue-400 text-black font-bold text-[50px] px-[150px] py-[10px] rounded-full border-4 border-black transform transition-all duration-300 hover:scale-105"
               style={{
-                boxShadow: '0 8px 0 0 #7dd3fc'
+                boxShadow: '0 4px 0 0 #8cc5d5'
               }}
             >
               START
@@ -87,12 +87,12 @@ const HomePage = ({ onNavigate }) => {
 
           {/* OR Divider */}
           <div className={`mb-8 transition-all duration-1000 delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <p className="text-black font-bold text-lg">OR</p>
+            <p className="text-black font-bold text-[30px]">OR</p>
           </div>
 
           {/* Learn More Section */}
           <div className={`mb-12 transition-all duration-1000 delay-900 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <h2 className="text-black font-bold text-2xl mb-8">LEARN MORE ABOUT US ...</h2>
+            <h2 className="text-black font-bold text-[50px] mb-8">LEARN MORE ABOUT US ...</h2>
           </div>
 
           {/* Info Cards Section */}
@@ -103,9 +103,9 @@ const HomePage = ({ onNavigate }) => {
               className="text-left cursor-pointer transform transition-all duration-300 hover:scale-105"
               onClick={() => onNavigate('subpage2')}
             >
-              <h3 className="text-black font-bold text-2xl mb-4">OUR VISION</h3>
+              <h3 className="text-black font-bold text-[50px] mb-4">OUR VISION</h3>
               <div className="bg-yellow-300 border-4 border-black rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <p className="text-black text-sm leading-relaxed">
+                <p className="text-black font-bold text-[20px] leading-relaxed">
                   This project aims to help modern people rediscover and experience the power of smell, exploring how olfaction influences our emotions and memories in this digital age.
                 </p>
               </div>
@@ -116,39 +116,11 @@ const HomePage = ({ onNavigate }) => {
               className="text-left cursor-pointer transform transition-all duration-300 hover:scale-105"
               onClick={() => onNavigate('subpage2')}
             >
-              <h3 className="text-black font-bold text-2xl mb-4">OUR TEAM</h3>
+              <h3 className="text-black font-bold text-[50px] mb-4">OUR TEAM</h3>
               <div className="bg-yellow-300 border-4 border-black rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <p className="text-black text-sm leading-relaxed">
+                <p className="text-black font-bold text-[20px] leading-relaxed">
                   The project is developed by a student team from the SJTU-U Writing Center.
                 </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Additional Navigation Cards */}
-          <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto mt-12 transition-all duration-1000 delay-1300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-
-            {/* Calligraphy Explorer */}
-            <div
-              className="bg-orange-400 border-4 border-black rounded-lg p-6 shadow-lg cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
-              onClick={() => onNavigate('subpage1')}
-            >
-              <div className="text-center">
-                <div className="text-4xl mb-3">📚</div>
-                <h3 className="text-black font-bold text-lg mb-2">Explore Calligraphy</h3>
-                <p className="text-black text-sm">Discover ancient Chinese calligraphy and cultural sites</p>
-              </div>
-            </div>
-
-            {/* Smell Experience */}
-            <div
-              className="bg-blue-300 border-4 border-black rounded-lg p-6 shadow-lg cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
-              onClick={() => onNavigate('subpage3')}
-            >
-              <div className="text-center">
-                <div className="text-4xl mb-3">🌸</div>
-                <h3 className="text-black font-bold text-lg mb-2">Smell Experience</h3>
-                <p className="text-black text-sm">Explore different scents and their magical effects</p>
               </div>
             </div>
           </div>
