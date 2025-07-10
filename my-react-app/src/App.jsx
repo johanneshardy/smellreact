@@ -15,9 +15,9 @@ const App = () => {
   // Handle page navigation with smooth transitions
   const handleNavigate = (newPage) => {
     if (newPage === currentPage) return;
-    
+
     setIsPageTransitioning(true);
-    
+
     // Small delay for smooth transition
     setTimeout(() => {
       setCurrentPage(newPage);
@@ -27,9 +27,9 @@ const App = () => {
 
   // Page component router
   const PageRouter = () => {
-    const pageProps = { 
+    const pageProps = {
       onNavigate: handleNavigate,
-      isTransitioning: isPageTransitioning 
+      isTransitioning: isPageTransitioning
     };
 
     switch (currentPage) {

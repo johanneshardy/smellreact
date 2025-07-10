@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 // Dynamically load Leaflet if not already loaded
 const loadLeaflet = () => {
@@ -47,7 +47,7 @@ const SubPage1 = ({ onNavigate }) => {
   const [leafletLib, setLeafletLib] = useState(null);
   const [floatingElements, setFloatingElements] = useState([]);
   const [isVisible, setIsVisible] = useState(false);
-  
+
   const mapRef = useRef(null);
   const leafletMapRef = useRef(null);
   const markersRef = useRef([]);
@@ -140,11 +140,11 @@ const SubPage1 = ({ onNavigate }) => {
       allItems.forEach(item => {
         if (item.location) {
           const isSelected = selectedItemIds.has(item.id);
-          
+
           const getMarkerColor = (style) => {
-            switch(style) {
+            switch (style) {
               case '篆书': return '#8B7355';
-              case '隶书': return '#C9A96E';  
+              case '隶书': return '#C9A96E';
               case '行书': return '#B5A082';
               case '楷书': return '#A0916C';
               case '草书': return '#D4C4A8';
@@ -209,7 +209,7 @@ const SubPage1 = ({ onNavigate }) => {
 
   const renderChart = (type, categories) => {
     const data = {};
-    
+
     sampleItems.forEach(item => {
       let category;
       if (type === 'font') {
@@ -219,7 +219,7 @@ const SubPage1 = ({ onNavigate }) => {
       } else {
         category = item.temporal || '未知';
       }
-      
+
       if (!data[category]) data[category] = [];
       data[category].push(item);
     });
@@ -229,18 +229,18 @@ const SubPage1 = ({ onNavigate }) => {
 
   const ChartComponent = ({ title, type, categories }) => {
     const chartData = renderChart(type, categories);
-    
+
     return (
       <div className="bg-white/90 backdrop-blur-md rounded-2xl border shadow-xl p-4 h-64 hover:shadow-2xl transition-all duration-300"
-           style={{borderColor: 'rgba(139, 115, 85, 0.2)'}}>
+        style={{ borderColor: 'rgba(139, 115, 85, 0.2)' }}>
         <h3 className="text-sm font-semibold mb-3 text-center border-b pb-2"
-            style={{color: '#4A3728', borderColor: 'rgba(139, 115, 85, 0.2)'}}>
+          style={{ color: '#4A3728', borderColor: 'rgba(139, 115, 85, 0.2)' }}>
           {title}
         </h3>
         <div className="h-44 overflow-y-auto">
           {chartData.categories.map((category) => (
             <div key={category} className="mb-3">
-              <div className="text-xs mb-2 font-medium" style={{color: 'rgba(74, 55, 40, 0.8)'}}>{category}</div>
+              <div className="text-xs mb-2 font-medium" style={{ color: 'rgba(74, 55, 40, 0.8)' }}>{category}</div>
               <div className="flex flex-wrap gap-1.5">
                 {chartData.data[category]?.map((item) => (
                   <button
@@ -264,10 +264,10 @@ const SubPage1 = ({ onNavigate }) => {
 
   return (
     <div className="min-h-screen w-full relative overflow-hidden"
-         style={{
-           background: 'linear-gradient(135deg, #F5F0E8 0%, #E6D7C3 25%, #D4C4A8 50%, #C9A96E 75%, #B5A082 100%)'
-         }}>
-      
+      style={{
+        background: 'linear-gradient(135deg, #F5F0E8 0%, #E6D7C3 25%, #D4C4A8 50%, #C9A96E 75%, #B5A082 100%)'
+      }}>
+
       {/* Floating background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {floatingElements.map((element) => (
@@ -290,15 +290,15 @@ const SubPage1 = ({ onNavigate }) => {
 
       {/* Fun geometric shapes */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 right-20 w-24 h-24 rounded-full opacity-15 animate-bounce" 
-             style={{backgroundColor: '#C9A96E', animationDuration: '4s'}}></div>
-        <div className="absolute bottom-40 left-20 w-20 h-20 opacity-10 rotate-45 animate-spin" 
-             style={{backgroundColor: '#8B7355', animationDuration: '10s'}}></div>
+        <div className="absolute top-20 right-20 w-24 h-24 rounded-full opacity-15 animate-bounce"
+          style={{ backgroundColor: '#C9A96E', animationDuration: '4s' }}></div>
+        <div className="absolute bottom-40 left-20 w-20 h-20 opacity-10 rotate-45 animate-spin"
+          style={{ backgroundColor: '#8B7355', animationDuration: '10s' }}></div>
       </div>
 
       {/* Navigation header */}
       <div className="relative z-10 flex justify-between items-center p-6">
-        <button 
+        <button
           onClick={() => onNavigate('home')}
           className="group flex items-center space-x-2 transition-all duration-300 backdrop-blur-md px-6 py-3 rounded-full shadow-lg hover:shadow-xl border-2 font-medium hover:scale-105"
           style={{
@@ -312,25 +312,25 @@ const SubPage1 = ({ onNavigate }) => {
           </svg>
           <span className="text-sm">Back to Home</span>
         </button>
-        
+
         <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           <h1 className="text-3xl font-bold text-transparent bg-clip-text"
-              style={{backgroundImage: 'linear-gradient(135deg, #4A3728 0%, #8B7355 50%, #C9A96E 100%)'}}>
+            style={{ backgroundImage: 'linear-gradient(135deg, #4A3728 0%, #8B7355 50%, #C9A96E 100%)' }}>
             Ancient Calligraphy Explorer ✨
           </h1>
         </div>
-        
+
         <div className="w-12"></div>
       </div>
 
       {/* Main dashboard content */}
       <div className={`relative z-10 flex-1 p-6 grid grid-cols-12 grid-rows-12 gap-4 min-h-0 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-        
+
         {/* Left panel - Charts */}
         <div className="col-span-2 row-span-12 bg-white/90 backdrop-blur-md rounded-3xl border shadow-2xl flex flex-col overflow-hidden"
-             style={{borderColor: 'rgba(139, 115, 85, 0.2)'}}>
-          <div className="p-4 border-b" style={{borderColor: 'rgba(139, 115, 85, 0.2)'}}>
-            <h2 className="text-lg font-semibold flex items-center space-x-2" style={{color: '#4A3728'}}>
+          style={{ borderColor: 'rgba(139, 115, 85, 0.2)' }}>
+          <div className="p-4 border-b" style={{ borderColor: 'rgba(139, 115, 85, 0.2)' }}>
+            <h2 className="text-lg font-semibold flex items-center space-x-2" style={{ color: '#4A3728' }}>
               <span>📊</span>
               <span>Statistics</span>
             </h2>
@@ -343,19 +343,19 @@ const SubPage1 = ({ onNavigate }) => {
 
         {/* Middle panel - Map */}
         <div className="col-span-7 row-span-12 bg-white/90 backdrop-blur-md rounded-3xl border shadow-2xl overflow-hidden relative"
-             style={{borderColor: 'rgba(139, 115, 85, 0.2)'}}>
+          style={{ borderColor: 'rgba(139, 115, 85, 0.2)' }}>
           <div className="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg border"
-               style={{borderColor: 'rgba(139, 115, 85, 0.2)'}}>
-            <span className="text-sm font-medium flex items-center space-x-2" style={{color: '#4A3728'}}>
+            style={{ borderColor: 'rgba(139, 115, 85, 0.2)' }}>
+            <span className="text-sm font-medium flex items-center space-x-2" style={{ color: '#4A3728' }}>
               <span>🗺️</span>
               <span>Shanghai Cultural Sites</span>
             </span>
           </div>
           {!isMapReady ? (
             <div className="w-full h-full flex items-center justify-center">
-              <div className="text-center" style={{color: 'rgba(74, 55, 40, 0.7)'}}>
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" 
-                     style={{borderColor: '#C9A96E'}}></div>
+              <div className="text-center" style={{ color: 'rgba(74, 55, 40, 0.7)' }}>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4"
+                  style={{ borderColor: '#C9A96E' }}></div>
                 <p>Loading map... 🗺️</p>
               </div>
             </div>
@@ -368,10 +368,10 @@ const SubPage1 = ({ onNavigate }) => {
         <div className="col-span-3 row-span-12 flex flex-col gap-4">
           {/* Work list */}
           <div className="bg-white/90 backdrop-blur-md rounded-3xl border shadow-2xl flex flex-col overflow-hidden flex-1"
-               style={{borderColor: 'rgba(139, 115, 85, 0.2)'}}>
+            style={{ borderColor: 'rgba(139, 115, 85, 0.2)' }}>
             <div className="backdrop-blur-sm px-4 py-3 border-b"
-                 style={{backgroundColor: 'rgba(139, 115, 85, 0.1)', borderColor: 'rgba(139, 115, 85, 0.2)'}}>
-              <h3 className="text-sm font-semibold flex items-center space-x-2" style={{color: '#4A3728'}}>
+              style={{ backgroundColor: 'rgba(139, 115, 85, 0.1)', borderColor: 'rgba(139, 115, 85, 0.2)' }}>
+              <h3 className="text-sm font-semibold flex items-center space-x-2" style={{ color: '#4A3728' }}>
                 <span>📚</span>
                 <span>作品列表</span>
               </h3>
@@ -399,41 +399,41 @@ const SubPage1 = ({ onNavigate }) => {
           {/* Details panel */}
           {selectedItem && (
             <div className="bg-white/90 backdrop-blur-md rounded-3xl border shadow-2xl p-4 flex-1"
-                 style={{borderColor: 'rgba(139, 115, 85, 0.2)'}}>
+              style={{ borderColor: 'rgba(139, 115, 85, 0.2)' }}>
               <h3 className="text-lg font-bold text-center mb-4 flex items-center justify-center space-x-2"
-                  style={{color: '#4A3728'}}>
+                style={{ color: '#4A3728' }}>
                 <span>🎨</span>
                 <span>{selectedItem.name}</span>
               </h3>
-              
+
               <div className="space-y-3">
                 <div className="rounded-xl p-4 border"
-                     style={{backgroundColor: 'rgba(245, 240, 232, 0.8)', borderColor: 'rgba(139, 115, 85, 0.2)'}}>
-                  <p className="text-sm flex items-center space-x-2 mb-2" style={{color: 'rgba(74, 55, 40, 0.9)'}}>
-                    <span className="font-semibold" style={{color: '#C9A96E'}}>👨‍🎨 作者:</span>
-                    <span style={{color: '#8B7355'}}>
+                  style={{ backgroundColor: 'rgba(245, 240, 232, 0.8)', borderColor: 'rgba(139, 115, 85, 0.2)' }}>
+                  <p className="text-sm flex items-center space-x-2 mb-2" style={{ color: 'rgba(74, 55, 40, 0.9)' }}>
+                    <span className="font-semibold" style={{ color: '#C9A96E' }}>👨‍🎨 作者:</span>
+                    <span style={{ color: '#8B7355' }}>
                       {selectedItem.authors?.map(a => `${a.author} (${a.role})`).join('、')}
                     </span>
                   </p>
-                  
-                  <p className="text-sm flex items-center space-x-2 mb-2" style={{color: 'rgba(74, 55, 40, 0.9)'}}>
-                    <span className="font-semibold" style={{color: '#C9A96E'}}>✍️ 书体:</span>
-                    <span style={{color: '#8B7355'}}>{selectedItem.calligraphyStyle}</span>
-                  </p>
-                  
-                  <p className="text-sm flex items-center space-x-2 mb-2" style={{color: 'rgba(74, 55, 40, 0.9)'}}>
-                    <span className="font-semibold" style={{color: '#C9A96E'}}>🏮 朝代:</span>
-                    <span style={{color: '#8B7355'}}>{selectedItem.temporal}</span>
+
+                  <p className="text-sm flex items-center space-x-2 mb-2" style={{ color: 'rgba(74, 55, 40, 0.9)' }}>
+                    <span className="font-semibold" style={{ color: '#C9A96E' }}>✍️ 书体:</span>
+                    <span style={{ color: '#8B7355' }}>{selectedItem.calligraphyStyle}</span>
                   </p>
 
-                  <p className="text-sm flex items-center space-x-2 mb-2" style={{color: 'rgba(74, 55, 40, 0.9)'}}>
-                    <span className="font-semibold" style={{color: '#C9A96E'}}>📍 位置:</span>
-                    <span style={{color: '#8B7355'}}>{selectedItem.city}</span>
+                  <p className="text-sm flex items-center space-x-2 mb-2" style={{ color: 'rgba(74, 55, 40, 0.9)' }}>
+                    <span className="font-semibold" style={{ color: '#C9A96E' }}>🏮 朝代:</span>
+                    <span style={{ color: '#8B7355' }}>{selectedItem.temporal}</span>
                   </p>
 
-                  <p className="text-sm flex items-center space-x-2" style={{color: 'rgba(74, 55, 40, 0.9)'}}>
-                    <span className="font-semibold" style={{color: '#C9A96E'}}>🏛️ 区域:</span>
-                    <span style={{color: '#8B7355'}}>{selectedItem.district}</span>
+                  <p className="text-sm flex items-center space-x-2 mb-2" style={{ color: 'rgba(74, 55, 40, 0.9)' }}>
+                    <span className="font-semibold" style={{ color: '#C9A96E' }}>📍 位置:</span>
+                    <span style={{ color: '#8B7355' }}>{selectedItem.city}</span>
+                  </p>
+
+                  <p className="text-sm flex items-center space-x-2" style={{ color: 'rgba(74, 55, 40, 0.9)' }}>
+                    <span className="font-semibold" style={{ color: '#C9A96E' }}>🏛️ 区域:</span>
+                    <span style={{ color: '#8B7355' }}>{selectedItem.district}</span>
                   </p>
                 </div>
               </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 const SubPage2 = ({ onNavigate }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -90,10 +90,10 @@ const SubPage2 = ({ onNavigate }) => {
 
   return (
     <div className="min-h-screen w-full relative overflow-hidden"
-         style={{
-           background: 'linear-gradient(135deg, #F5F0E8 0%, #E6D7C3 25%, #D4C4A8 50%, #C9A96E 75%, #B5A082 100%)'
-         }}>
-      
+      style={{
+        background: 'linear-gradient(135deg, #F5F0E8 0%, #E6D7C3 25%, #D4C4A8 50%, #C9A96E 75%, #B5A082 100%)'
+      }}>
+
       {/* Floating background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {floatingElements.map((element) => (
@@ -116,19 +116,19 @@ const SubPage2 = ({ onNavigate }) => {
 
       {/* Fun geometric shapes */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-32 left-16 w-20 h-20 rounded-full opacity-15 animate-bounce" 
-             style={{backgroundColor: '#C9A96E', animationDuration: '3s'}}></div>
-        <div className="absolute top-1/4 right-24 w-16 h-16 opacity-12 rotate-45 animate-spin" 
-             style={{backgroundColor: '#8B7355', animationDuration: '8s'}}></div>
-        <div className="absolute bottom-1/3 left-1/4 w-24 h-24 rounded-full opacity-15 animate-pulse" 
-             style={{backgroundColor: '#B5A082', animationDuration: '2s'}}></div>
-        <div className="absolute bottom-20 right-16 w-18 h-18 opacity-12 animate-bounce" 
-             style={{backgroundColor: '#A0916C', animationDuration: '4s'}}></div>
+        <div className="absolute top-32 left-16 w-20 h-20 rounded-full opacity-15 animate-bounce"
+          style={{ backgroundColor: '#C9A96E', animationDuration: '3s' }}></div>
+        <div className="absolute top-1/4 right-24 w-16 h-16 opacity-12 rotate-45 animate-spin"
+          style={{ backgroundColor: '#8B7355', animationDuration: '8s' }}></div>
+        <div className="absolute bottom-1/3 left-1/4 w-24 h-24 rounded-full opacity-15 animate-pulse"
+          style={{ backgroundColor: '#B5A082', animationDuration: '2s' }}></div>
+        <div className="absolute bottom-20 right-16 w-18 h-18 opacity-12 animate-bounce"
+          style={{ backgroundColor: '#A0916C', animationDuration: '4s' }}></div>
       </div>
 
       {/* Fun Navigation header */}
       <div className="relative z-10 flex justify-between items-center p-6">
-        <button 
+        <button
           onClick={() => onNavigate('home')}
           className="group flex items-center space-x-2 transition-all duration-300 backdrop-blur-md px-6 py-3 rounded-full shadow-lg hover:shadow-xl border-2 font-medium hover:scale-105"
           style={{
@@ -142,33 +142,33 @@ const SubPage2 = ({ onNavigate }) => {
           </svg>
           <span className="text-sm">Back to Home</span>
         </button>
-        
+
         <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           <h1 className="text-3xl font-bold text-transparent bg-clip-text"
-              style={{backgroundImage: 'linear-gradient(135deg, #4A3728 0%, #8B7355 50%, #C9A96E 100%)'}}>
+            style={{ backgroundImage: 'linear-gradient(135deg, #4A3728 0%, #8B7355 50%, #C9A96E 100%)' }}>
             Project Introduction 📚
           </h1>
         </div>
-        
+
         <div className="w-12"></div>
       </div>
-      
+
       {/* Main Content */}
       <div className="relative z-10 flex-grow flex items-center justify-center px-8 py-8">
         <div className="max-w-6xl w-full mx-auto">
-          
+
           {/* Fun Title Section */}
           <div className={`text-center mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <h1 className="text-5xl md:text-7xl font-black mb-6 drop-shadow-2xl"
-                style={{color: '#4A3728'}}>
+              style={{ color: '#4A3728' }}>
               {'Project Hub'.split('').map((letter, index) => (
                 letter === ' ' ? (
                   <span key={index} className="inline-block mx-4">✨</span>
                 ) : (
-                  <span 
+                  <span
                     key={index}
                     className="inline-block hover:rotate-12 hover:scale-110 transition-transform duration-300 cursor-default"
-                    style={{animationDelay: `${index * 0.1}s`}}
+                    style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     {letter}
                   </span>
@@ -176,16 +176,16 @@ const SubPage2 = ({ onNavigate }) => {
               ))}
             </h1>
             <div className="w-24 h-0.5 mx-auto rounded-full mb-6"
-                 style={{background: 'linear-gradient(90deg, #C9A96E 0%, #8B7355 100%)'}}></div>
+              style={{ background: 'linear-gradient(90deg, #C9A96E 0%, #8B7355 100%)' }}></div>
             <p className="text-xl md:text-2xl leading-relaxed max-w-4xl mx-auto"
-               style={{color: 'rgba(74, 55, 40, 0.9)'}}>
+              style={{ color: 'rgba(74, 55, 40, 0.9)' }}>
               Discover the vision, mission, and innovative approach that drives our project forward. Learn about our goals and the impact we aim to create! 🚀
             </p>
           </div>
 
           {/* Project Features Grid */}
           <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            {projectFeatures.map((feature, index) => (
+            {projectFeatures.map((feature) => (
               <div
                 key={feature.id}
                 className="group relative bg-white/90 backdrop-blur-md rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-rotate-1 cursor-pointer border-4"
@@ -196,27 +196,27 @@ const SubPage2 = ({ onNavigate }) => {
                 }}
               >
                 <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-500"
-                     style={{background: feature.gradient}}></div>
-                
+                  style={{ background: feature.gradient }}></div>
+
                 <div className="relative text-center">
                   <div className="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg text-white text-2xl"
-                       style={{background: feature.gradient}}>
+                    style={{ background: feature.gradient }}>
                     {feature.icon}
                   </div>
                   <h3 className="text-2xl font-bold mb-4 transition-colors duration-300"
-                      style={{
-                        color: activeFeature === feature.id ? feature.hoverColor : '#4A3728'
-                      }}>
+                    style={{
+                      color: activeFeature === feature.id ? feature.hoverColor : '#4A3728'
+                    }}>
                     {feature.title}
                   </h3>
                   <p className="text-sm leading-relaxed"
-                     style={{color: 'rgba(74, 55, 40, 0.7)'}}>
+                    style={{ color: 'rgba(74, 55, 40, 0.7)' }}>
                     {feature.description}
                   </p>
-                  
+
                   {activeFeature === feature.id && (
                     <div className="absolute -top-2 -right-2 text-white text-xs px-3 py-1 rounded-full animate-bounce"
-                         style={{backgroundColor: feature.hoverColor}}>
+                      style={{ backgroundColor: feature.hoverColor }}>
                       Amazing! ⭐
                     </div>
                   )}
@@ -227,17 +227,17 @@ const SubPage2 = ({ onNavigate }) => {
 
           {/* Fun Timeline Section */}
           <div className={`bg-white/90 backdrop-blur-md rounded-3xl p-8 mb-12 border shadow-xl transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-               style={{borderColor: 'rgba(139, 115, 85, 0.2)'}}>
+            style={{ borderColor: 'rgba(139, 115, 85, 0.2)' }}>
             <div className="text-center mb-8">
               <h2 className="text-3xl md:text-4xl font-bold mb-4 flex items-center justify-center space-x-3"
-                  style={{color: '#4A3728'}}>
+                style={{ color: '#4A3728' }}>
                 <span>🗓️</span>
                 <span>Project Timeline</span>
                 <span>🚀</span>
               </h2>
               <p className="text-lg mb-8 max-w-3xl mx-auto leading-relaxed"
-                 style={{color: 'rgba(74, 55, 40, 0.8)'}}>
-                Our development follows a structured approach, with each phase building upon previous discoveries 
+                style={{ color: 'rgba(74, 55, 40, 0.8)' }}>
+                Our development follows a structured approach, with each phase building upon previous discoveries
                 to create a comprehensive and meaningful experience.
               </p>
             </div>
@@ -246,41 +246,41 @@ const SubPage2 = ({ onNavigate }) => {
             <div className="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0 md:space-x-8">
               <div className="flex flex-col items-center text-center group hover:scale-110 transition-transform duration-300">
                 <div className="w-16 h-16 rounded-full flex items-center justify-center mb-3 shadow-lg text-2xl"
-                     style={{background: 'linear-gradient(135deg, #C9A96E 0%, #8B7355 100%)', color: 'white'}}>
+                  style={{ background: 'linear-gradient(135deg, #C9A96E 0%, #8B7355 100%)', color: 'white' }}>
                   🔍
                 </div>
-                <h3 className="font-semibold mb-2" style={{color: '#4A3728'}}>Research Phase</h3>
-                <p className="text-sm" style={{color: 'rgba(74, 55, 40, 0.7)'}}>Foundation & Discovery</p>
+                <h3 className="font-semibold mb-2" style={{ color: '#4A3728' }}>Research Phase</h3>
+                <p className="text-sm" style={{ color: 'rgba(74, 55, 40, 0.7)' }}>Foundation & Discovery</p>
               </div>
 
               {/* Fun connection line */}
               <div className="hidden md:block flex-1 h-1 rounded-full mx-4 relative overflow-hidden"
-                   style={{background: 'linear-gradient(90deg, #C9A96E 0%, #B5A082 100%)'}}>
+                style={{ background: 'linear-gradient(90deg, #C9A96E 0%, #B5A082 100%)' }}>
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 animate-pulse"></div>
               </div>
 
               <div className="flex flex-col items-center text-center group hover:scale-110 transition-transform duration-300">
                 <div className="w-16 h-16 rounded-full flex items-center justify-center mb-3 shadow-lg text-2xl"
-                     style={{background: 'linear-gradient(135deg, #B5A082 0%, #A0916C 100%)', color: 'white'}}>
+                  style={{ background: 'linear-gradient(135deg, #B5A082 0%, #A0916C 100%)', color: 'white' }}>
                   🛠️
                 </div>
-                <h3 className="font-semibold mb-2" style={{color: '#4A3728'}}>Development</h3>
-                <p className="text-sm" style={{color: 'rgba(74, 55, 40, 0.7)'}}>Building & Testing</p>
+                <h3 className="font-semibold mb-2" style={{ color: '#4A3728' }}>Development</h3>
+                <p className="text-sm" style={{ color: 'rgba(74, 55, 40, 0.7)' }}>Building & Testing</p>
               </div>
 
               {/* Fun connection line */}
               <div className="hidden md:block flex-1 h-1 rounded-full mx-4 relative overflow-hidden"
-                   style={{background: 'linear-gradient(90deg, #B5A082 0%, #8B7355 100%)'}}>
+                style={{ background: 'linear-gradient(90deg, #B5A082 0%, #8B7355 100%)' }}>
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 animate-pulse"></div>
               </div>
 
               <div className="flex flex-col items-center text-center group hover:scale-110 transition-transform duration-300">
                 <div className="w-16 h-16 rounded-full flex items-center justify-center mb-3 shadow-lg text-2xl"
-                     style={{background: 'linear-gradient(135deg, #8B7355 0%, #C9A96E 100%)', color: 'white'}}>
+                  style={{ background: 'linear-gradient(135deg, #8B7355 0%, #C9A96E 100%)', color: 'white' }}>
                   🚀
                 </div>
-                <h3 className="font-semibold mb-2" style={{color: '#4A3728'}}>Implementation</h3>
-                <p className="text-sm" style={{color: 'rgba(74, 55, 40, 0.7)'}}>Launch & Refinement</p>
+                <h3 className="font-semibold mb-2" style={{ color: '#4A3728' }}>Implementation</h3>
+                <p className="text-sm" style={{ color: 'rgba(74, 55, 40, 0.7)' }}>Launch & Refinement</p>
               </div>
             </div>
           </div>
@@ -288,22 +288,22 @@ const SubPage2 = ({ onNavigate }) => {
           {/* Animated Key Metrics */}
           <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 transition-all duration-1000 delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <div className="bg-white/90 backdrop-blur-md rounded-2xl p-6 text-center border shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
-                 style={{borderColor: 'rgba(139, 115, 85, 0.2)'}}>
+              style={{ borderColor: 'rgba(139, 115, 85, 0.2)' }}>
               <div className="text-4xl mb-2">😊</div>
-              <div className="text-4xl font-bold mb-2" style={{color: '#C9A96E'}}>{animatedStats.satisfaction}%</div>
-              <div className="text-sm" style={{color: 'rgba(74, 55, 40, 0.7)'}}>User Satisfaction</div>
+              <div className="text-4xl font-bold mb-2" style={{ color: '#C9A96E' }}>{animatedStats.satisfaction}%</div>
+              <div className="text-sm" style={{ color: 'rgba(74, 55, 40, 0.7)' }}>User Satisfaction</div>
             </div>
             <div className="bg-white/90 backdrop-blur-md rounded-2xl p-6 text-center border shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
-                 style={{borderColor: 'rgba(139, 115, 85, 0.2)'}}>
+              style={{ borderColor: 'rgba(139, 115, 85, 0.2)' }}>
               <div className="text-4xl mb-2">📅</div>
-              <div className="text-4xl font-bold mb-2" style={{color: '#B5A082'}}>{animatedStats.months}+</div>
-              <div className="text-sm" style={{color: 'rgba(74, 55, 40, 0.7)'}}>Months Development</div>
+              <div className="text-4xl font-bold mb-2" style={{ color: '#B5A082' }}>{animatedStats.months}+</div>
+              <div className="text-sm" style={{ color: 'rgba(74, 55, 40, 0.7)' }}>Months Development</div>
             </div>
             <div className="bg-white/90 backdrop-blur-md rounded-2xl p-6 text-center border shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
-                 style={{borderColor: 'rgba(139, 115, 85, 0.2)'}}>
+              style={{ borderColor: 'rgba(139, 115, 85, 0.2)' }}>
               <div className="text-4xl mb-2">💻</div>
-              <div className="text-4xl font-bold mb-2" style={{color: '#8B7355'}}>{animatedStats.lines.toLocaleString()}+</div>
-              <div className="text-sm" style={{color: 'rgba(74, 55, 40, 0.7)'}}>Lines of Code</div>
+              <div className="text-4xl font-bold mb-2" style={{ color: '#8B7355' }}>{animatedStats.lines.toLocaleString()}+</div>
+              <div className="text-sm" style={{ color: 'rgba(74, 55, 40, 0.7)' }}>Lines of Code</div>
             </div>
           </div>
         </div>

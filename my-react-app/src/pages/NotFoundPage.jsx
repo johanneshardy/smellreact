@@ -1,5 +1,3 @@
-import React from 'react';
-
 const NotFoundPage = ({ onNavigate }) => {
   return (
     <div className="fixed inset-0 w-screen h-screen bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800 flex flex-col relative overflow-hidden">
@@ -8,7 +6,7 @@ const NotFoundPage = ({ onNavigate }) => {
         <div className="absolute inset-0 bg-gradient-to-tr from-red-800/20 via-transparent to-orange-800/20"></div>
         <div className="absolute top-20 right-20 w-96 h-96 bg-red-500/8 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 left-20 w-80 h-80 bg-orange-500/8 rounded-full blur-2xl"></div>
-        
+
         {/* Floating error symbols */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           {[...Array(15)].map((_, i) => (
@@ -31,7 +29,7 @@ const NotFoundPage = ({ onNavigate }) => {
 
       {/* Navigation header */}
       <div className="relative z-10 flex justify-between items-center p-6">
-        <button 
+        <button
           onClick={() => onNavigate('home')}
           className="group flex items-center space-x-2 text-white/80 hover:text-white transition-all duration-300 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full shadow-lg hover:shadow-xl border border-white/30 hover:border-white/50"
         >
@@ -40,8 +38,8 @@ const NotFoundPage = ({ onNavigate }) => {
           </svg>
           <span className="font-medium text-sm">Back to Home</span>
         </button>
-        
-        <button 
+
+        <button
           onClick={() => onNavigate('home')}
           className="group p-3 bg-white/20 backdrop-blur-md rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-white/80 hover:text-white border border-white/30 hover:border-white/50"
           title="Return to Home"
@@ -55,7 +53,7 @@ const NotFoundPage = ({ onNavigate }) => {
       {/* Main content - properly centered */}
       <div className="relative z-10 flex-grow flex items-center justify-center px-8">
         <div className="max-w-4xl w-full text-center">
-          
+
           {/* Large 404 display */}
           <div className="mb-12">
             <div className="relative">
@@ -68,7 +66,7 @@ const NotFoundPage = ({ onNavigate }) => {
                 404
               </h1>
             </div>
-            
+
             <div className="w-32 h-0.5 bg-gradient-to-r from-red-400 to-orange-500 mx-auto rounded-full mb-8"></div>
           </div>
 
@@ -78,7 +76,7 @@ const NotFoundPage = ({ onNavigate }) => {
               Oops! Page Not Found
             </h2>
             <p className="text-lg md:text-xl text-white/80 leading-relaxed max-w-2xl mx-auto mb-8 animate-slide-up">
-              The page you're looking for seems to have wandered off into the digital void. 
+              The page you're looking for seems to have wandered off into the digital void.
               Don't worry, it happens to the best of us!
             </p>
           </div>
@@ -118,7 +116,7 @@ const NotFoundPage = ({ onNavigate }) => {
 
           {/* Action buttons - properly centered */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button 
+            <button
               onClick={() => onNavigate('home')}
               className="group relative bg-white/15 backdrop-blur-md hover:bg-white/20 text-white font-bold py-4 px-8 rounded-2xl shadow-xl transform transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-white/30 hover:border-white/50 overflow-hidden"
             >
@@ -130,8 +128,8 @@ const NotFoundPage = ({ onNavigate }) => {
                 <span>Take Me Home</span>
               </span>
             </button>
-            
-            <button 
+
+            <button
               onClick={() => window.location.reload()}
               className="group relative bg-white/15 backdrop-blur-md hover:bg-white/20 text-white font-medium py-4 px-6 rounded-2xl shadow-xl transform transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-white/30 hover:border-white/50 overflow-hidden"
             >

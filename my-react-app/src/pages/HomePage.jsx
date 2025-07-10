@@ -11,7 +11,7 @@ const HomePage = ({ onNavigate }) => {
 
   return (
     <div className="min-h-screen w-full relative overflow-hidden bg-yellow-400">
-      
+
       {/* Navigation Header */}
       <header className="relative z-10 bg-orange-500 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 py-4">
@@ -26,7 +26,7 @@ const HomePage = ({ onNavigate }) => {
                 <span className="text-xs font-normal">Writing Center</span>
               </div>
             </div>
-            
+
             {/* Navigation Menu */}
             <div className="hidden md:flex space-x-8">
               <a href="#" className="text-white hover:text-yellow-200 font-medium transition-colors duration-300">
@@ -56,7 +56,7 @@ const HomePage = ({ onNavigate }) => {
       {/* Main Hero Section */}
       <main className="relative z-10 px-4 py-12">
         <div className="max-w-4xl mx-auto text-center">
-          
+
           {/* Cartoon Character */}
           <div className='flex justify-center items-center'>
             <img src='/src/assets/smellcharacter.png' alt="Cartoon Character" className='w-100 h-100' />
@@ -74,9 +74,12 @@ const HomePage = ({ onNavigate }) => {
 
           {/* CTA Button */}
           <div className={`mb-8 transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <button 
+            <button
               onClick={() => onNavigate('subpage1')}
-              className="bg-blue-300 hover:bg-blue-400 text-black font-bold text-2xl px-12 py-4 rounded-full border-4 border-black shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+              className="bg-blue-300 hover:bg-blue-400 text-black font-bold text-2xl px-12 py-4 rounded-full border-4 border-black transform transition-all duration-300 hover:scale-105"
+              style={{
+                boxShadow: '0 8px 0 0 #7dd3fc'
+              }}
             >
               START
             </button>
@@ -94,9 +97,9 @@ const HomePage = ({ onNavigate }) => {
 
           {/* Info Cards Section */}
           <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto transition-all duration-1000 delay-1100 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            
+
             {/* Our Vision Card */}
-            <div 
+            <div
               className="text-left cursor-pointer transform transition-all duration-300 hover:scale-105"
               onClick={() => onNavigate('subpage2')}
             >
@@ -109,7 +112,7 @@ const HomePage = ({ onNavigate }) => {
             </div>
 
             {/* Our Team Card */}
-            <div 
+            <div
               className="text-left cursor-pointer transform transition-all duration-300 hover:scale-105"
               onClick={() => onNavigate('subpage2')}
             >
@@ -124,9 +127,9 @@ const HomePage = ({ onNavigate }) => {
 
           {/* Additional Navigation Cards */}
           <div className={`grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto mt-12 transition-all duration-1000 delay-1300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            
+
             {/* Calligraphy Explorer */}
-            <div 
+            <div
               className="bg-orange-400 border-4 border-black rounded-lg p-6 shadow-lg cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
               onClick={() => onNavigate('subpage1')}
             >
@@ -138,7 +141,7 @@ const HomePage = ({ onNavigate }) => {
             </div>
 
             {/* Smell Experience */}
-            <div 
+            <div
               className="bg-blue-300 border-4 border-black rounded-lg p-6 shadow-lg cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
               onClick={() => onNavigate('subpage3')}
             >
