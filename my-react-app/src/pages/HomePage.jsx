@@ -105,7 +105,7 @@ const HomePage = ({ onNavigate }) => {
             <div
               className="text-left transform transition-all duration-300 hover:scale-105"
             >
-              <h3 className="text-black font-bold text-[50px] mb-4">OUR VISION</h3>
+              <h3 className="text-black font-archivo-black font-normal text-[44px] mb-4">OUR VISION</h3>
               <div className="bg-yellow-300 border-4 border-black rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <p className="text-black font-bold text-[20px] leading-relaxed">
                   This project aims to help modern people rediscover and experience the power of smell, exploring how olfaction influences our emotions and memories in this digital age.
@@ -117,7 +117,7 @@ const HomePage = ({ onNavigate }) => {
             <div
               className="text-left transform transition-all duration-300 hover:scale-105"
             >
-              <h3 className="text-black font-bold text-[50px] mb-4">OUR TEAM</h3>
+              <h3 className="text-black font-archivo-black font-normal text-[44px] mb-4">OUR TEAM</h3>
               <div className="bg-yellow-300 border-4 border-black rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <p className="text-black font-bold text-[20px] leading-relaxed">
                   The project is developed by a student team from the UM-SJTU Writing Center.
