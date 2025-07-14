@@ -39,40 +39,30 @@ const loadLeaflet = () => {
 };
 
 const SubPage1 = ({ onNavigate }) => {
-  const [selectedItemIds, setSelectedItemIds] = useState(new Set());
-  const [allItems, setAllItems] = useState([]);
-  const [currentWorkList, setCurrentWorkList] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedSmellIds, setSelectedSmellIds] = useState(new Set());
+  const [allSmells, setAllSmells] = useState([]);
+  const [currentSmellList, setCurrentSmellList] = useState([]);
+  const [selectedSmell, setSelectedSmell] = useState(null);
   const [isMapReady, setIsMapReady] = useState(false);
   const [leafletLib, setLeafletLib] = useState(null);
-  const [floatingElements, setFloatingElements] = useState([]);
   const [isVisible, setIsVisible] = useState(false);
+  const [showUploadForm, setShowUploadForm] = useState(false);
+  const [uploadData, setUploadData] = useState({
+    title: '',
+    description: '',
+    category: 'floral',
+    intensity: 5,
+    location: null,
+    address: ''
+  });
 
   const mapRef = useRef(null);
   const leafletMapRef = useRef(null);
   const markersRef = useRef([]);
 
-  // Generate floating elements like homepage
-  useEffect(() => {
-    const elements = [];
-    const nudeColors = ['#C9A96E', '#B5A082', '#8B7355', '#A0916C', '#D4C4A8', '#E6D7C3'];
-    for (let i = 0; i < 8; i++) {
-      elements.push({
-        id: i,
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        size: Math.random() * 15 + 8,
-        color: nudeColors[Math.floor(Math.random() * nudeColors.length)],
-        duration: Math.random() * 4 + 3,
-        delay: Math.random() * 2
-      });
-    }
-    setFloatingElements(elements);
-  }, []);
-
   // Entrance animation
   useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), 200);
+    const timer = setTimeout(() => setIsVisible(true), 300);
     return () => clearTimeout(timer);
   }, []);
 
@@ -88,18 +78,120 @@ const SubPage1 = ({ onNavigate }) => {
       });
   }, []);
 
-  // Sample data
-  const sampleItems = [
-    { id: 0, name: "《上海博物馆藏颜真卿书法》", calligraphyStyle: "楷书", temporal: "唐", stele: { temporal: "唐" }, authors: [{ id: 1, author: "颜真卿", role: "书" }], location: [31.2304, 121.4737], city: "上海博物馆", district: "黄浦区" },
-    { id: 1, name: "《中华艺术宫王羲之拓本》", calligraphyStyle: "行书", temporal: "晋", stele: { temporal: "晋" }, authors: [{ id: 2, author: "王羲之", role: "书" }], location: [31.1755, 121.4977], city: "中华艺术宫", district: "浦东新区" },
-    { id: 2, name: "《复旦大学图书馆石门颂》", calligraphyStyle: "隶书", temporal: "汉", stele: { temporal: "汉" }, authors: [{ id: 3, author: "佚名", role: "书" }], location: [31.2989, 121.5015], city: "复旦大学", district: "杨浦区" },
-    { id: 3, name: "《上海图书馆古籍部张迁碑》", calligraphyStyle: "隶书", temporal: "汉", stele: { temporal: "汉" }, authors: [{ id: 4, author: "佚名", role: "书" }], location: [31.2252, 121.4450], city: "上海图书馆", district: "徐汇区" },
-    { id: 4, name: "《华东师范大学多宝塔碑》", calligraphyStyle: "楷书", temporal: "唐", stele: { temporal: "唐" }, authors: [{ id: 5, author: "颜真卿", role: "书" }], location: [31.2303, 121.4067], city: "华东师大", district: "普陀区" },
-    { id: 5, name: "《豫园古迹泰山刻石》", calligraphyStyle: "篆书", temporal: "秦", stele: { temporal: "秦" }, authors: [{ id: 6, author: "李斯", role: "书" }], location: [31.2260, 121.4903], city: "豫园", district: "黄浦区" }
+  // Sample smell data
+  const sampleSmells = [
+    { 
+      id: 0, 
+      title: "Rose Garden Café", 
+      description: "Beautiful rose aroma mixed with coffee", 
+      category: "floral", 
+      intensity: 7, 
+      location: [31.2304, 121.4737], 
+      address: "People's Square, Shanghai",
+      timestamp: "2024-01-15",
+      contributor: "Alice"
+    },
+    { 
+      id: 1, 
+      title: "Street Food Paradise", 
+      description: "Amazing grilled meat and spices", 
+      category: "food", 
+      intensity: 9, 
+      location: [31.1755, 121.4977], 
+      address: "Lujiazui, Shanghai",
+      timestamp: "2024-01-14",
+      contributor: "Bob"
+    },
+    { 
+      id: 2, 
+      title: "Ocean Breeze Pier", 
+      description: "Fresh salty sea air", 
+      category: "nature", 
+      intensity: 6, 
+      location: [31.2989, 121.5015], 
+      address: "Yangpu District, Shanghai",
+      timestamp: "2024-01-13",
+      contributor: "Carol"
+    },
+    { 
+      id: 3, 
+      title: "Pine Forest Path", 
+      description: "Deep earthy pine scent", 
+      category: "nature", 
+      intensity: 8, 
+      location: [31.2252, 121.4450], 
+      address: "Xujiahui Park, Shanghai",
+      timestamp: "2024-01-12",
+      contributor: "David"
+    },
+    { 
+      id: 4, 
+      title: "Vanilla Bakery", 
+      description: "Sweet vanilla and fresh bread", 
+      category: "food", 
+      intensity: 8, 
+      location: [31.2303, 121.4067], 
+      address: "Putuo District, Shanghai",
+      timestamp: "2024-01-11",
+      contributor: "Eve"
+    },
+    { 
+      id: 5, 
+      title: "Jasmine Tea House", 
+      description: "Delicate jasmine flower tea", 
+      category: "floral", 
+      intensity: 5, 
+      location: [31.2260, 121.4903], 
+      address: "Yu Garden, Shanghai",
+      timestamp: "2024-01-10",
+      contributor: "Frank"
+    }
   ];
 
-  const DYNASTY_ORDER = ['秦', '汉', '魏', '晋', '南北朝', '隋', '唐', '五代', '宋', '辽', '金', '元', '明', '清', '民国', '现代', '未知'];
-  const FONT_ORDER = ['篆书', '隶书', '草书', '行书', '楷书', '未知'];
+  // Load data from localStorage or use sample data
+  const loadSmellData = () => {
+    try {
+      const savedData = localStorage.getItem('smellMapData');
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        // Ensure we have valid data structure
+        if (Array.isArray(parsedData) && parsedData.length > 0) {
+          return parsedData;
+        }
+      }
+    } catch (error) {
+      console.warn('Error loading smell data from localStorage:', error);
+    }
+    // Return sample data if no saved data or error
+    return sampleSmells;
+  };
+
+  // Save data to localStorage
+  const saveSmellData = (data) => {
+    try {
+      localStorage.setItem('smellMapData', JSON.stringify(data));
+      console.log('✅ Smell data saved to localStorage');
+    } catch (error) {
+      console.error('Error saving smell data to localStorage:', error);
+      alert('Warning: Could not save data. Your data might not persist after page reload.');
+    }
+  };
+
+  // Get next available ID
+  const getNextId = (smells) => {
+    if (smells.length === 0) return 0;
+    return Math.max(...smells.map(smell => smell.id)) + 1;
+  };
+
+  const SMELL_CATEGORIES = ['floral', 'food', 'nature', 'urban', 'chemical', 'other'];
+  const CATEGORY_COLORS = {
+    'floral': '#ff69b4',
+    'food': '#ff8c00', 
+    'nature': '#32cd32',
+    'urban': '#708090',
+    'chemical': '#dc143c',
+    'other': '#9370db'
+  };
 
   // Initialize Leaflet map
   useEffect(() => {
@@ -118,6 +210,7 @@ const SubPage1 = ({ onNavigate }) => {
         cartoLayer.addTo(leafletMapRef.current);
         mapRef.current.style.borderRadius = '16px';
         mapRef.current.style.overflow = 'hidden';
+
       } catch (error) {
         console.error('Error initializing map:', error);
       }
@@ -131,97 +224,177 @@ const SubPage1 = ({ onNavigate }) => {
     };
   }, [isMapReady, leafletLib]);
 
-  // Update markers when items change
+  // Handle map click for location selection
   useEffect(() => {
-    if (leafletMapRef.current && leafletLib && allItems.length > 0) {
+    if (leafletMapRef.current && leafletLib) {
+      // Remove existing click handlers
+      leafletMapRef.current.off('click');
+      
+      if (showUploadForm) {
+        // Add click handler for new smell locations
+        const handleMapClick = (e) => {
+          const newLocation = [e.latlng.lat, e.latlng.lng];
+          setUploadData(prev => ({
+            ...prev,
+            location: newLocation
+          }));
+          
+          // Add temporary marker to show selected location
+          if (window.tempMarker) {
+            leafletMapRef.current.removeLayer(window.tempMarker);
+          }
+          
+          window.tempMarker = leafletLib.circleMarker(newLocation, {
+            radius: 15,
+            fillColor: '#fcd71a',
+            color: '#000000',
+            weight: 4,
+            opacity: 1,
+            fillOpacity: 0.9
+          }).addTo(leafletMapRef.current);
+          
+          window.tempMarker.bindPopup("📍 New smell location selected!").openPopup();
+        };
+        
+        leafletMapRef.current.on('click', handleMapClick);
+      }
+      
+      // Clean up temp marker when upload form closes
+      if (!showUploadForm && window.tempMarker) {
+        leafletMapRef.current.removeLayer(window.tempMarker);
+        window.tempMarker = null;
+      }
+    }
+  }, [showUploadForm, leafletMapRef.current, leafletLib]);
+
+  // Update markers when smells change
+  useEffect(() => {
+    if (leafletMapRef.current && leafletLib && allSmells.length > 0) {
       markersRef.current.forEach(marker => leafletMapRef.current.removeLayer(marker));
       markersRef.current = [];
 
-      allItems.forEach(item => {
-        if (item.location) {
-          const isSelected = selectedItemIds.has(item.id);
+      allSmells.forEach(smell => {
+        if (smell.location) {
+          const isSelected = selectedSmellIds.has(smell.id);
+          const categoryColor = CATEGORY_COLORS[smell.category] || '#9370db';
 
-          const getMarkerColor = (style) => {
-            switch (style) {
-              case '篆书': return '#8B7355';
-              case '隶书': return '#C9A96E';
-              case '行书': return '#B5A082';
-              case '楷书': return '#A0916C';
-              case '草书': return '#D4C4A8';
-              default: return '#E6D7C3';
-            }
-          };
-
-          const marker = leafletLib.circleMarker(item.location, {
-            radius: isSelected ? 15 : 10,
-            fillColor: isSelected ? '#C9A96E' : getMarkerColor(item.calligraphyStyle),
-            color: '#4A3728',
+          const marker = leafletLib.circleMarker(smell.location, {
+            radius: isSelected ? 15 : (smell.intensity + 5),
+            fillColor: isSelected ? '#fcd71a' : categoryColor,
+            color: '#000000',
             weight: 3,
             opacity: 1,
-            fillOpacity: isSelected ? 0.9 : 0.8
+            fillOpacity: isSelected ? 0.9 : 0.7
           }).addTo(leafletMapRef.current);
 
           marker.bindPopup(`
-            <div style="font-family: 'Inter', sans-serif; max-width: 280px; color: #4A3728;">
-              <h4 style="margin: 0 0 8px 0; color: #4A3728; font-size: 16px; font-weight: 700;">
-                ${item.name}
+            <div style="font-family: 'Archivo Black', sans-serif; max-width: 280px; color: #000000;">
+              <h4 style="margin: 0 0 8px 0; color: #000000; font-size: 16px; font-weight: 700;">
+                ${smell.title} 👃
               </h4>
-              <p style="margin: 0 0 4px 0; font-size: 13px; color: #8B7355;">
-                <strong>📍 位置:</strong> ${item.city}
+              <p style="margin: 0 0 4px 0; font-size: 13px; color: #333333;">
+                <strong>📍 Location:</strong> ${smell.address}
               </p>
-              <p style="margin: 0 0 4px 0; font-size: 13px; color: #8B7355;">
-                <strong>✍️ 书体:</strong> ${item.calligraphyStyle}
+              <p style="margin: 0 0 4px 0; font-size: 13px; color: #333333;">
+                <strong>🏷️ Category:</strong> ${smell.category}
+              </p>
+              <p style="margin: 0 0 4px 0; font-size: 13px; color: #333333;">
+                <strong>💪 Intensity:</strong> ${smell.intensity}/10
+              </p>
+              <p style="margin: 0; font-size: 12px; color: #666;">
+                <em>"${smell.description}"</em>
               </p>
             </div>
           `);
 
           marker.on('click', () => {
-            handleItemClick(item.id);
+            handleSmellClick(smell.id);
           });
 
           markersRef.current.push(marker);
         }
       });
-
-      window.selectItem = (itemId) => {
-        handleItemClick(itemId);
-      };
     }
-  }, [allItems, selectedItemIds, leafletLib]);
+  }, [allSmells, selectedSmellIds, leafletLib]);
 
+  // Initialize data from localStorage
   useEffect(() => {
-    setAllItems(sampleItems);
-    setCurrentWorkList(sampleItems);
-    setSelectedItem(sampleItems[0]);
+    const loadedSmells = loadSmellData();
+    setAllSmells(loadedSmells);
+    setCurrentSmellList(loadedSmells);
+    if (loadedSmells.length > 0) {
+      setSelectedSmell(loadedSmells[0]);
+    }
   }, []);
 
-  const handleItemClick = (itemId) => {
-    const newSelection = new Set([itemId]);
-    setSelectedItemIds(newSelection);
-    const item = allItems.find(i => i.id === itemId);
-    setSelectedItem(item);
-    setCurrentWorkList([item]);
+  const handleSmellClick = (smellId) => {
+    const newSelection = new Set([smellId]);
+    setSelectedSmellIds(newSelection);
+    const smell = allSmells.find(s => s.id === smellId);
+    setSelectedSmell(smell);
+    setCurrentSmellList([smell]);
 
-    if (item.location && leafletMapRef.current) {
-      leafletMapRef.current.setView(item.location, 8, { animate: true });
+    if (smell.location && leafletMapRef.current) {
+      leafletMapRef.current.setView(smell.location, 15, { animate: true });
+    }
+  };
+
+  const handleUploadSubmit = (e) => {
+    e.preventDefault();
+    if (uploadData.title && uploadData.location) {
+      const newSmell = {
+        id: allSmells.length,
+        title: uploadData.title,
+        description: uploadData.description,
+        category: uploadData.category,
+        intensity: uploadData.intensity,
+        location: uploadData.location,
+        address: uploadData.address || `Lat: ${uploadData.location[0].toFixed(4)}, Lng: ${uploadData.location[1].toFixed(4)}`,
+        timestamp: new Date().toISOString().split('T')[0],
+        contributor: "You"
+      };
+      
+      setAllSmells([...allSmells, newSmell]);
+      setCurrentSmellList([...allSmells, newSmell]);
+      setShowUploadForm(false);
+      
+      // Clean up temporary marker
+      if (window.tempMarker && leafletMapRef.current) {
+        leafletMapRef.current.removeLayer(window.tempMarker);
+        window.tempMarker = null;
+      }
+      
+      // Reset form
+      setUploadData({
+        title: '',
+        description: '',
+        category: 'floral',
+        intensity: 5,
+        location: null,
+        address: ''
+      });
+      
+      // Show success message
+      alert('Smell data uploaded successfully! 👃✨');
+    } else {
+      alert('Please fill in the title and click on the map to select a location!');
     }
   };
 
   const renderChart = (type, categories) => {
     const data = {};
 
-    sampleItems.forEach(item => {
+    allSmells.forEach(smell => {
       let category;
-      if (type === 'font') {
-        category = item.calligraphyStyle || '未知';
-      } else if (type === 'stele') {
-        category = item.stele?.temporal || '未知';
-      } else {
-        category = item.temporal || '未知';
+      if (type === 'category') {
+        category = smell.category || 'other';
+      } else if (type === 'intensity') {
+        category = smell.intensity >= 8 ? 'Strong (8-10)' : 
+                  smell.intensity >= 5 ? 'Medium (5-7)' : 'Light (1-4)';
       }
 
       if (!data[category]) data[category] = [];
-      data[category].push(item);
+      data[category].push(smell);
     });
 
     return { data, categories: categories.filter(cat => data[cat]) };
@@ -231,27 +404,24 @@ const SubPage1 = ({ onNavigate }) => {
     const chartData = renderChart(type, categories);
 
     return (
-      <div className="bg-white/90 backdrop-blur-md rounded-2xl border shadow-xl p-4 h-64 hover:shadow-2xl transition-all duration-300"
-        style={{ borderColor: 'rgba(139, 115, 85, 0.2)' }}>
-        <h3 className="text-sm font-semibold mb-3 text-center border-b pb-2"
-          style={{ color: '#4A3728', borderColor: 'rgba(139, 115, 85, 0.2)' }}>
+      <div className="bg-yellow-300 border-4 border-black rounded-lg shadow-xl p-4 h-64 hover:shadow-2xl transition-all duration-300">
+        <h3 className="text-sm font-bold mb-3 text-center border-b-2 border-black pb-2 text-black">
           {title}
         </h3>
         <div className="h-44 overflow-y-auto">
           {chartData.categories.map((category) => (
             <div key={category} className="mb-3">
-              <div className="text-xs mb-2 font-medium" style={{ color: 'rgba(74, 55, 40, 0.8)' }}>{category}</div>
+              <div className="text-xs mb-2 font-bold text-black">{category}</div>
               <div className="flex flex-wrap gap-1.5">
-                {chartData.data[category]?.map((item) => (
+                {chartData.data[category]?.map((smell) => (
                   <button
-                    key={item.id}
-                    onClick={() => handleItemClick(item.id)}
-                    className="w-5 h-5 rounded-full border-2 shadow-lg transition-all duration-300 hover:scale-110"
+                    key={smell.id}
+                    onClick={() => handleSmellClick(smell.id)}
+                    className="w-5 h-5 rounded-full border-2 border-black shadow-lg transition-all duration-300 hover:scale-110"
                     style={{
-                      backgroundColor: selectedItemIds.has(item.id) ? '#C9A96E' : '#B5A082',
-                      borderColor: 'rgba(139, 115, 85, 0.3)'
+                      backgroundColor: selectedSmellIds.has(smell.id) ? '#fcd71a' : CATEGORY_COLORS[smell.category] || '#9370db'
                     }}
-                    title={item.name}
+                    title={smell.title}
                   />
                 ))}
               </div>
@@ -263,100 +433,197 @@ const SubPage1 = ({ onNavigate }) => {
   };
 
   return (
-    <div className="min-h-screen w-full relative overflow-hidden"
-      style={{
-        background: 'linear-gradient(135deg, #F5F0E8 0%, #E6D7C3 25%, #D4C4A8 50%, #C9A96E 75%, #B5A082 100%)'
-      }}>
+    <div className="min-h-screen w-full relative overflow-hidden bg-[#fcd71a]">
+      {/* Navigation Header */}
+      <header className="relative z-10 bg-orange-500 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <nav className="flex items-center justify-between">
+            {/* Logo */}
+            <div className="flex items-center space-x-2 pl-2 pr-2 md:pl-4 md:pr-4 lg:px-8">
+              <img src='/src/assets/writing-center-logo.png' alt="Logo" className='w-16 h-16' />
+              <div className="text-white font-bold text-lg">
+                UM-SJTU<br />
+                Writing Center
+              </div>
+            </div>
 
-      {/* Floating background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {floatingElements.map((element) => (
-          <div
-            key={element.id}
-            className="absolute rounded-full opacity-10 animate-pulse"
-            style={{
-              left: `${element.x}%`,
-              top: `${element.y}%`,
-              width: `${element.size}px`,
-              height: `${element.size}px`,
-              backgroundColor: element.color,
-              animationDuration: `${element.duration}s`,
-              animationDelay: `${element.delay}s`,
-              transform: 'translate(-50%, -50%)'
-            }}
-          />
-        ))}
-      </div>
+            {/* Page Title */}
+            <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+              <h1 className="text-white font-bold text-xl md:text-2xl">
+                Smell Map Explorer 👃🗺️
+              </h1>
+            </div>
 
-      {/* Fun geometric shapes */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 right-20 w-24 h-24 rounded-full opacity-15 animate-bounce"
-          style={{ backgroundColor: '#C9A96E', animationDuration: '4s' }}></div>
-        <div className="absolute bottom-40 left-20 w-20 h-20 opacity-10 rotate-45 animate-spin"
-          style={{ backgroundColor: '#8B7355', animationDuration: '10s' }}></div>
-      </div>
-
-      {/* Navigation header */}
-      <div className="relative z-10 flex justify-between items-center p-6">
-        <button
-          onClick={() => onNavigate('home')}
-          className="group flex items-center space-x-2 transition-all duration-300 backdrop-blur-md px-6 py-3 rounded-full shadow-lg hover:shadow-xl border-2 font-medium hover:scale-105"
-          style={{
-            color: '#4A3728',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            borderColor: 'rgba(139, 115, 85, 0.3)'
-          }}
-        >
-          <svg className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          <span className="text-sm">Back to Home</span>
-        </button>
-
-        <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-          <h1 className="text-3xl font-bold text-transparent bg-clip-text"
-            style={{ backgroundImage: 'linear-gradient(135deg, #4A3728 0%, #8B7355 50%, #C9A96E 100%)' }}>
-            Ancient Calligraphy Explorer ✨
-          </h1>
+            {/* Navigation Buttons */}
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setShowUploadForm(!showUploadForm)}
+                className={`font-bold transition-colors duration-300 px-4 py-2 rounded-full ${
+                  showUploadForm 
+                    ? 'bg-yellow-400 text-black hover:bg-yellow-300' 
+                    : 'bg-orange-600 text-white hover:bg-orange-700'
+                }`}
+              >
+                {showUploadForm ? '❌ Cancel' : '➕ Add Smell'}
+              </button>
+              
+              <button
+                onClick={() => onNavigate('home')}
+                className="text-white hover:text-yellow-200 font-bold transition-colors duration-300 bg-orange-600 hover:bg-orange-700 px-4 py-2 rounded-full"
+              >
+                ← Back to Home
+              </button>
+            </div>
+          </nav>
         </div>
+      </header>
 
-        <div className="w-12"></div>
-      </div>
+      {/* Upload Form - Top Panel Below Header */}
+      {showUploadForm && (
+        <div className="relative z-10 bg-yellow-300 border-b-4 border-black shadow-lg">
+          <div className="max-w-7xl mx-auto px-6 py-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-black">Add New Smell Experience 👃</h2>
+              <button
+                onClick={() => {
+                  setShowUploadForm(false);
+                  // Clean up temp marker
+                  if (window.tempMarker && leafletMapRef.current) {
+                    leafletMapRef.current.removeLayer(window.tempMarker);
+                    window.tempMarker = null;
+                  }
+                  // Reset form
+                  setUploadData({
+                    title: '',
+                    description: '',
+                    category: 'floral',
+                    intensity: 5,
+                    location: null,
+                    address: ''
+                  });
+                }}
+                className="text-black hover:text-red-600 font-bold text-2xl"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <form onSubmit={handleUploadSubmit} className="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
+              <div className="md:col-span-2">
+                <label className="block text-sm font-bold text-black mb-1">Smell Title *</label>
+                <input
+                  type="text"
+                  value={uploadData.title}
+                  onChange={(e) => setUploadData({...uploadData, title: e.target.value})}
+                  className="w-full p-2 border-2 border-black rounded text-black"
+                  placeholder="e.g., Coffee Shop Aroma"
+                  required
+                />
+              </div>
+              
+              <div className="md:col-span-2">
+                <label className="block text-sm font-bold text-black mb-1">Description</label>
+                <input
+                  type="text"
+                  value={uploadData.description}
+                  onChange={(e) => setUploadData({...uploadData, description: e.target.value})}
+                  className="w-full p-2 border-2 border-black rounded text-black"
+                  placeholder="Describe the smell..."
+                />
+              </div>
 
-      {/* Main dashboard content */}
+              <div>
+                <label className="block text-sm font-bold text-black mb-1">Category</label>
+                <select
+                  value={uploadData.category}
+                  onChange={(e) => setUploadData({...uploadData, category: e.target.value})}
+                  className="w-full p-2 border-2 border-black rounded text-black"
+                >
+                  {SMELL_CATEGORIES.map(cat => (
+                    <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-black mb-1">Intensity: {uploadData.intensity}/10</label>
+                <input
+                  type="range"
+                  min="1"
+                  max="10"
+                  value={uploadData.intensity}
+                  onChange={(e) => setUploadData({...uploadData, intensity: parseInt(e.target.value)})}
+                  className="w-full"
+                />
+              </div>
+            </form>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4 items-center">
+              <div className="md:col-span-2">
+                <label className="block text-sm font-bold text-black mb-1">Address (Optional)</label>
+                <input
+                  type="text"
+                  value={uploadData.address}
+                  onChange={(e) => setUploadData({...uploadData, address: e.target.value})}
+                  className="w-full p-2 border-2 border-black rounded text-black"
+                  placeholder="e.g., Starbucks, Nanjing Road"
+                />
+              </div>
+
+              <div className="text-sm text-black bg-orange-200 p-2 rounded border-2 border-black">
+                📍 {uploadData.location 
+                  ? `Selected: ${uploadData.location[0].toFixed(4)}, ${uploadData.location[1].toFixed(4)}` 
+                  : 'Click on the map to select location *'}
+              </div>
+
+              <button
+                type="submit"
+                form="uploadForm"
+                onClick={handleUploadSubmit}
+                disabled={!uploadData.title || !uploadData.location}
+                className="bg-orange-500 text-white font-bold py-2 px-4 rounded border-2 border-black hover:bg-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-300"
+              >
+                Upload Smell Data 🚀
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main dashboard content - no need to adjust padding anymore */}
       <div className={`relative z-10 flex-1 p-6 grid grid-cols-12 grid-rows-12 gap-4 min-h-0 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
 
         {/* Left panel - Charts */}
-        <div className="col-span-2 row-span-12 bg-white/90 backdrop-blur-md rounded-3xl border shadow-2xl flex flex-col overflow-hidden"
-          style={{ borderColor: 'rgba(139, 115, 85, 0.2)' }}>
-          <div className="p-4 border-b" style={{ borderColor: 'rgba(139, 115, 85, 0.2)' }}>
-            <h2 className="text-lg font-semibold flex items-center space-x-2" style={{ color: '#4A3728' }}>
+        <div className="col-span-2 row-span-12 bg-yellow-300 border-4 border-black rounded-lg shadow-2xl flex flex-col overflow-hidden">
+          <div className="p-4 border-b-4 border-black bg-orange-400">
+            <h2 className="text-lg font-bold flex items-center space-x-2 text-black">
               <span>📊</span>
-              <span>Statistics</span>
+              <span>Smell Analytics</span>
             </h2>
           </div>
           <div className="flex-1 p-3 space-y-4 overflow-y-auto">
-            <ChartComponent title="字体统计 ✍️" type="font" categories={FONT_ORDER} />
-            <ChartComponent title="碑刻立朝代 🏛️" type="stele" categories={DYNASTY_ORDER} />
+            <ChartComponent title="Categories 🏷️" type="category" categories={SMELL_CATEGORIES} />
+            <ChartComponent title="Intensity Levels 💪" type="intensity" categories={['Light (1-4)', 'Medium (5-7)', 'Strong (8-10)']} />
           </div>
         </div>
 
         {/* Middle panel - Map */}
-        <div className="col-span-7 row-span-12 bg-white/90 backdrop-blur-md rounded-3xl border shadow-2xl overflow-hidden relative"
-          style={{ borderColor: 'rgba(139, 115, 85, 0.2)' }}>
-          <div className="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg border"
-            style={{ borderColor: 'rgba(139, 115, 85, 0.2)' }}>
-            <span className="text-sm font-medium flex items-center space-x-2" style={{ color: '#4A3728' }}>
-              <span>🗺️</span>
-              <span>Shanghai Cultural Sites</span>
-            </span>
-          </div>
+        <div className="col-span-7 row-span-12 bg-yellow-300 border-4 border-black rounded-lg shadow-2xl overflow-hidden relative">
+          
+          {showUploadForm && (
+            <div className="absolute top-4 right-4 z-10 bg-yellow-400 border-2 border-black rounded-lg px-3 py-2 shadow-lg animate-pulse">
+              <span className="text-xs font-bold text-black">
+                👆 Click map to set location!<br/>
+                {uploadData.location ? '✅ Location set!' : '❌ No location yet'}
+              </span>
+            </div>
+          )}
+
           {!isMapReady ? (
-            <div className="w-full h-full flex items-center justify-center">
-              <div className="text-center" style={{ color: 'rgba(74, 55, 40, 0.7)' }}>
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4"
-                  style={{ borderColor: '#C9A96E' }}></div>
-                <p>Loading map... 🗺️</p>
+            <div className="w-full h-full flex items-center justify-center bg-yellow-300">
+              <div className="text-center text-black">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-black mx-auto mb-4"></div>
+                <p className="font-bold">Loading smell map... 👃🗺️</p>
               </div>
             </div>
           ) : (
@@ -364,32 +631,30 @@ const SubPage1 = ({ onNavigate }) => {
           )}
         </div>
 
-        {/* Right panel - Work list and Details */}
+        {/* Right panel - Smell list and Details */}
         <div className="col-span-3 row-span-12 flex flex-col gap-4">
-          {/* Work list */}
-          <div className="bg-white/90 backdrop-blur-md rounded-3xl border shadow-2xl flex flex-col overflow-hidden flex-1"
-            style={{ borderColor: 'rgba(139, 115, 85, 0.2)' }}>
-            <div className="backdrop-blur-sm px-4 py-3 border-b"
-              style={{ backgroundColor: 'rgba(139, 115, 85, 0.1)', borderColor: 'rgba(139, 115, 85, 0.2)' }}>
-              <h3 className="text-sm font-semibold flex items-center space-x-2" style={{ color: '#4A3728' }}>
-                <span>📚</span>
-                <span>作品列表</span>
+          {/* Smell list */}
+          <div className="bg-yellow-300 border-4 border-black rounded-lg shadow-2xl flex flex-col overflow-hidden flex-1">
+            <div className="bg-orange-400 px-4 py-3 border-b-4 border-black">
+              <h3 className="text-sm font-bold flex items-center space-x-2 text-black">
+                <span>👃</span>
+                <span>Smell Experiences ({allSmells.length})</span>
               </h3>
             </div>
             <div className="flex-1 overflow-y-auto">
               <ul>
-                {currentWorkList.map((work) => (
+                {currentSmellList.map((smell) => (
                   <li
-                    key={work.id}
-                    onClick={() => handleItemClick(work.id)}
-                    className="px-4 py-3 cursor-pointer text-sm transition-all duration-300 hover:scale-105 border-b"
+                    key={smell.id}
+                    onClick={() => handleSmellClick(smell.id)}
+                    className="px-4 py-3 cursor-pointer text-sm transition-all duration-300 hover:scale-105 border-b-2 border-black font-medium"
                     style={{
-                      backgroundColor: selectedItemIds.has(work.id) ? 'rgba(201, 169, 110, 0.2)' : 'transparent',
-                      color: selectedItemIds.has(work.id) ? '#4A3728' : 'rgba(74, 55, 40, 0.8)',
-                      borderColor: 'rgba(139, 115, 85, 0.1)'
+                      backgroundColor: selectedSmellIds.has(smell.id) ? '#fcd71a' : '#ffeb3b',
+                      color: 'black'
                     }}
                   >
-                    {work.name}
+                    <div className="font-bold">{smell.title}</div>
+                    <div className="text-xs opacity-75">{smell.category} • {smell.intensity}/10</div>
                   </li>
                 ))}
               </ul>
@@ -397,43 +662,43 @@ const SubPage1 = ({ onNavigate }) => {
           </div>
 
           {/* Details panel */}
-          {selectedItem && (
-            <div className="bg-white/90 backdrop-blur-md rounded-3xl border shadow-2xl p-4 flex-1"
-              style={{ borderColor: 'rgba(139, 115, 85, 0.2)' }}>
-              <h3 className="text-lg font-bold text-center mb-4 flex items-center justify-center space-x-2"
-                style={{ color: '#4A3728' }}>
-                <span>🎨</span>
-                <span>{selectedItem.name}</span>
+          {selectedSmell && (
+            <div className="bg-yellow-300 border-4 border-black rounded-lg shadow-2xl p-4 flex-1">
+              <h3 className="text-lg font-bold text-center mb-4 flex items-center justify-center space-x-2 text-black">
+                <span>👃</span>
+                <span>{selectedSmell.title}</span>
               </h3>
 
               <div className="space-y-3">
-                <div className="rounded-xl p-4 border"
-                  style={{ backgroundColor: 'rgba(245, 240, 232, 0.8)', borderColor: 'rgba(139, 115, 85, 0.2)' }}>
-                  <p className="text-sm flex items-center space-x-2 mb-2" style={{ color: 'rgba(74, 55, 40, 0.9)' }}>
-                    <span className="font-semibold" style={{ color: '#C9A96E' }}>👨‍🎨 作者:</span>
-                    <span style={{ color: '#8B7355' }}>
-                      {selectedItem.authors?.map(a => `${a.author} (${a.role})`).join('、')}
-                    </span>
+                <div className="rounded-lg p-4 border-2 border-black bg-orange-200">
+                  <p className="text-sm flex items-center space-x-2 mb-2 text-black">
+                    <span className="font-bold text-orange-600">📝 Description:</span>
+                  </p>
+                  <p className="text-sm mb-3 text-black italic">"{selectedSmell.description}"</p>
+
+                  <p className="text-sm flex items-center space-x-2 mb-2 text-black">
+                    <span className="font-bold text-orange-600">🏷️ Category:</span>
+                    <span className="text-black capitalize">{selectedSmell.category}</span>
                   </p>
 
-                  <p className="text-sm flex items-center space-x-2 mb-2" style={{ color: 'rgba(74, 55, 40, 0.9)' }}>
-                    <span className="font-semibold" style={{ color: '#C9A96E' }}>✍️ 书体:</span>
-                    <span style={{ color: '#8B7355' }}>{selectedItem.calligraphyStyle}</span>
+                  <p className="text-sm flex items-center space-x-2 mb-2 text-black">
+                    <span className="font-bold text-orange-600">💪 Intensity:</span>
+                    <span className="text-black">{selectedSmell.intensity}/10</span>
                   </p>
 
-                  <p className="text-sm flex items-center space-x-2 mb-2" style={{ color: 'rgba(74, 55, 40, 0.9)' }}>
-                    <span className="font-semibold" style={{ color: '#C9A96E' }}>🏮 朝代:</span>
-                    <span style={{ color: '#8B7355' }}>{selectedItem.temporal}</span>
+                  <p className="text-sm flex items-center space-x-2 mb-2 text-black">
+                    <span className="font-bold text-orange-600">📍 Location:</span>
+                    <span className="text-black">{selectedSmell.address}</span>
                   </p>
 
-                  <p className="text-sm flex items-center space-x-2 mb-2" style={{ color: 'rgba(74, 55, 40, 0.9)' }}>
-                    <span className="font-semibold" style={{ color: '#C9A96E' }}>📍 位置:</span>
-                    <span style={{ color: '#8B7355' }}>{selectedItem.city}</span>
+                  <p className="text-sm flex items-center space-x-2 mb-2 text-black">
+                    <span className="font-bold text-orange-600">📅 Date:</span>
+                    <span className="text-black">{selectedSmell.timestamp}</span>
                   </p>
 
-                  <p className="text-sm flex items-center space-x-2" style={{ color: 'rgba(74, 55, 40, 0.9)' }}>
-                    <span className="font-semibold" style={{ color: '#C9A96E' }}>🏛️ 区域:</span>
-                    <span style={{ color: '#8B7355' }}>{selectedItem.district}</span>
+                  <p className="text-sm flex items-center space-x-2 text-black">
+                    <span className="font-bold text-orange-600">👤 By:</span>
+                    <span className="text-black">{selectedSmell.contributor}</span>
                   </p>
                 </div>
               </div>
