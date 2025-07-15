@@ -1,52 +1,41 @@
 import { useState, useEffect, useRef } from 'react';
+import { smellService } from '../services/smellService';
 
-// Dynamically load Leaflet if not already loaded
-const loadLeaflet = () => {
-  return new Promise((resolve, reject) => {
-    if (typeof window !== 'undefined' && window.L) {
-      resolve(window.L);
-      return;
-    }
+// Import Leaflet locally
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
-    if (!document.querySelector('link[href*="leaflet"]')) {
-      const cssLink = document.createElement('link');
-      cssLink.rel = 'stylesheet';
-      cssLink.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-      cssLink.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';
-      cssLink.crossOrigin = '';
-      document.head.appendChild(cssLink);
-    }
+// Fix for default marker icons (Leaflet bundling issue)
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
-    if (!document.querySelector('script[src*="leaflet"]')) {
-      const script = document.createElement('script');
-      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-      script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
-      script.crossOrigin = '';
-      script.onload = () => resolve(window.L);
-      script.onerror = reject;
-      document.head.appendChild(script);
-    } else {
-      const checkLeaflet = () => {
-        if (window.L) {
-          resolve(window.L);
-        } else {
-          setTimeout(checkLeaflet, 100);
-        }
-      };
-      checkLeaflet();
-    }
-  });
-};
+// Configure default marker icon
+let DefaultIcon = L.icon({
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 const SubPage1 = ({ onNavigate }) => {
   const [selectedSmellIds, setSelectedSmellIds] = useState(new Set());
   const [allSmells, setAllSmells] = useState([]);
   const [currentSmellList, setCurrentSmellList] = useState([]);
   const [selectedSmell, setSelectedSmell] = useState(null);
-  const [isMapReady, setIsMapReady] = useState(false);
-  const [leafletLib, setLeafletLib] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
   const [showUploadForm, setShowUploadForm] = useState(false);
+  
+  // Firebase-related states
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState('connecting');
+  const [mapError, setMapError] = useState(null);
+  
   const [uploadData, setUploadData] = useState({
     title: '',
     description: '',
@@ -59,6 +48,7 @@ const SubPage1 = ({ onNavigate }) => {
   const mapRef = useRef(null);
   const leafletMapRef = useRef(null);
   const markersRef = useRef([]);
+  const unsubscribeRef = useRef(null);
 
   // Entrance animation
   useEffect(() => {
@@ -66,22 +56,10 @@ const SubPage1 = ({ onNavigate }) => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Load Leaflet library
-  useEffect(() => {
-    loadLeaflet()
-      .then((L) => {
-        setLeafletLib(L);
-        setIsMapReady(true);
-      })
-      .catch((error) => {
-        console.error('Failed to load Leaflet:', error);
-      });
-  }, []);
-
-  // Sample smell data
+  // Sample smell data (fallback)
   const sampleSmells = [
     { 
-      id: 0, 
+      id: 'sample-0', 
       title: "Rose Garden Café", 
       description: "Beautiful rose aroma mixed with coffee", 
       category: "floral", 
@@ -92,7 +70,7 @@ const SubPage1 = ({ onNavigate }) => {
       contributor: "Alice"
     },
     { 
-      id: 1, 
+      id: 'sample-1', 
       title: "Street Food Paradise", 
       description: "Amazing grilled meat and spices", 
       category: "food", 
@@ -103,7 +81,7 @@ const SubPage1 = ({ onNavigate }) => {
       contributor: "Bob"
     },
     { 
-      id: 2, 
+      id: 'sample-2', 
       title: "Ocean Breeze Pier", 
       description: "Fresh salty sea air", 
       category: "nature", 
@@ -114,7 +92,7 @@ const SubPage1 = ({ onNavigate }) => {
       contributor: "Carol"
     },
     { 
-      id: 3, 
+      id: 'sample-3', 
       title: "Pine Forest Path", 
       description: "Deep earthy pine scent", 
       category: "nature", 
@@ -125,7 +103,7 @@ const SubPage1 = ({ onNavigate }) => {
       contributor: "David"
     },
     { 
-      id: 4, 
+      id: 'sample-4', 
       title: "Vanilla Bakery", 
       description: "Sweet vanilla and fresh bread", 
       category: "food", 
@@ -136,7 +114,7 @@ const SubPage1 = ({ onNavigate }) => {
       contributor: "Eve"
     },
     { 
-      id: 5, 
+      id: 'sample-5', 
       title: "Jasmine Tea House", 
       description: "Delicate jasmine flower tea", 
       category: "floral", 
@@ -148,40 +126,72 @@ const SubPage1 = ({ onNavigate }) => {
     }
   ];
 
-  // Load data from localStorage or use sample data
-  const loadSmellData = () => {
-    try {
-      const savedData = localStorage.getItem('smellMapData');
-      if (savedData) {
-        const parsedData = JSON.parse(savedData);
-        // Ensure we have valid data structure
-        if (Array.isArray(parsedData) && parsedData.length > 0) {
-          return parsedData;
+  // Load data from Firebase with real-time updates
+  useEffect(() => {
+    const initializeData = async () => {
+      setIsLoading(true);
+      setConnectionStatus('connecting');
+      
+      try {
+        console.log("🔄 Loading smell data from Firebase...");
+        const smells = await smellService.getAllSmells();
+        
+        if (smells.length > 0) {
+          console.log(`✅ Loaded ${smells.length} smells from Firebase`);
+          setAllSmells(smells);
+          setCurrentSmellList(smells);
+          setSelectedSmell(smells[0]);
+          setConnectionStatus('connected');
+        } else {
+          console.log('📝 No data found, using sample data');
+          setAllSmells(sampleSmells);
+          setCurrentSmellList(sampleSmells);
+          setSelectedSmell(sampleSmells[0]);
+          setConnectionStatus('connected');
         }
+        
+        setError(null);
+      } catch (err) {
+        console.error('❌ Failed to load data:', err);
+        setError('Failed to connect to database. Using offline data.');
+        setConnectionStatus('offline');
+        
+        // Fallback to sample data
+        setAllSmells(sampleSmells);
+        setCurrentSmellList(sampleSmells);
+        setSelectedSmell(sampleSmells[0]);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.warn('Error loading smell data from localStorage:', error);
-    }
-    // Return sample data if no saved data or error
-    return sampleSmells;
-  };
+    };
 
-  // Save data to localStorage
-  const saveSmellData = (data) => {
+    initializeData();
+
+    // Set up real-time listener
     try {
-      localStorage.setItem('smellMapData', JSON.stringify(data));
-      console.log('✅ Smell data saved to localStorage');
-    } catch (error) {
-      console.error('Error saving smell data to localStorage:', error);
-      alert('Warning: Could not save data. Your data might not persist after page reload.');
+      const unsubscribe = smellService.subscribeToSmells((smells) => {
+        console.log("🔄 Real-time update received");
+        setAllSmells(smells);
+        setCurrentSmellList(smells);
+        if (smells.length > 0 && !selectedSmell) {
+          setSelectedSmell(smells[0]);
+        }
+        setConnectionStatus('connected');
+        setError(null);
+      });
+      
+      unsubscribeRef.current = unsubscribe;
+    } catch (err) {
+      console.error('❌ Failed to set up real-time listener:', err);
+      setConnectionStatus('offline');
     }
-  };
 
-  // Get next available ID
-  const getNextId = (smells) => {
-    if (smells.length === 0) return 0;
-    return Math.max(...smells.map(smell => smell.id)) + 1;
-  };
+    return () => {
+      if (unsubscribeRef.current) {
+        unsubscribeRef.current();
+      }
+    };
+  }, []);
 
   const SMELL_CATEGORIES = ['floral', 'food', 'nature', 'urban', 'chemical', 'other'];
   const CATEGORY_COLORS = {
@@ -193,58 +203,86 @@ const SubPage1 = ({ onNavigate }) => {
     'other': '#9370db'
   };
 
-  // Initialize Leaflet map
+  // Initialize Leaflet map (much simpler now!)
   useEffect(() => {
-    if (mapRef.current && !leafletMapRef.current && isMapReady && leafletLib) {
+    if (mapRef.current && !leafletMapRef.current && !isLoading) {
       try {
-        leafletMapRef.current = leafletLib.map(mapRef.current, {
+        console.log("🗺️ Creating Leaflet map...");
+        
+        // Clear any existing content
+        mapRef.current.innerHTML = '';
+        
+        // Create map
+        const map = L.map(mapRef.current, {
           zoomControl: true,
           attributionControl: true
-        }).setView([31.2304, 121.4737], 11);
-
-        const cartoLayer = leafletLib.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        });
+        
+        // Set view to Shanghai
+        map.setView([31.2304, 121.4737], 11);
+        
+        // Add tile layer
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
           attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>',
           maxZoom: 20
-        });
-
-        cartoLayer.addTo(leafletMapRef.current);
+        }).addTo(map);
+        
+        // Style the map container
+        mapRef.current.style.height = '100%';
+        mapRef.current.style.width = '100%';
         mapRef.current.style.borderRadius = '16px';
         mapRef.current.style.overflow = 'hidden';
+        
+        leafletMapRef.current = map;
+        setMapError(null);
+        
+        console.log("✅ Map created successfully!");
+        
+        // Force resize after creation
+        setTimeout(() => {
+          if (leafletMapRef.current) {
+            leafletMapRef.current.invalidateSize();
+          }
+        }, 100);
 
       } catch (error) {
-        console.error('Error initializing map:', error);
+        console.error('❌ Error creating map:', error);
+        setMapError(`Map creation failed: ${error.message}`);
       }
     }
 
     return () => {
       if (leafletMapRef.current) {
+        console.log("🗺️ Cleaning up map...");
         leafletMapRef.current.remove();
         leafletMapRef.current = null;
       }
     };
-  }, [isMapReady, leafletLib]);
+  }, [isLoading]); // Only depend on isLoading
 
   // Handle map click for location selection
   useEffect(() => {
-    if (leafletMapRef.current && leafletLib) {
+    if (leafletMapRef.current) {
       // Remove existing click handlers
       leafletMapRef.current.off('click');
       
       if (showUploadForm) {
-        // Add click handler for new smell locations
         const handleMapClick = (e) => {
           const newLocation = [e.latlng.lat, e.latlng.lng];
+          console.log("📍 Location selected:", newLocation);
+          
           setUploadData(prev => ({
             ...prev,
             location: newLocation
           }));
           
-          // Add temporary marker to show selected location
+          // Remove existing temp marker
           if (window.tempMarker) {
             leafletMapRef.current.removeLayer(window.tempMarker);
           }
           
-          window.tempMarker = leafletLib.circleMarker(newLocation, {
+          // Add new temp marker
+          window.tempMarker = L.circleMarker(newLocation, {
             radius: 15,
             fillColor: '#fcd71a',
             color: '#000000',
@@ -265,69 +303,76 @@ const SubPage1 = ({ onNavigate }) => {
         window.tempMarker = null;
       }
     }
-  }, [showUploadForm, leafletMapRef.current, leafletLib]);
+  }, [showUploadForm]);
 
   // Update markers when smells change
   useEffect(() => {
-    if (leafletMapRef.current && leafletLib && allSmells.length > 0) {
-      markersRef.current.forEach(marker => leafletMapRef.current.removeLayer(marker));
-      markersRef.current = [];
-
-      allSmells.forEach(smell => {
-        if (smell.location) {
-          const isSelected = selectedSmellIds.has(smell.id);
-          const categoryColor = CATEGORY_COLORS[smell.category] || '#9370db';
-
-          const marker = leafletLib.circleMarker(smell.location, {
-            radius: isSelected ? 15 : (smell.intensity + 5),
-            fillColor: isSelected ? '#fcd71a' : categoryColor,
-            color: '#000000',
-            weight: 3,
-            opacity: 1,
-            fillOpacity: isSelected ? 0.9 : 0.7
-          }).addTo(leafletMapRef.current);
-
-          marker.bindPopup(`
-            <div style="font-family: 'Archivo Black', sans-serif; max-width: 280px; color: #000000;">
-              <h4 style="margin: 0 0 8px 0; color: #000000; font-size: 16px; font-weight: 700;">
-                ${smell.title} 👃
-              </h4>
-              <p style="margin: 0 0 4px 0; font-size: 13px; color: #333333;">
-                <strong>📍 Location:</strong> ${smell.address}
-              </p>
-              <p style="margin: 0 0 4px 0; font-size: 13px; color: #333333;">
-                <strong>🏷️ Category:</strong> ${smell.category}
-              </p>
-              <p style="margin: 0 0 4px 0; font-size: 13px; color: #333333;">
-                <strong>💪 Intensity:</strong> ${smell.intensity}/10
-              </p>
-              <p style="margin: 0; font-size: 12px; color: #666;">
-                <em>"${smell.description}"</em>
-              </p>
-            </div>
-          `);
-
-          marker.on('click', () => {
-            handleSmellClick(smell.id);
-          });
-
-          markersRef.current.push(marker);
+    if (leafletMapRef.current && allSmells.length > 0) {
+      console.log(`🗺️ Updating ${allSmells.length} markers on map`);
+      
+      // Clear existing markers
+      markersRef.current.forEach(marker => {
+        try {
+          leafletMapRef.current.removeLayer(marker);
+        } catch (e) {
+          console.warn('Error removing marker:', e);
         }
       });
-    }
-  }, [allSmells, selectedSmellIds, leafletLib]);
+      markersRef.current = [];
 
-  // Initialize data from localStorage
-  useEffect(() => {
-    const loadedSmells = loadSmellData();
-    setAllSmells(loadedSmells);
-    setCurrentSmellList(loadedSmells);
-    if (loadedSmells.length > 0) {
-      setSelectedSmell(loadedSmells[0]);
+      // Add new markers
+      allSmells.forEach(smell => {
+        if (smell.location && Array.isArray(smell.location) && smell.location.length === 2) {
+          try {
+            const isSelected = selectedSmellIds.has(smell.id);
+            const categoryColor = CATEGORY_COLORS[smell.category] || '#9370db';
+
+            const marker = L.circleMarker(smell.location, {
+              radius: isSelected ? 15 : (smell.intensity + 5),
+              fillColor: isSelected ? '#fcd71a' : categoryColor,
+              color: '#000000',
+              weight: 3,
+              opacity: 1,
+              fillOpacity: isSelected ? 0.9 : 0.7
+            }).addTo(leafletMapRef.current);
+
+            marker.bindPopup(`
+              <div style="font-family: 'Archivo Black', sans-serif; max-width: 280px; color: #000000;">
+                <h4 style="margin: 0 0 8px 0; color: #000000; font-size: 16px; font-weight: 700;">
+                  ${smell.title} 👃
+                </h4>
+                <p style="margin: 0 0 4px 0; font-size: 13px; color: #333333;">
+                  <strong>📍 Location:</strong> ${smell.address}
+                </p>
+                <p style="margin: 0 0 4px 0; font-size: 13px; color: #333333;">
+                  <strong>🏷️ Category:</strong> ${smell.category}
+                </p>
+                <p style="margin: 0 0 4px 0; font-size: 13px; color: #333333;">
+                  <strong>💪 Intensity:</strong> ${smell.intensity}/10
+                </p>
+                <p style="margin: 0; font-size: 12px; color: #666;">
+                  <em>"${smell.description}"</em>
+                </p>
+              </div>
+            `);
+
+            marker.on('click', () => {
+              handleSmellClick(smell.id);
+            });
+
+            markersRef.current.push(marker);
+          } catch (error) {
+            console.warn('Error adding marker for smell:', smell.title, error);
+          }
+        }
+      });
+
+      console.log(`✅ Added ${markersRef.current.length} markers to map`);
     }
-  }, []);
+  }, [allSmells, selectedSmellIds]);
 
   const handleSmellClick = (smellId) => {
+    console.log("👃 Smell clicked:", smellId);
     const newSelection = new Set([smellId]);
     setSelectedSmellIds(newSelection);
     const smell = allSmells.find(s => s.id === smellId);
@@ -339,26 +384,36 @@ const SubPage1 = ({ onNavigate }) => {
     }
   };
 
-  const handleUploadSubmit = (e) => {
+  // Upload submit with Firebase
+  const handleUploadSubmit = async (e) => {
     e.preventDefault();
-    if (uploadData.title && uploadData.location) {
-      const newSmell = {
-        id: allSmells.length,
+    
+    if (!uploadData.title || !uploadData.location) {
+      alert('Please fill in the title and click on the map to select a location!');
+      return;
+    }
+
+    setIsUploading(true);
+    
+    try {
+      console.log("📤 Uploading new smell data...");
+      
+      const newSmellData = {
         title: uploadData.title,
         description: uploadData.description,
         category: uploadData.category,
         intensity: uploadData.intensity,
         location: uploadData.location,
         address: uploadData.address || `Lat: ${uploadData.location[0].toFixed(4)}, Lng: ${uploadData.location[1].toFixed(4)}`,
-        timestamp: new Date().toISOString().split('T')[0],
         contributor: "You"
       };
       
-      setAllSmells([...allSmells, newSmell]);
-      setCurrentSmellList([...allSmells, newSmell]);
-      setShowUploadForm(false);
+      await smellService.addSmell(newSmellData);
       
-      // Clean up temporary marker
+      console.log("✅ Smell data uploaded successfully!");
+      
+      // Clean up
+      setShowUploadForm(false);
       if (window.tempMarker && leafletMapRef.current) {
         leafletMapRef.current.removeLayer(window.tempMarker);
         window.tempMarker = null;
@@ -374,10 +429,13 @@ const SubPage1 = ({ onNavigate }) => {
         address: ''
       });
       
-      // Show success message
       alert('Smell data uploaded successfully! 👃✨');
-    } else {
-      alert('Please fill in the title and click on the map to select a location!');
+      
+    } catch (error) {
+      console.error('❌ Upload error:', error);
+      alert(`Failed to upload smell data: ${error.message}`);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -432,6 +490,37 @@ const SubPage1 = ({ onNavigate }) => {
     );
   };
 
+  // Connection status indicator
+  const ConnectionStatus = () => {
+    const statusConfig = {
+      connecting: { color: '#fbbf24', icon: '🔄', text: 'Connecting...' },
+      connected: { color: '#10b981', icon: '✅', text: 'Connected' },
+      offline: { color: '#ef4444', icon: '⚠️', text: 'Offline' }
+    };
+    
+    const config = statusConfig[connectionStatus] || statusConfig.offline;
+    
+    return (
+      <div className="flex items-center space-x-2 text-white text-sm">
+        <span>{config.icon}</span>
+        <span>{config.text}</span>
+      </div>
+    );
+  };
+
+  // Show loading screen
+  if (isLoading) {
+    return (
+      <div className="min-h-screen w-full bg-[#fcd71a] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-black mx-auto mb-4"></div>
+          <h2 className="text-2xl font-bold text-black mb-2">Loading Smell Map... 👃</h2>
+          <p className="text-black">Initializing map and data...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen w-full relative overflow-hidden bg-[#fcd71a]">
       {/* Navigation Header */}
@@ -447,24 +536,26 @@ const SubPage1 = ({ onNavigate }) => {
               </div>
             </div>
 
-            {/* Page Title */}
+            {/* Page Title with Connection Status */}
             <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-              <h1 className="text-white font-bold text-xl md:text-2xl">
+              <h1 className="text-white font-bold text-xl md:text-2xl mb-1">
                 Smell Map Explorer 👃🗺️
               </h1>
+              <ConnectionStatus />
             </div>
 
             {/* Navigation Buttons */}
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => setShowUploadForm(!showUploadForm)}
+                disabled={isUploading}
                 className={`font-bold transition-colors duration-300 px-4 py-2 rounded-full ${
                   showUploadForm 
                     ? 'bg-yellow-400 text-black hover:bg-yellow-300' 
                     : 'bg-orange-600 text-white hover:bg-orange-700'
-                }`}
+                } ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                {showUploadForm ? '❌ Cancel' : '➕ Add Smell'}
+                {isUploading ? '⏳ Uploading...' : showUploadForm ? '❌ Cancel' : '➕ Add Smell'}
               </button>
               
               <button
@@ -476,9 +567,16 @@ const SubPage1 = ({ onNavigate }) => {
             </div>
           </nav>
         </div>
+        
+        {/* Error Banner */}
+        {(error || mapError) && (
+          <div className="bg-red-500 text-white text-center py-2 px-4">
+            <span className="font-medium">⚠️ {error || mapError}</span>
+          </div>
+        )}
       </header>
 
-      {/* Upload Form - Top Panel Below Header */}
+      {/* Upload Form */}
       {showUploadForm && (
         <div className="relative z-10 bg-yellow-300 border-b-4 border-black shadow-lg">
           <div className="max-w-7xl mx-auto px-6 py-4">
@@ -487,12 +585,10 @@ const SubPage1 = ({ onNavigate }) => {
               <button
                 onClick={() => {
                   setShowUploadForm(false);
-                  // Clean up temp marker
                   if (window.tempMarker && leafletMapRef.current) {
                     leafletMapRef.current.removeLayer(window.tempMarker);
                     window.tempMarker = null;
                   }
-                  // Reset form
                   setUploadData({
                     title: '',
                     description: '',
@@ -518,6 +614,7 @@ const SubPage1 = ({ onNavigate }) => {
                   className="w-full p-2 border-2 border-black rounded text-black"
                   placeholder="e.g., Coffee Shop Aroma"
                   required
+                  disabled={isUploading}
                 />
               </div>
               
@@ -529,6 +626,7 @@ const SubPage1 = ({ onNavigate }) => {
                   onChange={(e) => setUploadData({...uploadData, description: e.target.value})}
                   className="w-full p-2 border-2 border-black rounded text-black"
                   placeholder="Describe the smell..."
+                  disabled={isUploading}
                 />
               </div>
 
@@ -538,6 +636,7 @@ const SubPage1 = ({ onNavigate }) => {
                   value={uploadData.category}
                   onChange={(e) => setUploadData({...uploadData, category: e.target.value})}
                   className="w-full p-2 border-2 border-black rounded text-black"
+                  disabled={isUploading}
                 >
                   {SMELL_CATEGORIES.map(cat => (
                     <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
@@ -554,6 +653,7 @@ const SubPage1 = ({ onNavigate }) => {
                   value={uploadData.intensity}
                   onChange={(e) => setUploadData({...uploadData, intensity: parseInt(e.target.value)})}
                   className="w-full"
+                  disabled={isUploading}
                 />
               </div>
             </form>
@@ -567,6 +667,7 @@ const SubPage1 = ({ onNavigate }) => {
                   onChange={(e) => setUploadData({...uploadData, address: e.target.value})}
                   className="w-full p-2 border-2 border-black rounded text-black"
                   placeholder="e.g., Starbucks, Nanjing Road"
+                  disabled={isUploading}
                 />
               </div>
 
@@ -578,19 +679,18 @@ const SubPage1 = ({ onNavigate }) => {
 
               <button
                 type="submit"
-                form="uploadForm"
                 onClick={handleUploadSubmit}
-                disabled={!uploadData.title || !uploadData.location}
+                disabled={!uploadData.title || !uploadData.location || isUploading}
                 className="bg-orange-500 text-white font-bold py-2 px-4 rounded border-2 border-black hover:bg-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-300"
               >
-                Upload Smell Data 🚀
+                {isUploading ? '⏳ Uploading...' : 'Upload Smell Data 🚀'}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Main dashboard content - no need to adjust padding anymore */}
+      {/* Main dashboard content */}
       <div className={`relative z-10 flex-1 p-6 grid grid-cols-12 grid-rows-12 gap-4 min-h-0 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
 
         {/* Left panel - Charts */}
@@ -600,6 +700,9 @@ const SubPage1 = ({ onNavigate }) => {
               <span>📊</span>
               <span>Smell Analytics</span>
             </h2>
+            <div className="text-xs text-black mt-1">
+              Total: {allSmells.length} smells
+            </div>
           </div>
           <div className="flex-1 p-3 space-y-4 overflow-y-auto">
             <ChartComponent title="Categories 🏷️" type="category" categories={SMELL_CATEGORIES} />
@@ -619,16 +722,36 @@ const SubPage1 = ({ onNavigate }) => {
             </div>
           )}
 
-          {!isMapReady ? (
-            <div className="w-full h-full flex items-center justify-center bg-yellow-300">
-              <div className="text-center text-black">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-black mx-auto mb-4"></div>
-                <p className="font-bold">Loading smell map... 👃🗺️</p>
+          {/* Map Container */}
+          <div className="w-full h-full relative">
+            {mapError ? (
+              <div className="w-full h-full flex items-center justify-center bg-yellow-300">
+                <div className="text-center text-black max-w-md p-6">
+                  <div className="text-6xl mb-4">🗺️</div>
+                  <h3 className="font-bold text-lg mb-2">Map Error</h3>
+                  <p className="text-sm mb-4">{mapError}</p>
+                  <button
+                    onClick={() => {
+                      setMapError(null);
+                      window.location.reload();
+                    }}
+                    className="bg-orange-500 text-white px-4 py-2 rounded border-2 border-black hover:bg-orange-600 font-bold"
+                  >
+                    🔄 Reload Page
+                  </button>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div ref={mapRef} className="w-full h-full" style={{ minHeight: '400px' }} />
-          )}
+            ) : (
+              <div 
+                ref={mapRef} 
+                className="w-full h-full"
+                style={{ 
+                  minHeight: '400px',
+                  background: '#f0f0f0'
+                }}
+              />
+            )}
+          </div>
         </div>
 
         {/* Right panel - Smell list and Details */}
@@ -640,24 +763,36 @@ const SubPage1 = ({ onNavigate }) => {
                 <span>👃</span>
                 <span>Smell Experiences ({allSmells.length})</span>
               </h3>
+              {connectionStatus === 'connected' && (
+                <div className="text-xs text-black mt-1">🔄 Live updates</div>
+              )}
             </div>
             <div className="flex-1 overflow-y-auto">
-              <ul>
-                {currentSmellList.map((smell) => (
-                  <li
-                    key={smell.id}
-                    onClick={() => handleSmellClick(smell.id)}
-                    className="px-4 py-3 cursor-pointer text-sm transition-all duration-300 hover:scale-105 border-b-2 border-black font-medium"
-                    style={{
-                      backgroundColor: selectedSmellIds.has(smell.id) ? '#fcd71a' : '#ffeb3b',
-                      color: 'black'
-                    }}
-                  >
-                    <div className="font-bold">{smell.title}</div>
-                    <div className="text-xs opacity-75">{smell.category} • {smell.intensity}/10</div>
-                  </li>
-                ))}
-              </ul>
+              {currentSmellList.length === 0 ? (
+                <div className="p-4 text-center text-black">
+                  <div className="text-4xl mb-2">👃</div>
+                  <p className="font-bold">No smells yet!</p>
+                  <p className="text-sm">Add your first smell experience</p>
+                </div>
+              ) : (
+                <ul>
+                  {currentSmellList.map((smell) => (
+                    <li
+                      key={smell.id}
+                      onClick={() => handleSmellClick(smell.id)}
+                      className="px-4 py-3 cursor-pointer text-sm transition-all duration-300 hover:scale-105 border-b-2 border-black font-medium"
+                      style={{
+                        backgroundColor: selectedSmellIds.has(smell.id) ? '#fcd71a' : '#ffeb3b',
+                        color: 'black'
+                      }}
+                    >
+                      <div className="font-bold">{smell.title}</div>
+                      <div className="text-xs opacity-75">{smell.category} • {smell.intensity}/10</div>
+                      <div className="text-xs opacity-60">by {smell.contributor}</div>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
 
