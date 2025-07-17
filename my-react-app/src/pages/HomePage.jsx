@@ -2,12 +2,31 @@ import { useState, useEffect } from 'react';
 
 const HomePage = ({ onNavigate }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Entrance animation
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 300);
     return () => clearTimeout(timer);
   }, []);
+
+  // Navigation menu items
+  const menuItems = [
+    { id: 1, label: 'SMELL MAP', page: '1' },
+    { id: 2, label: 'SMELL DAILY', page: '2' },
+    { id: 3, label: 'SMELL LIBRARY', page: '3' },
+    { id: 4, label: 'CONTACT', page: 'contact' }
+  ];
+
+  const handleMenuClick = (page) => {
+    if (page === 'contact') {
+      // For contact, you can scroll to footer or create a contact page
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    } else {
+      onNavigate(page);
+    }
+    setIsMobileMenuOpen(false); // Close mobile menu after navigation
+  };
 
   return (
     <div className="min-h-screen w-full relative overflow-hidden bg-[#fcd71a]">
@@ -24,29 +43,50 @@ const HomePage = ({ onNavigate }) => {
               </div>
             </div>
 
-            {/* Navigation Menu */}
+            {/* Desktop Navigation Menu */}
             <div className="hidden md:flex space-x-8">
-              <a href="#" className="text-white hover:text-yellow-200 font-bold transition-colors duration-300">
-                SMELL MAP
-              </a>
-              <a href="#" className="text-white hover:text-yellow-200 font-bold transition-colors duration-300">
-                SMELL DAILY
-              </a>
-              <a href="#" className="text-white hover:text-yellow-200 font-bold transition-colors duration-300">
-                SMELL LIBRARY
-              </a>
-              <a href="#" className="text-white hover:text-yellow-200 font-bold transition-colors duration-300">
-                CONTACT
-              </a>
+              {menuItems.map(item => (
+                <button
+                  key={item.id}
+                  onClick={() => handleMenuClick(item.page)}
+                  className="text-white hover:text-yellow-200 font-bold transition-colors duration-300"
+                >
+                  {item.label}
+                </button>
+              ))}
             </div>
 
             {/* Mobile Menu Button */}
-            <button className="md:hidden text-white">
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden text-white hover:text-yellow-200 transition-colors duration-300"
+            >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                {isMobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
               </svg>
             </button>
           </nav>
+
+          {/* Mobile Menu */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden mt-4 pb-4 animate-fade-in">
+              <div className="space-y-2">
+                {menuItems.map(item => (
+                  <button
+                    key={item.id}
+                    onClick={() => handleMenuClick(item.page)}
+                    className="w-full text-left px-4 py-3 text-white hover:bg-orange-600 hover:text-yellow-200 font-bold transition-colors duration-300 rounded-lg"
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
@@ -100,11 +140,9 @@ const HomePage = ({ onNavigate }) => {
 
           {/* Info Cards Section */}
           <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto transition-all duration-1000 delay-1100 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-
+            
             {/* Our Vision Card */}
-            <div
-              className="text-left transform transition-all duration-300 hover:scale-105"
-            >
+            <div className="text-left transform transition-all duration-300 hover:scale-105">
               <h3 className="text-black font-archivo-black font-normal text-[44px] mb-4">OUR VISION</h3>
               <div className="bg-yellow-300 border-4 border-black rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <p className="text-black font-bold text-[20px] leading-relaxed">
@@ -114,13 +152,11 @@ const HomePage = ({ onNavigate }) => {
             </div>
 
             {/* Our Team Card */}
-            <div
-              className="text-left transform transition-all duration-300 hover:scale-105"
-            >
+            <div className="text-left transform transition-all duration-300 hover:scale-105">
               <h3 className="text-black font-archivo-black font-normal text-[44px] mb-4">OUR TEAM</h3>
               <div className="bg-yellow-300 border-4 border-black rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <p className="text-black font-bold text-[20px] leading-relaxed">
-                  The project is developed by a student team from the UM-SJTU Writing Center.
+                  The project is developed by a student team from the UM-SJTU Writing Center, passionate about exploring the intersection of technology and sensory experiences.
                 </p>
               </div>
             </div>
@@ -132,9 +168,13 @@ const HomePage = ({ onNavigate }) => {
       <footer className="relative z-10 py-6 mt-12">
         <div className="max-w-4xl mx-auto text-center">
           <div className="bg-orange-400 border-4 border-black rounded-lg px-6 py-4 shadow-lg">
-            <p className="text-black font-medium">
+            <p className="text-black font-medium mb-2">
               Made with 💛 by UM-SJTU Writing Center © {new Date().getFullYear()}
             </p>
+            <div className="flex justify-center space-x-4 text-black">
+              <span>📧 Contact: writingcenter@sjtu.edu.cn</span>
+              <span>📱 WeChat: SJTU-WritingCenter</span>
+            </div>
           </div>
         </div>
       </footer>

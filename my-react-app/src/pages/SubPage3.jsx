@@ -1,28 +1,17 @@
 import { useState, useEffect } from 'react';
 
 const SubPage3 = ({ onNavigate }) => {
-  const [activeScent, setActiveScent] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
-  const [floatingElements, setFloatingElements] = useState([]);
-  const [scentAnimation, setScentAnimation] = useState({});
-
-  // Generate floating elements like homepage
-  useEffect(() => {
-    const elements = [];
-    const nudeColors = ['#C9A96E', '#B5A082', '#8B7355', '#A0916C', '#D4C4A8', '#E6D7C3'];
-    for (let i = 0; i < 12; i++) {
-      elements.push({
-        id: i,
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        size: Math.random() * 16 + 8,
-        color: nudeColors[Math.floor(Math.random() * nudeColors.length)],
-        duration: Math.random() * 4 + 3,
-        delay: Math.random() * 2
-      });
-    }
-    setFloatingElements(elements);
-  }, []);
+  const [activeCategory, setActiveCategory] = useState('nature');
+  const [selectedScent, setSelectedScent] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredScents, setFilteredScents] = useState([]);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newScent, setNewScent] = useState({
+    name: '',
+    image: '',
+    description: ''
+  });
 
   // Entrance animation
   useEffect(() => {
@@ -30,288 +19,459 @@ const SubPage3 = ({ onNavigate }) => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Scent bubble animation
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setScentAnimation(prev => ({
-        ...prev,
-        [Math.random()]: {
-          x: Math.random() * 100,
-          y: Math.random() * 100,
-          size: Math.random() * 30 + 10
-        }
-      }));
-    }, 2000);
+  // Smell library data
+  const smellLibrary = {
+    nature: [
+      {
+        id: 'lotus',
+        name: 'Lotus',
+        image: 'https://picsum.photos/seed/lotus/400/200',
+        thumbnail: 'https://picsum.photos/seed/lotus/50/50',
+        description: 'The lotus flower emits a delicate, subtle fragrance that is often described as clean and slightly sweet. It carries a fresh, airy quality, not overpowering but gently permeating the air—like a soft whisper of sweetness blended with a hint of green, earthy freshness. Unlike heavy or cloying scents, its aroma feels light and pure, evoking a sense of tranquility, often associated with calm waters and serene natural settings where the flower blooms.'
+      },
+      {
+        id: 'canyon',
+        name: 'Canyon',
+        image: 'https://picsum.photos/seed/canyon/400/200',
+        thumbnail: 'https://picsum.photos/seed/canyon/50/50',
+        description: 'The scent of a canyon carries the earthy aroma of aged rocks and dry soil, intertwined with faint notes of desert flora. A subtle, dusty fragrance that evokes vastness and solitude, with a hint of minerals carried by the wind.'
+      },
+      {
+        id: 'aurora',
+        name: 'Aurora',
+        image: 'https://picsum.photos/seed/aurora/400/200',
+        thumbnail: 'https://picsum.photos/seed/aurora/50/50',
+        description: 'An aurora\'s scent is elusive—cold, crisp air with a faint electric tang, reminiscent of ozone after a lightning strike. It carries the freshness of polar winds and the ethereal quality of the night sky in remote, untouched places.'
+      },
+      {
+        id: 'pine',
+        name: 'Pine',
+        image: 'https://picsum.photos/seed/pine/400/200',
+        thumbnail: 'https://picsum.photos/seed/pine/50/50',
+        description: 'Pine trees release a sharp, invigorating fragrance filled with terpenes like pinene. It\'s a clean, foresty scent that brings to mind mountain air, Christmas trees, and the resilience of evergreen forests.'
+      },
+      {
+        id: 'waterfall',
+        name: 'Waterfall',
+        image: 'https://picsum.photos/seed/waterfall/400/200',
+        thumbnail: 'https://picsum.photos/seed/waterfall/50/50',
+        description: 'The air around waterfalls carries a misty, refreshing scent—cool, oxygen-rich, and faintly mineral. It combines the purity of rushing water with the earthy tones of the surrounding vegetation and rocks.'
+      },
+      {
+        id: 'rainbow',
+        name: 'Rainbow',
+        image: 'https://picsum.photos/seed/rainbow/400/200',
+        thumbnail: 'https://picsum.photos/seed/rainbow/50/50',
+        description: 'While rainbows themselves have no scent, the air after a rainstorm—when rainbows often appear—carries petrichor, the earthy fragrance of rain on dry ground, mixed with the fresh, clean aroma of washed air.'
+      }
+    ],
+    animal: [
+      {
+        id: 'horse',
+        name: 'Horse',
+        image: 'https://picsum.photos/seed/horse/400/200',
+        thumbnail: 'https://picsum.photos/seed/horse/50/50',
+        description: 'The scent of horses is warm and earthy, a mixture of hay, leather, and the animal\'s natural musk. It\'s a comforting, barnyard fragrance that evokes countryside and pastoral life.'
+      },
+      {
+        id: 'cat',
+        name: 'Cat',
+        image: 'https://picsum.photos/seed/cat/400/200',
+        thumbnail: 'https://picsum.photos/seed/cat/50/50',
+        description: 'A cat\'s scent is subtle and clean, often described as slightly sweet and warm. Well-groomed cats have a pleasant, neutral smell that many find comforting and familiar.'
+      }
+    ],
+    food: [
+      {
+        id: 'coffee',
+        name: 'Coffee',
+        image: 'https://picsum.photos/seed/coffee/400/200',
+        thumbnail: 'https://picsum.photos/seed/coffee/50/50',
+        description: 'The rich, complex aroma of coffee beans combines earthy, nutty, and slightly acidic notes. When brewed, it releases a warm, inviting fragrance that can instantly energize and comfort, with hints of caramel and chocolate depending on the roast.'
+      },
+      {
+        id: 'bread',
+        name: 'Fresh Bread',
+        image: 'https://picsum.photos/seed/bread/400/200',
+        thumbnail: 'https://picsum.photos/seed/bread/50/50',
+        description: 'The aroma of freshly baked bread is warm, yeasty, and comforting. It carries notes of wheat, with a slightly sweet undertone and a crusty, golden exterior that speaks of home and nourishment.'
+      },
+      {
+        id: 'vanilla',
+        name: 'Vanilla',
+        image: 'https://picsum.photos/seed/vanilla/400/200',
+        thumbnail: 'https://picsum.photos/seed/vanilla/50/50',
+        description: 'Pure vanilla has a sweet, creamy fragrance with floral undertones and a hint of spice. It\'s warm and comforting, often associated with baking and desserts, but also sophisticated in its complexity.'
+      }
+    ],
+    urban: [
+      {
+        id: 'subway',
+        name: 'Subway',
+        image: 'https://picsum.photos/seed/subway/400/200',
+        thumbnail: 'https://picsum.photos/seed/subway/50/50',
+        description: 'The distinctive scent of subway systems combines metallic notes from the tracks, electrical ozone, and the collective human presence. It\'s an urban signature that varies by city but always speaks of movement and metropolitan life.'
+      },
+      {
+        id: 'gasoline',
+        name: 'Gasoline',
+        image: 'https://picsum.photos/seed/gasoline/400/200',
+        thumbnail: 'https://picsum.photos/seed/gasoline/50/50',
+        description: 'Gasoline has a sharp, chemical odor that\'s immediately recognizable. Despite its artificial nature, many find it oddly appealing—sweet yet acrid, with hydrocarbon notes that evoke road trips and mechanical power.'
+      }
+    ],
+    human: [
+      {
+        id: 'perfume',
+        name: 'Perfume',
+        image: 'https://picsum.photos/seed/perfume/400/200',
+        thumbnail: 'https://picsum.photos/seed/perfume/50/50',
+        description: 'Fine perfume is a carefully crafted blend of top, middle, and base notes that evolves over time. It can range from light and floral to deep and musky, designed to complement and enhance the wearer\'s natural scent.'
+      },
+      {
+        id: 'newborn',
+        name: 'Newborn Baby',
+        image: 'https://picsum.photos/seed/newborn/400/200',
+        thumbnail: 'https://picsum.photos/seed/newborn/50/50',
+        description: 'The scent of a newborn baby is delicate and pure—a soft, powdery fragrance mixed with the natural sweetness of new life. It\'s often described as one of the most comforting and primal scents humans can experience.'
+      }
+    ],
+    chemical: [
+      {
+        id: 'chlorine',
+        name: 'Chlorine',
+        image: 'https://picsum.photos/seed/chlorine/400/200',
+        thumbnail: 'https://picsum.photos/seed/chlorine/50/50',
+        description: 'Chlorine has a sharp, penetrating odor that\'s immediately recognizable from swimming pools and cleaning products. It\'s clean and sterile, with a slightly burning sensation that speaks of purification and sanitation.'
+      },
+      {
+        id: 'ammonia',
+        name: 'Ammonia',
+        image: 'https://picsum.photos/seed/ammonia/400/200',
+        thumbnail: 'https://picsum.photos/seed/ammonia/50/50',
+        description: 'Ammonia has a pungent, alkaline odor that\'s sharp and irritating to the nose. It\'s the smell of strong cleaning products and certain industrial processes, immediately recognizable and impossible to ignore.'
+      }
+    ],
+    other: [
+      {
+        id: 'leather',
+        name: 'Leather',
+        image: 'https://picsum.photos/seed/leather/400/200',
+        thumbnail: 'https://picsum.photos/seed/leather/50/50',
+        description: 'Quality leather has a rich, complex scent that combines animal hide with tanning processes. It\'s warm and sophisticated, with notes that can range from sweet and supple to deep and masculine, often associated with luxury and craftsmanship.'
+      },
+      {
+        id: 'rubber',
+        name: 'Rubber',
+        image: 'https://picsum.photos/seed/rubber/400/200',
+        thumbnail: 'https://picsum.photos/seed/rubber/50/50',
+        description: 'Rubber has a distinctive industrial smell that\'s slightly sweet and elastic. It\'s the scent of tires, rubber bands, and various manufactured products, immediately recognizable and tied to modern industrial life.'
+      }
+    ]
+  };
 
-    return () => clearInterval(interval);
-  }, []);
-
-  const scentExperiences = [
-    {
-      id: 1,
-      title: "Floral Essence",
-      description: "Delicate rose and jasmine blend",
-      emoji: "🌸",
-      color: "#C9A96E",
-      bgGradient: "linear-gradient(135deg, rgba(201, 169, 110, 0.4) 0%, rgba(180, 160, 130, 0.4) 100%)",
-      intensity: 75
-    },
-    {
-      id: 2,
-      title: "Citrus Burst",
-      description: "Fresh lemon and orange zest",
-      emoji: "🍊",
-      color: "#B5A082",
-      bgGradient: "linear-gradient(135deg, rgba(181, 160, 130, 0.4) 0%, rgba(160, 145, 108, 0.4) 100%)",
-      intensity: 90
-    },
-    {
-      id: 3,
-      title: "Forest Deep",
-      description: "Earthy pine and moss notes",
-      emoji: "🌲",
-      color: "#8B7355",
-      bgGradient: "linear-gradient(135deg, rgba(139, 115, 85, 0.4) 0%, rgba(201, 169, 110, 0.4) 100%)",
-      intensity: 60
-    },
-    {
-      id: 4,
-      title: "Ocean Breeze",
-      description: "Salty air and sea minerals",
-      emoji: "🌊",
-      color: "#A0916C",
-      bgGradient: "linear-gradient(135deg, rgba(160, 145, 108, 0.4) 0%, rgba(212, 196, 168, 0.4) 100%)",
-      intensity: 85
-    }
+  const categories = [
+    { id: 'nature', name: 'Nature', icon: '🌿', color: 'bg-green-100 text-green-800' },
+    { id: 'animal', name: 'Animal', icon: '🐾', color: 'bg-yellow-100 text-yellow-800' },
+    { id: 'food', name: 'Food', icon: '🍯', color: 'bg-orange-100 text-orange-800' },
+    { id: 'urban', name: 'Urban', icon: '🏙️', color: 'bg-blue-100 text-blue-800' },
+    { id: 'human', name: 'Human Activity', icon: '👥', color: 'bg-purple-100 text-purple-800' },
+    { id: 'chemical', name: 'Chemical', icon: '🧪', color: 'bg-red-100 text-red-800' },
+    { id: 'other', name: 'Other', icon: '🔮', color: 'bg-gray-100 text-gray-800' }
   ];
 
+  // Filter scents based on search and category
+  useEffect(() => {
+    let scents = smellLibrary[activeCategory] || [];
+    
+    if (searchTerm) {
+      const allScents = Object.values(smellLibrary).flat();
+      scents = allScents.filter(scent =>
+        scent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        scent.description.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    setFilteredScents(scents);
+    
+    // Auto-select first scent if available
+    if (scents.length > 0) {
+      setSelectedScent(scents[0]);
+    } else {
+      setSelectedScent(null);
+    }
+  }, [activeCategory, searchTerm]);
+
+  const handleAddScent = (e) => {
+    e.preventDefault();
+    
+    if (!newScent.name || !newScent.image || !newScent.description) {
+      alert('Please fill in all fields');
+      return;
+    }
+    
+    const id = newScent.name.toLowerCase().replace(/\s+/g, '-');
+    const scentToAdd = {
+      id,
+      name: newScent.name,
+      image: newScent.image,
+      thumbnail: newScent.image,
+      description: newScent.description
+    };
+    
+    // Add to library (in real app, this would be saved to database)
+    if (!smellLibrary[activeCategory]) {
+      smellLibrary[activeCategory] = [];
+    }
+    smellLibrary[activeCategory].push(scentToAdd);
+    
+    setFilteredScents([...smellLibrary[activeCategory]]);
+    setSelectedScent(scentToAdd);
+    setShowAddModal(false);
+    setNewScent({ name: '', image: '', description: '' });
+  };
+
+  const currentCategory = categories.find(cat => cat.id === activeCategory);
+
   return (
-    <div className="min-h-screen w-full relative overflow-hidden"
-      style={{
-        background: 'linear-gradient(135deg, #F5F0E8 0%, #E6D7C3 25%, #D4C4A8 50%, #C9A96E 75%, #B5A082 100%)'
-      }}>
+    <div className="min-h-screen w-full relative overflow-hidden bg-[#fcd71a]">
+      {/* Navigation Header */}
+      <header className="relative z-10 bg-orange-500 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <nav className="flex items-center justify-between">
+            {/* Logo */}
+            <div className="flex items-center space-x-2 pl-2 pr-2 md:pl-4 md:pr-4 lg:px-8">
+              <img src='/src/assets/writing-center-logo.png' alt="Logo" className='w-16 h-16' />
+              <div className="text-white font-bold text-lg">
+                UM-SJTU<br />
+                Writing Center
+              </div>
+            </div>
 
-      {/* Floating background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {floatingElements.map((element) => (
-          <div
-            key={element.id}
-            className="absolute rounded-full opacity-12 animate-pulse"
-            style={{
-              left: `${element.x}%`,
-              top: `${element.y}%`,
-              width: `${element.size}px`,
-              height: `${element.size}px`,
-              backgroundColor: element.color,
-              animationDuration: `${element.duration}s`,
-              animationDelay: `${element.delay}s`,
-              transform: 'translate(-50%, -50%)'
-            }}
-          />
-        ))}
-      </div>
+            {/* Page Title */}
+            <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+              <h1 className="text-white font-bold text-lg">
+                SMELL LIBRARY
+              </h1>
+            </div>
 
-      {/* Scent bubbles animation */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {Object.entries(scentAnimation).map(([key, bubble]) => (
-          <div
-            key={key}
-            className="absolute rounded-full opacity-20 animate-ping"
-            style={{
-              left: `${bubble.x}%`,
-              top: `${bubble.y}%`,
-              width: `${bubble.size}px`,
-              height: `${bubble.size}px`,
-              backgroundColor: '#C9A96E',
-              animationDuration: '3s'
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Fun geometric shapes */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-24 left-20 w-24 h-24 rounded-full opacity-15 animate-bounce"
-          style={{ backgroundColor: '#C9A96E', animationDuration: '3s' }}></div>
-        <div className="absolute top-1/3 right-16 w-20 h-20 opacity-12 rotate-45 animate-spin"
-          style={{ backgroundColor: '#8B7355', animationDuration: '8s' }}></div>
-        <div className="absolute bottom-1/4 left-1/3 w-28 h-28 rounded-full opacity-15 animate-pulse"
-          style={{ backgroundColor: '#B5A082', animationDuration: '2s' }}></div>
-        <div className="absolute bottom-32 right-20 w-16 h-16 opacity-12 animate-bounce"
-          style={{ backgroundColor: '#A0916C', animationDuration: '4s' }}></div>
-      </div>
-
-      {/* Fun Navigation header */}
-      <div className="relative z-10 flex justify-between items-center p-6">
-        <button
-          onClick={() => onNavigate('home')}
-          className="group flex items-center space-x-2 transition-all duration-300 backdrop-blur-md px-6 py-3 rounded-full shadow-lg hover:shadow-xl border-2 font-medium hover:scale-105"
-          style={{
-            color: '#4A3728',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            borderColor: 'rgba(139, 115, 85, 0.3)'
-          }}
-        >
-          <svg className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          <span className="text-sm">Back to Home</span>
-        </button>
-
-        <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-          <h1 className="text-3xl font-bold text-transparent bg-clip-text"
-            style={{ backgroundImage: 'linear-gradient(135deg, #4A3728 0%, #8B7355 50%, #C9A96E 100%)' }}>
-            Smell Magic Experience 🌸
-          </h1>
-        </div>
-
-        <div className="w-12"></div>
-      </div>
-
-      {/* Main content */}
-      <div className="relative z-10 flex-grow flex flex-col justify-center px-8 py-8">
-        <div className="max-w-6xl w-full mx-auto">
-
-          {/* Fun Header section */}
-          <div className={`text-center mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <h1 className="text-5xl md:text-7xl font-black mb-6 drop-shadow-2xl"
-              style={{ color: '#4A3728' }}>
-              {'Olfactory Wonder'.split('').map((letter, index) => (
-                letter === ' ' ? (
-                  <span key={index} className="inline-block mx-4">👃</span>
-                ) : (
-                  <span
-                    key={index}
-                    className="inline-block hover:rotate-12 hover:scale-110 transition-transform duration-300 cursor-default"
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                  >
-                    {letter}
-                  </span>
-                )
-              ))}
-            </h1>
-            <div className="w-24 h-0.5 mx-auto rounded-full mb-6"
-              style={{ background: 'linear-gradient(90deg, #C9A96E 0%, #8B7355 100%)' }}></div>
-            <p className="text-xl md:text-2xl leading-relaxed max-w-4xl mx-auto"
-              style={{ color: 'rgba(74, 55, 40, 0.9)' }}>
-              Dive into a world of scents and aromas! Discover how different fragrances
-              can evoke memories, emotions, and transport you to different places. 🌈✨
-            </p>
-          </div>
-
-          {/* Scent experience grid */}
-          <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            {scentExperiences.map((scent) => (
-              <div
-                key={scent.id}
-                className="group relative cursor-pointer"
-                onMouseEnter={() => setActiveScent(scent.id)}
-                onMouseLeave={() => setActiveScent(null)}
+            {/* Search + Back Button */}
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search scents..."
+                  className="w-64 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400"
+                />
+                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                  🔍
+                </span>
+              </div>
+              
+              <button
+                onClick={() => onNavigate('home')}
+                className="text-white hover:text-yellow-200 font-bold transition-colors duration-300 bg-orange-600 hover:bg-orange-700 px-4 py-2 rounded-full"
               >
-                <div className="bg-white/90 backdrop-blur-md rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-rotate-2 border-4 h-full flex flex-col"
-                  style={{
-                    borderColor: activeScent === scent.id ? 'rgba(139, 115, 85, 0.4)' : 'transparent'
-                  }}>
+                ← Back to Home
+              </button>
+            </div>
+          </nav>
+        </div>
+      </header>
 
-                  <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{ background: scent.bgGradient }}></div>
-
-                  {/* Scent indicator with emoji */}
-                  <div className="relative text-center">
-                    <div className="w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg relative overflow-hidden text-2xl"
-                      style={{ backgroundColor: scent.color, color: 'white' }}>
-                      {scent.emoji}
-
-                      {/* Animated scent waves */}
-                      {activeScent === scent.id && (
-                        <>
-                          <div className="absolute inset-0 border-2 border-white/30 rounded-xl animate-ping"></div>
-                          <div className="absolute inset-0 border-2 border-white/20 rounded-xl animate-ping"
-                            style={{ animationDelay: '0.5s' }}></div>
-                        </>
-                      )}
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-grow flex flex-col justify-between">
-                      <div>
-                        <h3 className="text-xl font-bold mb-2 transition-colors duration-300"
-                          style={{
-                            color: activeScent === scent.id ? scent.color : '#4A3728'
-                          }}>
-                          {scent.title}
-                        </h3>
-                        <p className="text-sm mb-4" style={{ color: 'rgba(74, 55, 40, 0.7)' }}>
-                          {scent.description}
-                        </p>
-                      </div>
-
-                      {/* Intensity indicator */}
-                      <div className="w-full">
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-xs font-medium" style={{ color: 'rgba(74, 55, 40, 0.6)' }}>Intensity</span>
-                          <span className="text-xs font-medium" style={{ color: 'rgba(74, 55, 40, 0.6)' }}>{scent.intensity}%</span>
-                        </div>
-                        <div className="w-full rounded-full h-2"
-                          style={{ backgroundColor: 'rgba(139, 115, 85, 0.2)' }}>
-                          <div
-                            className="h-2 rounded-full transition-all duration-1000"
-                            style={{
-                              width: activeScent === scent.id ? `${scent.intensity}%` : '0%',
-                              backgroundColor: scent.color
-                            }}
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {activeScent === scent.id && (
-                      <div className="absolute -top-2 -right-2 text-white text-xs px-3 py-1 rounded-full animate-bounce"
-                        style={{ backgroundColor: scent.color }}>
-                        Smell it! 👃
-                      </div>
-                    )}
-                  </div>
-                </div>
+      {/* Quick Navigation Bar */}
+      <div className={`relative z-10 bg-white shadow-sm border-b border-gray-200 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-center space-x-8">
+            {categories.map((category, index) => (
+              <div key={category.id} className="flex items-center">
+                <button
+                  onClick={() => setActiveCategory(category.id)}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 ${
+                    activeCategory === category.id
+                      ? 'bg-orange-100 text-orange-800 font-bold'
+                      : 'text-gray-600 hover:text-orange-600 hover:bg-orange-50'
+                  }`}
+                >
+                  <span>{category.icon}</span>
+                  <span className="text-sm">{category.name}</span>
+                </button>
+                {index < categories.length - 1 && (
+                  <span className="text-gray-300 mx-2">/</span>
+                )}
               </div>
             ))}
           </div>
+        </div>
+      </div>
 
-          {/* Interactive section */}
-          <div className={`bg-white/90 backdrop-blur-md rounded-3xl p-8 border shadow-xl transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-            style={{ borderColor: 'rgba(139, 115, 85, 0.2)' }}>
-            <div className="text-center">
-              <h2 className="text-3xl font-bold mb-4 flex items-center justify-center space-x-3"
-                style={{ color: '#4A3728' }}>
-                <span>🎨</span>
-                <span>Create Your Scent Profile</span>
-                <span>✨</span>
-              </h2>
-              <p className="mb-6" style={{ color: 'rgba(74, 55, 40, 0.7)' }}>
-                Hover over the scent cards above to explore different olfactory experiences and discover your favorites!
-              </p>
-
-              {activeScent && (
-                <div className="animate-fade-in">
-                  <div className="inline-block rounded-2xl p-4 border"
-                    style={{
-                      backgroundColor: 'rgba(201, 169, 110, 0.2)',
-                      borderColor: 'rgba(139, 115, 85, 0.3)'
-                    }}>
-                    <p className="font-medium flex items-center space-x-2"
-                      style={{ color: '#4A3728' }}>
-                      <span>Currently exploring:</span>
-                      <span style={{ color: scentExperiences.find(s => s.id === activeScent)?.color }}>
-                        {scentExperiences.find(s => s.id === activeScent)?.emoji} {scentExperiences.find(s => s.id === activeScent)?.title}
-                      </span>
-                    </p>
-                  </div>
+      {/* Main Content */}
+      <div className={`relative z-10 p-6 transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-white rounded-xl shadow-xl overflow-hidden">
+            {/* Section Header */}
+            <div className="flex justify-between items-center px-6 py-4 bg-gray-50 border-b border-gray-200">
+              <div className="flex items-center space-x-3">
+                <span className="text-2xl">{currentCategory?.icon}</span>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">{currentCategory?.name}</h2>
+                  <p className="text-sm text-gray-600">{filteredScents.length} scents available</p>
                 </div>
-              )}
+              </div>
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="flex items-center space-x-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-colors duration-300"
+              >
+                <span>➕</span>
+                <span>Add Smell</span>
+              </button>
+            </div>
+
+            {/* Content Area */}
+            <div className="flex" style={{ height: '600px' }}>
+              {/* Left: Scent List */}
+              <div className="w-2/3 p-6 overflow-y-auto border-r border-gray-200">
+                {filteredScents.length === 0 ? (
+                  <div className="text-center py-20">
+                    <div className="text-6xl mb-4">👃</div>
+                    <p className="text-gray-500 font-medium">No scents found</p>
+                    <p className="text-gray-400 text-sm">Try adjusting your search or add a new scent</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {filteredScents.map((scent) => (
+                      <div
+                        key={scent.id}
+                        onClick={() => setSelectedScent(scent)}
+                        className={`flex items-center max-w-[800px] rounded-lg cursor-pointer transition-all duration-300 hover:shadow-md ${
+                          selectedScent?.id === scent.id
+                            ? 'bg-orange-50 border-l-4 border-orange-500 shadow-md'
+                            : 'bg-gray-50 hover:bg-gray-100'
+                        }`}
+                      >
+                        <img
+                          src={scent.thumbnail}
+                          alt={scent.name}
+                          className="w-16 h-16 object-cover rounded-lg mr-4 shadow-sm"
+                        />
+                        <div className="w-full overflow-hidden pr-4">
+                          <h3 className="font-medium text-gray-900">{scent.name}</h3>
+                          <p className="text-sm text-gray-600 w-full truncate">
+                            {scent.description.substring(0, 100)}...
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Right: Scent Detail */}
+              <div className="w-1/3 p-6 bg-gray-50">
+                {selectedScent ? (
+                  <div className="h-full flex flex-col">
+                    <img
+                      src={selectedScent.image}
+                      alt={selectedScent.name}
+                      className="w-full h-48 object-cover rounded-lg mb-4 shadow-md flex-shrink-0"
+                    />
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center flex-shrink-0">
+                      <span className="mr-2">👃</span>
+                      {selectedScent.name}
+                    </h3>
+                    <div className="flex-1 overflow-hidden">
+                      <div className="h-full overflow-y-auto pr-2">
+                        <p className="text-gray-700 leading-relaxed text-sm">
+                          {selectedScent.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="h-full flex flex-col items-center justify-center text-center text-gray-500">
+                    <div className="text-6xl mb-4">👃</div>
+                    <p className="font-medium">Select a scent from the left list</p>
+                    <p className="text-sm">to view detailed information</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Add Smell Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-900">Add New Smell</h2>
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+            
+            <form onSubmit={handleAddScent} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <input
+                  type="text"
+                  value={newScent.name}
+                  onChange={(e) => setNewScent({...newScent, name: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  placeholder="Enter smell name"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                <input
+                  type="url"
+                  value={newScent.image}
+                  onChange={(e) => setNewScent({...newScent, image: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  placeholder="Enter image URL"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea
+                  value={newScent.description}
+                  onChange={(e) => setNewScent({...newScent, description: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  rows="4"
+                  placeholder="Describe the scent..."
+                  required
+                />
+              </div>
+              
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                >
+                  Add Smell
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
