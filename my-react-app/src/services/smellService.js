@@ -1,41 +1,34 @@
 // src/services/smellService.js
-import { 
-  collection, 
-  addDoc, 
-  getDocs, 
-  doc, 
-  updateDoc, 
-  deleteDoc,
-  query,
-  orderBy,
-  where,
-  onSnapshot,
-  serverTimestamp
-} from 'firebase/firestore';
-import { db } from '../firebase/config';
+import { supabase } from '../supabase/config';
 
-const COLLECTION_NAME = 'smells';
+const TABLE_NAME = 'smells';
 
 export const smellService = {
   // Add new smell experience
   async addSmell(smellData) {
     try {
-      const docRef = await addDoc(collection(db, COLLECTION_NAME), {
-        title: smellData.title,
-        description: smellData.description || '',
-        category: smellData.category,
-        intensity: smellData.intensity,
-        latitude: smellData.location[0],
-        longitude: smellData.location[1],
-        address: smellData.address || '',
-        contributor: smellData.contributor || 'Anonymous',
-        timestamp: new Date().toISOString().split('T')[0], // Keep your format
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      });
+      const { data, error } = await supabase
+        .from(TABLE_NAME)
+        .insert([{
+          title: smellData.title,
+          description: smellData.description || '',
+          category: smellData.category,
+          intensity: smellData.intensity,
+          latitude: smellData.location[0],
+          longitude: smellData.location[1],
+          address: smellData.address || '',
+          contributor: smellData.contributor || 'Anonymous',
+          timestamp: new Date().toISOString().split('T')[0],
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
       
-      console.log('✅ Smell added with ID:', docRef.id);
-      return docRef.id;
+      console.log('✅ Smell added with ID:', data.id);
+      return data.id;
     } catch (error) {
       console.error('❌ Error adding smell:', error);
       throw new Error(`Failed to add smell: ${error.message}`);
@@ -45,26 +38,24 @@ export const smellService = {
   // Get all smells
   async getAllSmells() {
     try {
-      const q = query(
-        collection(db, COLLECTION_NAME), 
-        orderBy('createdAt', 'desc')
-      );
-      const querySnapshot = await getDocs(q);
-      
-      const smells = querySnapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          title: data.title,
-          description: data.description,
-          category: data.category,
-          intensity: data.intensity,
-          location: [data.latitude, data.longitude],
-          address: data.address,
-          timestamp: data.timestamp,
-          contributor: data.contributor
-        };
-      });
+      const { data, error } = await supabase
+        .from(TABLE_NAME)
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const smells = data.map(item => ({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        category: item.category,
+        intensity: item.intensity,
+        location: [item.latitude, item.longitude],
+        address: item.address,
+        timestamp: item.timestamp,
+        contributor: item.contributor
+      }));
       
       console.log(`✅ Loaded ${smells.length} smells from database`);
       return smells;
@@ -77,27 +68,25 @@ export const smellService = {
   // Get smells by category
   async getSmellsByCategory(category) {
     try {
-      const q = query(
-        collection(db, COLLECTION_NAME), 
-        where('category', '==', category),
-        orderBy('createdAt', 'desc')
-      );
-      const querySnapshot = await getDocs(q);
-      
-      const smells = querySnapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          title: data.title,
-          description: data.description,
-          category: data.category,
-          intensity: data.intensity,
-          location: [data.latitude, data.longitude],
-          address: data.address,
-          timestamp: data.timestamp,
-          contributor: data.contributor
-        };
-      });
+      const { data, error } = await supabase
+        .from(TABLE_NAME)
+        .select('*')
+        .eq('category', category)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const smells = data.map(item => ({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        category: item.category,
+        intensity: item.intensity,
+        location: [item.latitude, item.longitude],
+        address: item.address,
+        timestamp: item.timestamp,
+        contributor: item.contributor
+      }));
       
       return smells;
     } catch (error) {
@@ -109,34 +98,26 @@ export const smellService = {
   // Real-time listener for all smells
   subscribeToSmells(callback) {
     try {
-      const q = query(
-        collection(db, COLLECTION_NAME), 
-        orderBy('createdAt', 'desc')
-      );
-      
-      const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const smells = querySnapshot.docs.map(doc => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            title: data.title,
-            description: data.description,
-            category: data.category,
-            intensity: data.intensity,
-            location: [data.latitude, data.longitude],
-            address: data.address,
-            timestamp: data.timestamp,
-            contributor: data.contributor
-          };
-        });
-        
-        console.log(`🔄 Real-time update: ${smells.length} smells`);
-        callback(smells);
-      }, (error) => {
-        console.error('❌ Real-time listener error:', error);
-      });
-      
-      return unsubscribe;
+      const subscription = supabase
+        .channel('public:smells')
+        .on('postgres_changes', 
+          { 
+            event: '*', 
+            schema: 'public', 
+            table: TABLE_NAME 
+          }, 
+          async (payload) => {
+            // Fetch the latest data to maintain consistency with the data format
+            const { data } = await this.getAllSmells();
+            callback(data);
+          }
+        )
+        .subscribe();
+
+      console.log('✅ Real-time subscription initialized');
+      return () => {
+        subscription.unsubscribe();
+      };
     } catch (error) {
       console.error('❌ Error setting up real-time listener:', error);
       throw new Error(`Failed to set up real-time updates: ${error.message}`);
@@ -146,11 +127,17 @@ export const smellService = {
   // Update smell
   async updateSmell(id, updateData) {
     try {
-      const smellRef = doc(db, COLLECTION_NAME, id);
-      await updateDoc(smellRef, {
-        ...updateData,
-        updatedAt: serverTimestamp()
-      });
+      const { data, error } = await supabase
+        .from(TABLE_NAME)
+        .update({
+          ...updateData,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
       console.log('✅ Smell updated successfully');
     } catch (error) {
       console.error('❌ Error updating smell:', error);
@@ -161,7 +148,12 @@ export const smellService = {
   // Delete smell
   async deleteSmell(id) {
     try {
-      await deleteDoc(doc(db, COLLECTION_NAME, id));
+      const { error } = await supabase
+        .from(TABLE_NAME)
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
       console.log('✅ Smell deleted successfully');
     } catch (error) {
       console.error('❌ Error deleting smell:', error);
@@ -169,25 +161,28 @@ export const smellService = {
     }
   },
 
-  // Get smells near a location (basic implementation)
+  // Get smells near a location (using Postgres geo functions)
   async getNearbySmells(lat, lng, radiusKm = 5) {
     try {
-      // Simple bounding box calculation
-      const latDelta = radiusKm / 111.32; // Roughly 1 degree = 111.32 km
-      const lngDelta = radiusKm / (111.32 * Math.cos(lat * Math.PI / 180));
-      
-      const minLat = lat - latDelta;
-      const maxLat = lat + latDelta;
-      const minLng = lng - lngDelta;
-      const maxLng = lng + lngDelta;
-      
-      const allSmells = await this.getAllSmells();
-      
-      const nearbySmells = allSmells.filter(smell => {
-        const [smellLat, smellLng] = smell.location;
-        return smellLat >= minLat && smellLat <= maxLat &&
-               smellLng >= minLng && smellLng <= maxLng;
+      const { data, error } = await supabase.rpc('get_nearby_smells', {
+        latitude: lat,
+        longitude: lng,
+        radius_km: radiusKm
       });
+
+      if (error) throw error;
+
+      const nearbySmells = data.map(item => ({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        category: item.category,
+        intensity: item.intensity,
+        location: [item.latitude, item.longitude],
+        address: item.address,
+        timestamp: item.timestamp,
+        contributor: item.contributor
+      }));
       
       console.log(`✅ Found ${nearbySmells.length} smells within ${radiusKm}km`);
       return nearbySmells;

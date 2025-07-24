@@ -29,7 +29,7 @@ const SubPage1 = ({ onNavigate }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [showUploadForm, setShowUploadForm] = useState(false);
   
-  // Firebase-related states
+  // Database states
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
