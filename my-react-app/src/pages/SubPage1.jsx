@@ -42,7 +42,8 @@ const SubPage1 = ({ onNavigate }) => {
     category: 'floral',
     intensity: 5,
     location: null,
-    address: ''
+    address: '',
+    author: ''
   });
 
   const mapRef = useRef(null);
@@ -405,7 +406,7 @@ const SubPage1 = ({ onNavigate }) => {
         intensity: uploadData.intensity,
         location: uploadData.location,
         address: uploadData.address || `Lat: ${uploadData.location[0].toFixed(4)}, Lng: ${uploadData.location[1].toFixed(4)}`,
-        contributor: "You"
+        contributor: uploadData.author || "Anonymous"
       };
       
       await smellService.addSmell(newSmellData);
@@ -426,7 +427,8 @@ const SubPage1 = ({ onNavigate }) => {
         category: 'floral',
         intensity: 5,
         location: null,
-        address: ''
+        address: '',
+        author: ''
       });
       
       alert('Smell data uploaded successfully! 👃✨');
@@ -626,6 +628,18 @@ const SubPage1 = ({ onNavigate }) => {
                   onChange={(e) => setUploadData({...uploadData, description: e.target.value})}
                   className="w-full p-2 border-2 border-black rounded text-black"
                   placeholder="Describe the smell..."
+                  disabled={isUploading}
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-bold text-black mb-1">Author</label>
+                <input
+                  type="text"
+                  value={uploadData.author}
+                  onChange={(e) => setUploadData({...uploadData, author: e.target.value})}
+                  className="w-full p-2 border-2 border-black rounded text-black"
+                  placeholder="Your name (optional)"
                   disabled={isUploading}
                 />
               </div>

@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react';
+import { libraryService } from '../services/libraryService';
 
 const SubPage3 = ({ onNavigate }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [activeCategory, setActiveCategory] = useState('nature');
   const [selectedScent, setSelectedScent] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [scents, setScents] = useState([]);
   const [filteredScents, setFilteredScents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newScent, setNewScent] = useState({
     name: '',
+    category: 'nature',
     image: '',
     description: ''
   });
@@ -19,158 +24,73 @@ const SubPage3 = ({ onNavigate }) => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Smell library data
-  const smellLibrary = {
-    nature: [
-      {
-        id: 'lotus',
-        name: 'Lotus',
-        image: 'https://picsum.photos/seed/lotus/400/200',
-        thumbnail: 'https://picsum.photos/seed/lotus/50/50',
-        description: 'The lotus flower emits a delicate, subtle fragrance that is often described as clean and slightly sweet. It carries a fresh, airy quality, not overpowering but gently permeating the air—like a soft whisper of sweetness blended with a hint of green, earthy freshness. Unlike heavy or cloying scents, its aroma feels light and pure, evoking a sense of tranquility, often associated with calm waters and serene natural settings where the flower blooms.'
-      },
-      {
-        id: 'canyon',
-        name: 'Canyon',
-        image: 'https://picsum.photos/seed/canyon/400/200',
-        thumbnail: 'https://picsum.photos/seed/canyon/50/50',
-        description: 'The scent of a canyon carries the earthy aroma of aged rocks and dry soil, intertwined with faint notes of desert flora. A subtle, dusty fragrance that evokes vastness and solitude, with a hint of minerals carried by the wind.'
-      },
-      {
-        id: 'aurora',
-        name: 'Aurora',
-        image: 'https://picsum.photos/seed/aurora/400/200',
-        thumbnail: 'https://picsum.photos/seed/aurora/50/50',
-        description: 'An aurora\'s scent is elusive—cold, crisp air with a faint electric tang, reminiscent of ozone after a lightning strike. It carries the freshness of polar winds and the ethereal quality of the night sky in remote, untouched places.'
-      },
-      {
-        id: 'pine',
-        name: 'Pine',
-        image: 'https://picsum.photos/seed/pine/400/200',
-        thumbnail: 'https://picsum.photos/seed/pine/50/50',
-        description: 'Pine trees release a sharp, invigorating fragrance filled with terpenes like pinene. It\'s a clean, foresty scent that brings to mind mountain air, Christmas trees, and the resilience of evergreen forests.'
-      },
-      {
-        id: 'waterfall',
-        name: 'Waterfall',
-        image: 'https://picsum.photos/seed/waterfall/400/200',
-        thumbnail: 'https://picsum.photos/seed/waterfall/50/50',
-        description: 'The air around waterfalls carries a misty, refreshing scent—cool, oxygen-rich, and faintly mineral. It combines the purity of rushing water with the earthy tones of the surrounding vegetation and rocks.'
-      },
-      {
-        id: 'rainbow',
-        name: 'Rainbow',
-        image: 'https://picsum.photos/seed/rainbow/400/200',
-        thumbnail: 'https://picsum.photos/seed/rainbow/50/50',
-        description: 'While rainbows themselves have no scent, the air after a rainstorm—when rainbows often appear—carries petrichor, the earthy fragrance of rain on dry ground, mixed with the fresh, clean aroma of washed air.'
+  // Load scents from database
+  useEffect(() => {
+    const loadScents = async () => {
+      setIsLoading(true);
+      try {
+        const data = await libraryService.getAllScents();
+        setScents(data);
+        setFilteredScents(data.filter(scent => scent.category === activeCategory));
+        if (data.length > 0) {
+          setSelectedScent(data[0]);
+        }
+        setError(null);
+      } catch (err) {
+        console.error('Error loading scents:', err);
+        setError('Failed to load scents. Please try again later.');
+      } finally {
+        setIsLoading(false);
       }
-    ],
-    animal: [
-      {
-        id: 'horse',
-        name: 'Horse',
-        image: 'https://picsum.photos/seed/horse/400/200',
-        thumbnail: 'https://picsum.photos/seed/horse/50/50',
-        description: 'The scent of horses is warm and earthy, a mixture of hay, leather, and the animal\'s natural musk. It\'s a comforting, barnyard fragrance that evokes countryside and pastoral life.'
-      },
-      {
-        id: 'cat',
-        name: 'Cat',
-        image: 'https://picsum.photos/seed/cat/400/200',
-        thumbnail: 'https://picsum.photos/seed/cat/50/50',
-        description: 'A cat\'s scent is subtle and clean, often described as slightly sweet and warm. Well-groomed cats have a pleasant, neutral smell that many find comforting and familiar.'
-      }
-    ],
-    food: [
-      {
-        id: 'coffee',
-        name: 'Coffee',
-        image: 'https://picsum.photos/seed/coffee/400/200',
-        thumbnail: 'https://picsum.photos/seed/coffee/50/50',
-        description: 'The rich, complex aroma of coffee beans combines earthy, nutty, and slightly acidic notes. When brewed, it releases a warm, inviting fragrance that can instantly energize and comfort, with hints of caramel and chocolate depending on the roast.'
-      },
-      {
-        id: 'bread',
-        name: 'Fresh Bread',
-        image: 'https://picsum.photos/seed/bread/400/200',
-        thumbnail: 'https://picsum.photos/seed/bread/50/50',
-        description: 'The aroma of freshly baked bread is warm, yeasty, and comforting. It carries notes of wheat, with a slightly sweet undertone and a crusty, golden exterior that speaks of home and nourishment.'
-      },
-      {
-        id: 'vanilla',
-        name: 'Vanilla',
-        image: 'https://picsum.photos/seed/vanilla/400/200',
-        thumbnail: 'https://picsum.photos/seed/vanilla/50/50',
-        description: 'Pure vanilla has a sweet, creamy fragrance with floral undertones and a hint of spice. It\'s warm and comforting, often associated with baking and desserts, but also sophisticated in its complexity.'
-      }
-    ],
-    urban: [
-      {
-        id: 'subway',
-        name: 'Subway',
-        image: 'https://picsum.photos/seed/subway/400/200',
-        thumbnail: 'https://picsum.photos/seed/subway/50/50',
-        description: 'The distinctive scent of subway systems combines metallic notes from the tracks, electrical ozone, and the collective human presence. It\'s an urban signature that varies by city but always speaks of movement and metropolitan life.'
-      },
-      {
-        id: 'gasoline',
-        name: 'Gasoline',
-        image: 'https://picsum.photos/seed/gasoline/400/200',
-        thumbnail: 'https://picsum.photos/seed/gasoline/50/50',
-        description: 'Gasoline has a sharp, chemical odor that\'s immediately recognizable. Despite its artificial nature, many find it oddly appealing—sweet yet acrid, with hydrocarbon notes that evoke road trips and mechanical power.'
-      }
-    ],
-    human: [
-      {
-        id: 'perfume',
-        name: 'Perfume',
-        image: 'https://picsum.photos/seed/perfume/400/200',
-        thumbnail: 'https://picsum.photos/seed/perfume/50/50',
-        description: 'Fine perfume is a carefully crafted blend of top, middle, and base notes that evolves over time. It can range from light and floral to deep and musky, designed to complement and enhance the wearer\'s natural scent.'
-      },
-      {
-        id: 'newborn',
-        name: 'Newborn Baby',
-        image: 'https://picsum.photos/seed/newborn/400/200',
-        thumbnail: 'https://picsum.photos/seed/newborn/50/50',
-        description: 'The scent of a newborn baby is delicate and pure—a soft, powdery fragrance mixed with the natural sweetness of new life. It\'s often described as one of the most comforting and primal scents humans can experience.'
-      }
-    ],
-    chemical: [
-      {
-        id: 'chlorine',
-        name: 'Chlorine',
-        image: 'https://picsum.photos/seed/chlorine/400/200',
-        thumbnail: 'https://picsum.photos/seed/chlorine/50/50',
-        description: 'Chlorine has a sharp, penetrating odor that\'s immediately recognizable from swimming pools and cleaning products. It\'s clean and sterile, with a slightly burning sensation that speaks of purification and sanitation.'
-      },
-      {
-        id: 'ammonia',
-        name: 'Ammonia',
-        image: 'https://picsum.photos/seed/ammonia/400/200',
-        thumbnail: 'https://picsum.photos/seed/ammonia/50/50',
-        description: 'Ammonia has a pungent, alkaline odor that\'s sharp and irritating to the nose. It\'s the smell of strong cleaning products and certain industrial processes, immediately recognizable and impossible to ignore.'
-      }
-    ],
-    other: [
-      {
-        id: 'leather',
-        name: 'Leather',
-        image: 'https://picsum.photos/seed/leather/400/200',
-        thumbnail: 'https://picsum.photos/seed/leather/50/50',
-        description: 'Quality leather has a rich, complex scent that combines animal hide with tanning processes. It\'s warm and sophisticated, with notes that can range from sweet and supple to deep and masculine, often associated with luxury and craftsmanship.'
-      },
-      {
-        id: 'rubber',
-        name: 'Rubber',
-        image: 'https://picsum.photos/seed/rubber/400/200',
-        thumbnail: 'https://picsum.photos/seed/rubber/50/50',
-        description: 'Rubber has a distinctive industrial smell that\'s slightly sweet and elastic. It\'s the scent of tires, rubber bands, and various manufactured products, immediately recognizable and tied to modern industrial life.'
-      }
-    ]
-  };
+    };
 
-  const categories = [
+    loadScents();
+  }, []);
+
+  // Handle category change
+  useEffect(() => {
+    const updateCategory = async () => {
+      setIsLoading(true);
+      try {
+        const categoryScents = await libraryService.getScentsByCategory(activeCategory);
+        setFilteredScents(categoryScents);
+        if (categoryScents.length > 0 && !selectedScent) {
+          setSelectedScent(categoryScents[0]);
+        }
+      } catch (err) {
+        console.error('Error fetching category:', err);
+        setError('Failed to load category scents.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    updateCategory();
+  }, [activeCategory]);
+
+  // Handle search
+  useEffect(() => {
+    const searchScents = async () => {
+      if (!searchTerm.trim()) {
+        setFilteredScents(scents.filter(scent => scent.category === activeCategory));
+        return;
+      }
+
+      try {
+        const results = await libraryService.searchScents(searchTerm);
+        setFilteredScents(results);
+      } catch (err) {
+        console.error('Error searching scents:', err);
+        setError('Search failed. Please try again.');
+      }
+    };
+
+    const debounceTimer = setTimeout(searchScents, 300);
+    return () => clearTimeout(debounceTimer);
+  }, [searchTerm, activeCategory, scents]);
+
+  // Categories configuration
+  const CATEGORIES = [
     { id: 'nature', name: 'Nature', icon: '🌿', color: 'bg-green-100 text-green-800' },
     { id: 'animal', name: 'Animal', icon: '🐾', color: 'bg-yellow-100 text-yellow-800' },
     { id: 'food', name: 'Food', icon: '🍯', color: 'bg-orange-100 text-orange-800' },
@@ -180,58 +100,171 @@ const SubPage3 = ({ onNavigate }) => {
     { id: 'other', name: 'Other', icon: '🔮', color: 'bg-gray-100 text-gray-800' }
   ];
 
-  // Filter scents based on search and category
+  // Sample data for when the API fails
+  const FALLBACK_SCENTS = [
+    {
+      id: 'lotus',
+      name: 'Lotus',
+      category: 'nature',
+      image: 'https://picsum.photos/seed/lotus/400/200',
+      thumbnail: 'https://picsum.photos/seed/lotus/50/50',
+      description: 'The lotus flower emits a delicate, subtle fragrance that is often described as clean and slightly sweet. It carries a fresh, airy quality, not overpowering but gently permeating the air.'
+    },
+    {
+      id: 'canyon',
+      name: 'Canyon',
+      category: 'nature',
+      image: 'https://picsum.photos/seed/canyon/400/200',
+      thumbnail: 'https://picsum.photos/seed/canyon/50/50',
+      description: 'The scent of a canyon carries the earthy aroma of aged rocks and dry soil, intertwined with faint notes of desert flora. A subtle, dusty fragrance that evokes vastness and solitude.'
+    },
+    {
+      id: 'pine',
+      name: 'Pine',
+      category: 'nature',
+      image: 'https://picsum.photos/seed/pine/400/200',
+      thumbnail: 'https://picsum.photos/seed/pine/50/50',
+      description: 'Pine trees release a sharp, invigorating fragrance filled with terpenes like pinene. It\'s a clean, foresty scent that brings to mind mountain air and Christmas trees.'
+    },
+    {
+      id: 'horse',
+      name: 'Horse',
+      category: 'animal',
+      image: 'https://picsum.photos/seed/horse/400/200',
+      thumbnail: 'https://picsum.photos/seed/horse/50/50',
+      description: 'The scent of horses is warm and earthy, a mixture of hay, leather, and the animal\'s natural musk.'
+    },
+    {
+      id: 'coffee',
+      name: 'Coffee',
+      category: 'food',
+      image: 'https://picsum.photos/seed/coffee/400/200',
+      thumbnail: 'https://picsum.photos/seed/coffee/50/50',
+      description: 'The rich, complex aroma of coffee beans combines earthy, nutty, and slightly acidic notes. When brewed, it releases a warm, inviting fragrance.'
+    },
+    {
+      id: 'subway',
+      name: 'Subway',
+      category: 'urban',
+      image: 'https://picsum.photos/seed/subway/400/200',
+      thumbnail: 'https://picsum.photos/seed/subway/50/50',
+      description: 'The distinctive scent of subway systems combines metallic notes from the tracks and electrical ozone. It\'s an urban signature that varies by city.'
+    },
+    {
+      id: 'perfume',
+      name: 'Perfume',
+      category: 'human',
+      image: 'https://picsum.photos/seed/perfume/400/200',
+      thumbnail: 'https://picsum.photos/seed/perfume/50/50',
+      description: 'Fine perfume is a carefully crafted blend of top, middle, and base notes that evolves over time.'
+    },
+    {
+      id: 'chlorine',
+      name: 'Chlorine',
+      category: 'chemical',
+      image: 'https://picsum.photos/seed/chlorine/400/200',
+      thumbnail: 'https://picsum.photos/seed/chlorine/50/50',
+      description: 'Chlorine has a sharp, penetrating odor that\'s immediately recognizable from swimming pools and cleaning products.'
+    },
+    {
+      id: 'leather',
+      name: 'Leather',
+      category: 'other',
+      image: 'https://picsum.photos/seed/leather/400/200',
+      thumbnail: 'https://picsum.photos/seed/leather/50/50',
+      description: 'Quality leather has a rich, complex scent that combines animal hide with tanning processes. It\'s warm and sophisticated, with notes that can range from sweet and supple to deep and masculine, often associated with luxury and craftsmanship.'
+    },
+    {
+      id: 'horse',
+      name: 'Horse',
+      category: 'animal',
+      image: 'https://picsum.photos/seed/horse/400/200',
+      thumbnail: 'https://picsum.photos/seed/horse/50/50',
+      description: 'The scent of horses is warm and earthy, a mixture of hay, leather, and the animal\'s natural musk. It\'s a comforting, barnyard fragrance that evokes countryside and pastoral life.'
+    },
+    {
+      id: 'coffee',
+      name: 'Coffee',
+      category: 'food',
+      image: 'https://picsum.photos/seed/coffee/400/200',
+      thumbnail: 'https://picsum.photos/seed/coffee/50/50',
+      description: 'The rich, complex aroma of coffee beans combines earthy, nutty, and slightly acidic notes. When brewed, it releases a warm, inviting fragrance that can instantly energize and comfort, with hints of caramel and chocolate depending on the roast.'
+    }
+  ];
+
+
+  // Update filtered scents when category or search term changes
   useEffect(() => {
-    let scents = smellLibrary[activeCategory] || [];
+    if (!scents.length) return;
+
+    let filtered = scents;
     
+    // Filter by category if not searching
+    if (!searchTerm && activeCategory) {
+      filtered = scents.filter(scent => scent.category === activeCategory);
+    }
+    
+    // Apply search filter if there's a search term
     if (searchTerm) {
-      const allScents = Object.values(smellLibrary).flat();
-      scents = allScents.filter(scent =>
+      filtered = filtered.filter(scent =>
         scent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         scent.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
     
-    setFilteredScents(scents);
+    setFilteredScents(filtered);
     
     // Auto-select first scent if available
-    if (scents.length > 0) {
-      setSelectedScent(scents[0]);
+    if (filtered.length > 0) {
+      setSelectedScent(filtered[0]);
     } else {
       setSelectedScent(null);
     }
-  }, [activeCategory, searchTerm]);
+  }, [activeCategory, searchTerm, scents]);
 
-  const handleAddScent = (e) => {
+  const handleAddScent = async (e) => {
     e.preventDefault();
     
-    if (!newScent.name || !newScent.image || !newScent.description) {
-      alert('Please fill in all fields');
+    if (!newScent.name || !newScent.description) {
+      alert('Please fill in all required fields');
       return;
     }
-    
-    const id = newScent.name.toLowerCase().replace(/\s+/g, '-');
-    const scentToAdd = {
-      id,
-      name: newScent.name,
-      image: newScent.image,
-      thumbnail: newScent.image,
-      description: newScent.description
-    };
-    
-    // Add to library (in real app, this would be saved to database)
-    if (!smellLibrary[activeCategory]) {
-      smellLibrary[activeCategory] = [];
+
+    setIsLoading(true);
+    try {
+      const addedScent = await libraryService.addScent({
+        name: newScent.name,
+        category: activeCategory,
+        description: newScent.description,
+        image: newScent.image || `https://picsum.photos/seed/${Date.now()}/400/200`,
+        thumbnail: `https://picsum.photos/seed/${Date.now()}/50/50`
+      });
+
+      // Update scents list
+      setScents(prev => [addedScent, ...prev]);
+      setFilteredScents(prev => [addedScent, ...prev]);
+      setSelectedScent(addedScent);
+      
+      // Reset form and close modal
+      setNewScent({
+        name: '',
+        category: 'nature',
+        image: '',
+        description: ''
+      });
+      setShowAddModal(false);
+      
+      alert('Scent added successfully!');
+    } catch (err) {
+      console.error('Error adding scent:', err);
+      alert('Failed to add scent. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
-    smellLibrary[activeCategory].push(scentToAdd);
-    
-    setFilteredScents([...smellLibrary[activeCategory]]);
-    setSelectedScent(scentToAdd);
-    setShowAddModal(false);
     setNewScent({ name: '', image: '', description: '' });
   };
 
-  const currentCategory = categories.find(cat => cat.id === activeCategory);
+  const currentCategory = CATEGORIES.find(cat => cat.id === activeCategory);
 
   return (
     <div className="min-h-screen w-full relative overflow-hidden bg-[#fcd71a]">
@@ -285,7 +318,7 @@ const SubPage3 = ({ onNavigate }) => {
       <div className={`relative z-10 bg-white shadow-sm border-b border-gray-200 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-center space-x-8">
-            {categories.map((category, index) => (
+            {CATEGORIES.map((category, index) => (
               <div key={category.id} className="flex items-center">
                 <button
                   onClick={() => setActiveCategory(category.id)}
@@ -298,7 +331,7 @@ const SubPage3 = ({ onNavigate }) => {
                   <span>{category.icon}</span>
                   <span className="text-sm">{category.name}</span>
                 </button>
-                {index < categories.length - 1 && (
+                {index < CATEGORIES.length - 1 && (
                   <span className="text-gray-300 mx-2">/</span>
                 )}
               </div>
@@ -474,6 +507,6 @@ const SubPage3 = ({ onNavigate }) => {
       )}
     </div>
   );
-};
+}
 
 export default SubPage3;
