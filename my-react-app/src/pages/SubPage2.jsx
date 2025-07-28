@@ -22,13 +22,13 @@ const SubPage2 = ({ onNavigate }) => {
 
   // Categories configuration
   const CATEGORIES = [
-    { id: 'nature', name: 'Nature', color: 'bg-green-100 text-green-800 hover:bg-green-200' },
-    { id: 'animal', name: 'Animal', color: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' },
-    { id: 'food', name: 'Food', color: 'bg-orange-100 text-orange-800 hover:bg-orange-200' },
-    { id: 'urban', name: 'Urban', color: 'bg-blue-100 text-blue-800 hover:bg-blue-200' },
-    { id: 'human', name: 'Human Activity', color: 'bg-purple-100 text-purple-800 hover:bg-purple-200' },
-    { id: 'chemical', name: 'Chemical', color: 'bg-gray-100 text-gray-800 hover:bg-gray-200' },
-    { id: 'other', name: 'Other', color: 'bg-pink-100 text-pink-800 hover:bg-pink-200' }
+    { id: 'nature', name: 'Nature', icon: '🌿', color: 'bg-green-100 text-green-800 hover:bg-green-200' },
+    { id: 'animal', name: 'Animal', icon: '🐾', color: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' },
+    { id: 'food', name: 'Food', icon: '🍯', color: 'bg-orange-100 text-orange-800 hover:bg-orange-200' },
+    { id: 'urban', name: 'Urban', icon: '🏙️', color: 'bg-blue-100 text-blue-800 hover:bg-blue-200' },
+    { id: 'human', name: 'Human Activity', icon: '👥', color: 'bg-purple-100 text-purple-800 hover:bg-purple-200' },
+    { id: 'chemical', name: 'Chemical', icon: '🧪', color: 'bg-red-100 text-red-800 hover:bg-red-200' },
+    { id: 'other', name: 'Other', icon: '🔮', color: 'bg-gray-100 text-gray-800 hover:bg-gray-200' }
   ];
 
   // Navigation items

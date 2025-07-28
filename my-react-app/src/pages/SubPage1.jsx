@@ -39,7 +39,7 @@ const SubPage1 = ({ onNavigate }) => {
   const [uploadData, setUploadData] = useState({
     title: '',
     description: '',
-    category: 'floral',
+    category: 'nature',
     intensity: 5,
     location: null,
     address: '',
@@ -194,7 +194,15 @@ const SubPage1 = ({ onNavigate }) => {
     };
   }, []);
 
-  const SMELL_CATEGORIES = ['floral', 'food', 'nature', 'urban', 'chemical', 'other'];
+  const SMELL_CATEGORIES = [
+    { id: 'nature', name: 'Nature', icon: '🌿', color: 'bg-green-100 text-green-800' },
+    { id: 'animal', name: 'Animal', icon: '🐾', color: 'bg-yellow-100 text-yellow-800' },
+    { id: 'food', name: 'Food', icon: '🍯', color: 'bg-orange-100 text-orange-800' },
+    { id: 'urban', name: 'Urban', icon: '🏙️', color: 'bg-blue-100 text-blue-800' },
+    { id: 'human', name: 'Human Activity', icon: '👥', color: 'bg-purple-100 text-purple-800' },
+    { id: 'chemical', name: 'Chemical', icon: '🧪', color: 'bg-red-100 text-red-800' },
+    { id: 'other', name: 'Other', icon: '🔮', color: 'bg-gray-100 text-gray-800' }
+  ];
   const CATEGORY_COLORS = {
     'floral': '#ff69b4',
     'food': '#ff8c00', 
@@ -447,7 +455,8 @@ const SubPage1 = ({ onNavigate }) => {
     allSmells.forEach(smell => {
       let category;
       if (type === 'category') {
-        category = smell.category || 'other';
+        const cat = categories.find(c => c.id === (smell.category || 'other'));
+        category = cat ? cat.name : 'Other';
       } else if (type === 'intensity') {
         category = smell.intensity >= 8 ? 'Strong (8-10)' : 
                   smell.intensity >= 5 ? 'Medium (5-7)' : 'Light (1-4)';
@@ -457,7 +466,9 @@ const SubPage1 = ({ onNavigate }) => {
       data[category].push(smell);
     });
 
-    return { data, categories: categories.filter(cat => data[cat]) };
+    return { data, categories: type === 'category' 
+      ? categories.filter(cat => data[cat.name]).map(cat => cat.name)
+      : categories.filter(cat => data[cat]) };
   };
 
   const ChartComponent = ({ title, type, categories }) => {
@@ -653,7 +664,9 @@ const SubPage1 = ({ onNavigate }) => {
                   disabled={isUploading}
                 >
                   {SMELL_CATEGORIES.map(cat => (
-                    <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
+                    <option key={cat.id} value={cat.id}>
+                      {cat.icon} {cat.name}
+                    </option>
                   ))}
                 </select>
               </div>
