@@ -106,32 +106,32 @@ const SubPage3 = ({ onNavigate }) => {
       id: 'lotus',
       name: 'Lotus',
       category: 'nature',
-      image: 'https://picsum.photos/seed/lotus/400/200',
-      thumbnail: 'https://picsum.photos/seed/lotus/50/50',
+      image: 'https://picsum.photos/seed/lotus/800/450',
+      thumbnail: 'https://picsum.photos/seed/lotus/300/200',
       description: 'The lotus flower emits a delicate, subtle fragrance that is often described as clean and slightly sweet. It carries a fresh, airy quality, not overpowering but gently permeating the air.'
     },
     {
       id: 'canyon',
       name: 'Canyon',
       category: 'nature',
-      image: 'https://picsum.photos/seed/canyon/400/200',
-      thumbnail: 'https://picsum.photos/seed/canyon/50/50',
+      image: 'https://picsum.photos/seed/canyon/800/450',
+      thumbnail: 'https://picsum.photos/seed/canyon/300/200',
       description: 'The scent of a canyon carries the earthy aroma of aged rocks and dry soil, intertwined with faint notes of desert flora. A subtle, dusty fragrance that evokes vastness and solitude.'
     },
     {
       id: 'pine',
       name: 'Pine',
       category: 'nature',
-      image: 'https://picsum.photos/seed/pine/400/200',
-      thumbnail: 'https://picsum.photos/seed/pine/50/50',
+      image: 'https://picsum.photos/seed/pine/800/450',
+      thumbnail: 'https://picsum.photos/seed/pine/300/200',
       description: 'Pine trees release a sharp, invigorating fragrance filled with terpenes like pinene. It\'s a clean, foresty scent that brings to mind mountain air and Christmas trees.'
     },
     {
       id: 'horse',
       name: 'Horse',
       category: 'animal',
-      image: 'https://picsum.photos/seed/horse/400/200',
-      thumbnail: 'https://picsum.photos/seed/horse/50/50',
+      image: 'https://picsum.photos/seed/horse/800/450',
+      thumbnail: 'https://picsum.photos/seed/horse/300/200',
       description: 'The scent of horses is warm and earthy, a mixture of hay, leather, and the animal\'s natural musk.'
     },
     {
@@ -146,48 +146,48 @@ const SubPage3 = ({ onNavigate }) => {
       id: 'subway',
       name: 'Subway',
       category: 'urban',
-      image: 'https://picsum.photos/seed/subway/400/200',
-      thumbnail: 'https://picsum.photos/seed/subway/50/50',
+      image: 'https://picsum.photos/seed/subway/800/450',
+      thumbnail: 'https://picsum.photos/seed/subway/300/200',
       description: 'The distinctive scent of subway systems combines metallic notes from the tracks and electrical ozone. It\'s an urban signature that varies by city.'
     },
     {
       id: 'perfume',
       name: 'Perfume',
       category: 'human',
-      image: 'https://picsum.photos/seed/perfume/400/200',
-      thumbnail: 'https://picsum.photos/seed/perfume/50/50',
+      image: 'https://picsum.photos/seed/perfume/800/450',
+      thumbnail: 'https://picsum.photos/seed/perfume/300/200',
       description: 'Fine perfume is a carefully crafted blend of top, middle, and base notes that evolves over time.'
     },
     {
       id: 'chlorine',
       name: 'Chlorine',
       category: 'chemical',
-      image: 'https://picsum.photos/seed/chlorine/400/200',
-      thumbnail: 'https://picsum.photos/seed/chlorine/50/50',
+      image: 'https://picsum.photos/seed/chlorine/800/450',
+      thumbnail: 'https://picsum.photos/seed/chlorine/300/200',
       description: 'Chlorine has a sharp, penetrating odor that\'s immediately recognizable from swimming pools and cleaning products.'
     },
     {
       id: 'leather',
       name: 'Leather',
       category: 'other',
-      image: 'https://picsum.photos/seed/leather/400/200',
-      thumbnail: 'https://picsum.photos/seed/leather/50/50',
+      image: 'https://picsum.photos/seed/leather/800/450',
+      thumbnail: 'https://picsum.photos/seed/leather/300/200',
       description: 'Quality leather has a rich, complex scent that combines animal hide with tanning processes. It\'s warm and sophisticated, with notes that can range from sweet and supple to deep and masculine, often associated with luxury and craftsmanship.'
     },
     {
       id: 'horse',
       name: 'Horse',
       category: 'animal',
-      image: 'https://picsum.photos/seed/horse/400/200',
-      thumbnail: 'https://picsum.photos/seed/horse/50/50',
+      image: 'https://picsum.photos/seed/horse/800/450',
+      thumbnail: 'https://picsum.photos/seed/horse/300/200',
       description: 'The scent of horses is warm and earthy, a mixture of hay, leather, and the animal\'s natural musk. It\'s a comforting, barnyard fragrance that evokes countryside and pastoral life.'
     },
     {
       id: 'coffee',
       name: 'Coffee',
       category: 'food',
-      image: 'https://picsum.photos/seed/coffee/400/200',
-      thumbnail: 'https://picsum.photos/seed/coffee/50/50',
+      image: 'https://picsum.photos/seed/coffee/800/450',
+      thumbnail: 'https://picsum.photos/seed/coffee/300/200',
       description: 'The rich, complex aroma of coffee beans combines earthy, nutty, and slightly acidic notes. When brewed, it releases a warm, inviting fragrance that can instantly energize and comfort, with hints of caramel and chocolate depending on the roast.'
     }
   ];
@@ -232,12 +232,13 @@ const SubPage3 = ({ onNavigate }) => {
 
     setIsLoading(true);
     try {
+      const timestamp = Date.now();
       const addedScent = await libraryService.addScent({
         name: newScent.name,
         category: activeCategory,
         description: newScent.description,
-        image: newScent.image || `https://picsum.photos/seed/${Date.now()}/400/200`,
-        thumbnail: `https://picsum.photos/seed/${Date.now()}/50/50`
+        image: newScent.image || `https://picsum.photos/seed/${timestamp}/800/450`,
+        thumbnail: `https://picsum.photos/seed/${timestamp}/300/200`
       });
 
       // Update scents list
@@ -385,9 +386,9 @@ const SubPage3 = ({ onNavigate }) => {
                         }`}
                       >
                         <img
-                          src={scent.thumbnail}
+                          src={scent.image}
                           alt={scent.name}
-                          className="w-16 h-16 object-cover rounded-lg mr-4 shadow-sm"
+                          className="w-32 h-20 object-cover rounded-lg mr-4 shadow-sm"
                         />
                         <div className="w-full overflow-hidden pr-4">
                           <h3 className="font-medium text-gray-900">{scent.name}</h3>
@@ -408,7 +409,7 @@ const SubPage3 = ({ onNavigate }) => {
                     <img
                       src={selectedScent.image}
                       alt={selectedScent.name}
-                      className="w-full h-48 object-cover rounded-lg mb-4 shadow-md flex-shrink-0"
+                      className="w-full h-64 object-cover rounded-lg mb-4 shadow-md flex-shrink-0"
                     />
                     <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center flex-shrink-0">
                       <span className="mr-2">👃</span>

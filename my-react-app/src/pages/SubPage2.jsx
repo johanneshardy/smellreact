@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { articleService } from '../services/articleService';
+import { uploadService } from '../services/uploadService';
 
 const SubPage2 = ({ onNavigate }) => {
   // State management
@@ -10,6 +11,9 @@ const SubPage2 = ({ onNavigate }) => {
   const [articles, setArticles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showArticleModal, setShowArticleModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [submitForm, setSubmitForm] = useState({
     name: '',
     email: '',
@@ -96,6 +100,16 @@ const SubPage2 = ({ onNavigate }) => {
     }
   };
 
+  const handleImageChange = (e) => {
+    const url = e.target.value;
+    setSelectedImage(url);
+    if (url) {
+      setImagePreview(url);
+    } else {
+      setImagePreview(null);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -106,6 +120,9 @@ const SubPage2 = ({ onNavigate }) => {
 
     try {
       setIsLoading(true);
+      let imageUrl = selectedImage;
+      let thumbnailUrl = selectedImage;
+
       const newArticle = await articleService.addArticle({
         title: submitForm.title,
         category: submitForm.category,
@@ -113,8 +130,8 @@ const SubPage2 = ({ onNavigate }) => {
         excerpt: submitForm.content.substring(0, 150) + '...',
         name: submitForm.name,
         email: submitForm.email,
-        image: `https://picsum.photos/seed/${Date.now()}/800/450`,
-        thumbnail: `https://picsum.photos/seed/${Date.now()}/300/200`
+        image: imageUrl || `https://picsum.photos/seed/${Date.now()}/800/450`,
+        thumbnail: thumbnailUrl || `https://picsum.photos/seed/${Date.now()}/300/200`
       });
 
       setArticles(prevArticles => [newArticle, ...prevArticles]);
@@ -128,6 +145,8 @@ const SubPage2 = ({ onNavigate }) => {
         terms: false
       });
       setCharCount(0);
+      setSelectedImage(null);
+      setImagePreview(null);
       
       alert('Article submitted successfully!');
     } catch (error) {
@@ -223,7 +242,13 @@ const SubPage2 = ({ onNavigate }) => {
               <div className="p-6">
                 <h2 className="text-2xl font-bold mb-4">Scent of the Day</h2>
                 {articles[0] && (
-                  <article className="bg-gray-50 rounded-xl p-6">
+                  <article 
+                    className="bg-gray-50 rounded-xl p-6 cursor-pointer transform transition-all duration-200 hover:shadow-lg hover:scale-[1.01]"
+                    onClick={() => {
+                      setActiveArticle(articles[0]);
+                      setShowArticleModal(true);
+                    }}
+                  >
                     <img 
                       src={articles[0].image} 
                       alt={articles[0].title}
@@ -248,7 +273,14 @@ const SubPage2 = ({ onNavigate }) => {
                 <h2 className="text-2xl font-bold mb-4">Article Archive</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {articles.map(article => (
-                    <article key={article.id} className="bg-gray-50 rounded-xl p-4">
+                    <article 
+                      key={article.id} 
+                      className="bg-gray-50 rounded-xl p-4 cursor-pointer transform transition-all duration-200 hover:shadow-lg hover:scale-[1.02]"
+                      onClick={() => {
+                        setActiveArticle(article);
+                        setShowArticleModal(true);
+                      }}
+                    >
                       <img 
                         src={article.thumbnail} 
                         alt={article.title}
@@ -329,6 +361,44 @@ const SubPage2 = ({ onNavigate }) => {
                         </option>
                       ))}
                     </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Image URL
+                    </label>
+                    <div className="space-y-2">
+                      <input
+                        type="url"
+                        placeholder="Enter image URL (e.g., https://example.com/image.jpg)"
+                        value={selectedImage || ''}
+                        onChange={handleImageChange}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                      />
+                      {imagePreview && (
+                        <div className="relative w-full h-40">
+                          <img
+                            src={imagePreview}
+                            alt="Preview"
+                            className="w-full h-full object-cover rounded-lg"
+                            onError={() => {
+                              setImagePreview(null);
+                              alert('Invalid image URL. Please check the URL and try again.');
+                            }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedImage(null);
+                              setImagePreview(null);
+                            }}
+                            className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div>
@@ -433,6 +503,67 @@ const SubPage2 = ({ onNavigate }) => {
           </div>
         </div>
       </main>
+
+      {/* Article Modal */}
+      {showArticleModal && activeArticle && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden relative">
+            {/* Close button */}
+            <button
+              onClick={() => setShowArticleModal(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            <div className="overflow-y-auto max-h-[90vh]">
+              {/* Article header image */}
+              <div className="relative h-64 md:h-96">
+                <img
+                  src={activeArticle.image}
+                  alt={activeArticle.title}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                  <h2 className="text-3xl font-bold mb-2">{activeArticle.title}</h2>
+                  <div className="flex items-center space-x-4">
+                    <span className={`px-3 py-1 rounded-full text-sm bg-opacity-90 ${activeArticle.categoryColor}`}>
+                      {activeArticle.category}
+                    </span>
+                    <span>{activeArticle.date}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Article content */}
+              <div className="p-6 md:p-8">
+                <div className="prose max-w-none">
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                    {activeArticle.content}
+                  </p>
+                </div>
+
+                {/* Article metadata */}
+                <div className="mt-8 pt-6 border-t border-gray-200">
+                  <div className="flex justify-between items-center text-sm text-gray-500">
+                    <div>
+                      Written by <span className="font-medium">{activeArticle.author_name}</span>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <span>{activeArticle.reads || 0} reads</span>
+                      <span>•</span>
+                      <span>{activeArticle.likes || 0} likes</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
