@@ -1,12 +1,74 @@
-# React + Vite
+# Smell Project
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An interactive web application that helps people rediscover and experience the power of smell in the digital era. Developed by the UM-SJTU Writing Center, this project explores how olfaction shapes our emotions and memories while helping participants improve their descriptive writing skills.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Smell Map**: Interactive mapping of urban scents
+- **Smell Daily**: Daily smell-related activities and challenges
+- **Smell Library**: Collection of documented scents and experiences
+- **Mobile Responsive**: Fully responsive design for all devices
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- React + Vite
+- Tailwind CSS
+- Supabase
+- LeanCloud
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (version 14 or higher)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/johanneshardy/smellreact.git
+   ```
+
+2. Navigate to the project directory:
+   ```bash
+   cd smellreact/my-react-app
+   ```
+
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+The application will be available at `http://localhost:5173`
+
+## Project Structure
+
+```
+my-react-app/
+├── public/
+├── src/
+│   ├── assets/         # Images, fonts, and other static files
+│   ├── components/     # Reusable React components
+│   ├── context/       # React context providers
+│   ├── leancloud/     # LeanCloud configuration and utilities
+│   ├── pages/         # Page components
+│   ├── services/      # API and service functions
+│   ├── supabase/     # Supabase configuration
+│   ├── App.jsx       # Root component
+│   └── main.jsx      # Entry point
+```
+
+## Contact
+
+- Email: writingcenter@sjtu.edu.cn
+- WeChat: SJTU-WritingCenter
+
+## License
+
+This project is developed by the UM-SJTU Writing Center. All rights reserved.
