@@ -146,7 +146,7 @@ const HomePage = ({ onNavigate }) => {
               <h3 className="text-black font-archivo-black font-normal text-[44px] mb-4">OUR VISION</h3>
               <div className="bg-yellow-300 border-4 border-black rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <p className="text-black font-bold text-[20px] leading-relaxed">
-                  This project aims to help modern people rediscover and experience the power of smell, exploring how olfaction influences our emotions and memories in this digital age.
+                  This project aims to help modern people rediscover and experience the power of smell, exploring how olfaction shapes our emotions and memories in this digital era. By engaging their olfactory senses and documenting urban scents through writing, participants can sharpen their descriptive skills with greater sensory depth.
                 </p>
               </div>
             </div>
