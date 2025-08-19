@@ -252,7 +252,7 @@ const SubPage2 = ({ onNavigate }) => {
                     <img 
                       src={articles[0].image} 
                       alt={articles[0].title}
-                      className="w-full h-64 object-cover rounded-lg mb-4"
+                      className="w-full max-h-96 h-auto object-contain rounded-lg mb-4 mx-auto"
                     />
                     <h3 className="text-xl font-bold mb-2">{articles[0].title}</h3>
                     <p className="text-gray-600 mb-4">{articles[0].excerpt}</p>
@@ -284,7 +284,7 @@ const SubPage2 = ({ onNavigate }) => {
                       <img 
                         src={article.thumbnail} 
                         alt={article.title}
-                        className="w-full h-40 object-cover rounded-lg mb-3"
+                        className="w-full max-h-60 h-auto object-contain rounded-lg mb-3 mx-auto"
                       />
                       <h3 className="font-bold mb-2">{article.title}</h3>
                       <p className="text-gray-600 text-sm mb-3">{article.excerpt}</p>
