@@ -46,6 +46,17 @@ const SubPage1 = ({ onNavigate }) => {
     author: ''
   });
 
+  const [editingSmell, setEditingSmell] = useState(null);
+  const [editForm, setEditForm] = useState({
+    title: '',
+    description: '',
+    category: 'nature',
+    intensity: 5,
+    location: null,
+    address: '',
+    contributor: ''
+  });
+
   const mapRef = useRef(null);
   const leafletMapRef = useRef(null);
   const markersRef = useRef([]);
@@ -446,6 +457,63 @@ const SubPage1 = ({ onNavigate }) => {
       alert(`Failed to upload smell data: ${error.message}`);
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleEditClick = (smell) => {
+    setEditingSmell(smell);
+    setEditForm({
+      title: smell.title,
+      description: smell.description,
+      category: smell.category,
+      intensity: smell.intensity,
+      location: [smell.latitude, smell.longitude],
+      address: smell.address,
+      contributor: smell.contributor
+    });
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setIsLoading(true);
+      const updatedSmell = await smellService.updateSmell(editingSmell.id, editForm);
+      setAllSmells(prevSmells => 
+        prevSmells.map(smell => 
+          smell.id === updatedSmell.id ? updatedSmell : smell
+        )
+      );
+      setEditingSmell(null);
+      setEditForm({
+        title: '',
+        description: '',
+        category: 'nature',
+        intensity: 5,
+        location: null,
+        address: '',
+        contributor: ''
+      });
+    } catch (error) {
+      console.error('Error updating smell:', error);
+      setError('Failed to update smell. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteClick = async (id) => {
+    if (window.confirm('Are you sure you want to delete this smell experience?')) {
+      try {
+        setIsLoading(true);
+        await smellService.deleteSmell(id);
+        setAllSmells(prevSmells => prevSmells.filter(smell => smell.id !== id));
+        setSelectedSmell(null);
+      } catch (error) {
+        console.error('Error deleting smell:', error);
+        setError('Failed to delete smell. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -863,11 +931,115 @@ const SubPage1 = ({ onNavigate }) => {
                     <span className="text-black">{selectedSmell.contributor}</span>
                   </p>
                 </div>
+
+                {/* Edit and Delete buttons */}
+                <div className="flex justify-between gap-2">
+                  <button
+                    onClick={() => handleEditClick(selectedSmell)}
+                    className="flex-1 bg-blue-500 text-white font-bold py-2 px-4 rounded border-2 border-black hover:bg-blue-600 transition-colors duration-300"
+                  >
+                    ✏️ Edit Smell
+                  </button>
+
+                  <button
+                    onClick={() => handleDeleteClick(selectedSmell.id)}
+                    className="flex-1 bg-red-500 text-white font-bold py-2 px-4 rounded border-2 border-black hover:bg-red-600 transition-colors duration-300"
+                  >
+                    🗑️ Delete Smell
+                  </button>
+                </div>
               </div>
             </div>
           )}
         </div>
       </div>
+
+      {/* Edit Modal */}
+      {editingSmell && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-4">Edit Smell Experience</h2>
+            <form onSubmit={handleEditSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Title</label>
+                <input
+                  type="text"
+                  value={editForm.title}
+                  onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Category</label>
+                <select
+                  value={editForm.category}
+                  onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                >
+                  {SMELL_CATEGORIES.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.icon} {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Description</label>
+                <textarea
+                  value={editForm.description}
+                  onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                  rows={4}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Intensity (1-10)</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={editForm.intensity}
+                  onChange={(e) => setEditForm({ ...editForm, intensity: parseInt(e.target.value, 10) })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Address</label>
+                <input
+                  type="text"
+                  value={editForm.address}
+                  onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setEditingSmell(null)}
+                  className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

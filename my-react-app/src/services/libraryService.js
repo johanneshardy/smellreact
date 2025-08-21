@@ -108,22 +108,24 @@ export const libraryService = {
   },
 
   // Update scent
-  async updateScent(id, updates) {
+  async updateScent(id, scentData) {
     try {
       const { data, error } = await supabase
         .from(TABLE_NAME)
         .update({
-          ...updates,
+          name: scentData.name,
+          category: scentData.category || 'other',
+          description: scentData.description,
+          image: scentData.image,
+          thumbnail: scentData.thumbnail,
           updated_at: new Date().toISOString()
         })
         .eq('id', id)
-        .select()
-        .single();
+        .select();
 
       if (error) throw error;
-
       console.log('✅ Scent updated successfully');
-      return data;
+      return data[0];
     } catch (error) {
       console.error('❌ Error updating scent:', error);
       throw new Error(`Failed to update scent: ${error.message}`);

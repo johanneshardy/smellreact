@@ -189,6 +189,23 @@ export const articleService = {
     }
   },
 
+  // Update article
+  async updateArticle(id, articleData) {
+    try {
+      const { data, error } = await supabase
+        .from(TABLE_NAME)
+        .update(articleData)
+        .eq('id', id)
+        .select();
+
+      if (error) throw error;
+      return data[0];
+    } catch (error) {
+      console.error('❌ Error updating article:', error);
+      throw new Error(`Failed to update article: ${error.message}`);
+    }
+  },
+
   // Delete article
   async deleteArticle(id) {
     try {

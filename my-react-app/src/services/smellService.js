@@ -125,20 +125,26 @@ export const smellService = {
   },
 
   // Update smell
-  async updateSmell(id, updateData) {
+  async updateSmell(id, smellData) {
     try {
       const { data, error } = await supabase
         .from(TABLE_NAME)
         .update({
-          ...updateData,
+          title: smellData.title,
+          description: smellData.description || '',
+          category: smellData.category,
+          intensity: smellData.intensity,
+          latitude: smellData.location ? smellData.location[0] : undefined,
+          longitude: smellData.location ? smellData.location[1] : undefined,
+          address: smellData.address || '',
           updated_at: new Date().toISOString()
         })
         .eq('id', id)
-        .select()
-        .single();
+        .select();
 
       if (error) throw error;
       console.log('✅ Smell updated successfully');
+      return data[0];
     } catch (error) {
       console.error('❌ Error updating smell:', error);
       throw new Error(`Failed to update smell: ${error.message}`);

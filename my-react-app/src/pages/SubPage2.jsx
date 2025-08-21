@@ -12,6 +12,14 @@ const SubPage2 = ({ onNavigate }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showArticleModal, setShowArticleModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingArticle, setEditingArticle] = useState(null);
+  const [editForm, setEditForm] = useState({
+    title: '',
+    category: 'nature',
+    content: '',
+    image: ''
+  });
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [submitForm, setSubmitForm] = useState({
@@ -88,6 +96,55 @@ const SubPage2 = ({ onNavigate }) => {
 
     loadArticles();
   }, []);
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setIsLoading(true);
+      const updatedArticle = await articleService.updateArticle(editingArticle.id, editForm);
+      setArticles(prevArticles => 
+        prevArticles.map(article => 
+          article.id === updatedArticle.id ? updatedArticle : article
+        )
+      );
+      setEditingArticle(null);
+      setEditForm({
+        title: '',
+        category: 'nature',
+        content: '',
+        image: ''
+      });
+      alert('Article updated successfully!');
+    } catch (error) {
+      console.error('Error updating article:', error);
+      alert('Failed to update article. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEditClick = (article) => {
+    setEditingArticle(article);
+    setEditForm({
+      title: article.title,
+      category: article.category,
+      content: article.content,
+      image: article.image
+    });
+  };
+
+  const handleDeleteClick = async (articleId) => {
+    if (window.confirm('Are you sure you want to delete this article?')) {
+      try {
+        await articleService.deleteArticle(articleId);
+        setArticles(prevArticles => prevArticles.filter(article => article.id !== articleId));
+        alert('Article deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting article:', error);
+        alert('Failed to delete article. Please try again.');
+      }
+    }
+  };
 
   const handleSubmitChange = (field, value) => {
     setSubmitForm(prev => ({
@@ -508,62 +565,269 @@ const SubPage2 = ({ onNavigate }) => {
       {showArticleModal && activeArticle && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden relative">
-            {/* Close button */}
-            <button
-              onClick={() => setShowArticleModal(false)}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+            {/* Action buttons */}
+            <div className="absolute top-4 right-4 flex space-x-2 z-10">
+              <button
+                onClick={() => {
+                  setIsEditing(true);
+                  setEditForm({
+                    title: activeArticle.title,
+                    category: activeArticle.category,
+                    content: activeArticle.content,
+                    image: activeArticle.image
+                  });
+                }}
+                className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </button>
+              <button
+                onClick={async () => {
+                  if (window.confirm('Are you sure you want to delete this article?')) {
+                    try {
+                      setIsLoading(true);
+                      await articleService.deleteArticle(activeArticle.id);
+                      setArticles(articles.filter(a => a.id !== activeArticle.id));
+                      setShowArticleModal(false);
+                    } catch (err) {
+                      alert('Failed to delete article');
+                      console.error(err);
+                    } finally {
+                      setIsLoading(false);
+                    }
+                  }
+                }}
+                className="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setShowArticleModal(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
 
             <div className="overflow-y-auto max-h-[90vh]">
-              {/* Article header image */}
-              <div className="relative h-64 md:h-96">
-                <img
-                  src={activeArticle.image}
-                  alt={activeArticle.title}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                  <h2 className="text-3xl font-bold mb-2">{activeArticle.title}</h2>
-                  <div className="flex items-center space-x-4">
-                    <span className={`px-3 py-1 rounded-full text-sm bg-opacity-90 ${activeArticle.categoryColor}`}>
-                      {activeArticle.category}
-                    </span>
-                    <span>{activeArticle.date}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Article content */}
-              <div className="p-6 md:p-8">
-                <div className="prose max-w-none">
-                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                    {activeArticle.content}
-                  </p>
-                </div>
-
-                {/* Article metadata */}
-                <div className="mt-8 pt-6 border-t border-gray-200">
-                  <div className="flex justify-between items-center text-sm text-gray-500">
+              {isEditing ? (
+                <div className="p-6">
+                  <h3 className="text-2xl font-bold mb-4">Edit Article</h3>
+                  <form className="space-y-4" onSubmit={async (e) => {
+                    e.preventDefault();
+                    try {
+                      setIsLoading(true);
+                      const updatedArticle = await articleService.editArticle(activeArticle.id, editForm);
+                      setArticles(articles.map(a => a.id === updatedArticle.id ? updatedArticle : a));
+                      setActiveArticle(updatedArticle);
+                      setIsEditing(false);
+                    } catch (err) {
+                      alert('Failed to update article');
+                      console.error(err);
+                    } finally {
+                      setIsLoading(false);
+                    }
+                  }}>
                     <div>
-                      Written by <span className="font-medium">{activeArticle.author_name}</span>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                      <input
+                        type="text"
+                        value={editForm.title}
+                        onChange={(e) => setEditForm({...editForm, title: e.target.value})}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500"
+                        required
+                      />
                     </div>
-                    <div className="flex items-center space-x-4">
-                      <span>{activeArticle.reads || 0} reads</span>
-                      <span>•</span>
-                      <span>{activeArticle.likes || 0} likes</span>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                      <select
+                        value={editForm.category}
+                        onChange={(e) => setEditForm({...editForm, category: e.target.value})}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500"
+                      >
+                        {CATEGORIES.map(cat => (
+                          <option key={cat.id} value={cat.id}>
+                            {cat.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                      <input
+                        type="url"
+                        value={editForm.image}
+                        onChange={(e) => setEditForm({...editForm, image: e.target.value})}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Content</label>
+                      <textarea
+                        value={editForm.content}
+                        onChange={(e) => setEditForm({...editForm, content: e.target.value})}
+                        rows="6"
+                        className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500"
+                        required
+                      ></textarea>
+                    </div>
+                    <div className="flex space-x-4">
+                      <button
+                        type="submit"
+                        className="flex-1 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+                        disabled={isLoading}
+                      >
+                        {isLoading ? 'Saving...' : 'Save Changes'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsEditing(false);
+                          setEditForm({
+                            title: '',
+                            category: 'nature',
+                            content: '',
+                            image: ''
+                          });
+                        }}
+                        className="flex-1 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              ) : (
+                <>
+                  {/* Article header image */}
+                  <div className="relative h-64 md:h-96">
+                    <img
+                      src={activeArticle.image}
+                      alt={activeArticle.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                      <h2 className="text-3xl font-bold mb-2">{activeArticle.title}</h2>
+                      <div className="flex items-center space-x-4">
+                        <span className={`px-3 py-1 rounded-full text-sm bg-opacity-90 ${activeArticle.categoryColor}`}>
+                          {activeArticle.category}
+                        </span>
+                        <span>{activeArticle.date}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
+
+                  {/* Article content */}
+                  <div className="p-6 md:p-8">
+                    <div className="prose max-w-none">
+                      <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                        {activeArticle.content}
+                      </p>
+                    </div>
+
+                    {/* Article metadata */}
+                    <div className="mt-8 pt-6 border-t border-gray-200">
+                      <div className="flex justify-between items-center text-sm text-gray-500">
+                        <div>
+                          Written by <span className="font-medium">{activeArticle.author_name}</span>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                          <span>{activeArticle.reads || 0} reads</span>
+                          <span>•</span>
+                          <span>{activeArticle.likes || 0} likes</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
       )}
+
+      {/* Edit Article Modal */}
+      {editingArticle && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-4">Edit Article</h2>
+            <form onSubmit={handleEditSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Title</label>
+                <input
+                  type="text"
+                  value={editForm.title}
+                  onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Category</label>
+                <select
+                  value={editForm.category}
+                  onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                >
+                  {CATEGORIES.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Image URL</label>
+                <input
+                  type="url"
+                  value={editForm.image}
+                  onChange={(e) => setEditForm({ ...editForm, image: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Content</label>
+                <textarea
+                  value={editForm.content}
+                  onChange={(e) => setEditForm({ ...editForm, content: e.target.value })}
+                  rows={10}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  required
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setEditingArticle(null)}
+                  className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+
     </div>
   );
 };
