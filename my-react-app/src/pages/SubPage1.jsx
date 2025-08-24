@@ -74,7 +74,7 @@ const SubPage1 = ({ onNavigate }) => {
       id: 'sample-0', 
       title: "Rose Garden Café", 
       description: "Beautiful rose aroma mixed with coffee", 
-      category: "floral", 
+      category: "nature", 
       intensity: 7, 
       location: [31.2304, 121.4737], 
       address: "People's Square, Shanghai",
@@ -129,7 +129,7 @@ const SubPage1 = ({ onNavigate }) => {
       id: 'sample-5', 
       title: "Jasmine Tea House", 
       description: "Delicate jasmine flower tea", 
-      category: "floral", 
+      category: "nature", 
       intensity: 5, 
       location: [31.2260, 121.4903], 
       address: "Yu Garden, Shanghai",
@@ -215,10 +215,11 @@ const SubPage1 = ({ onNavigate }) => {
     { id: 'other', name: 'Other', icon: '🔮', color: 'bg-gray-100 text-gray-800' }
   ];
   const CATEGORY_COLORS = {
-    'floral': '#ff69b4',
-    'food': '#ff8c00', 
     'nature': '#32cd32',
+    'animal': '#ffd700',
+    'food': '#ff8c00',
     'urban': '#708090',
+    'human': '#9932cc',
     'chemical': '#dc143c',
     'other': '#9370db'
   };
@@ -280,14 +281,15 @@ const SubPage1 = ({ onNavigate }) => {
     };
   }, [isLoading]); // Only depend on isLoading
 
-  // Handle map click for location selection
+  // Handle map click for location selection and view reset
   useEffect(() => {
     if (leafletMapRef.current) {
       // Remove existing click handlers
       leafletMapRef.current.off('click');
       
-      if (showUploadForm) {
-        const handleMapClick = (e) => {
+      const handleMapClick = (e) => {
+        if (showUploadForm) {
+          // Handle location selection for upload form
           const newLocation = [e.latlng.lat, e.latlng.lng];
           console.log("📍 Location selected:", newLocation);
           
@@ -312,10 +314,18 @@ const SubPage1 = ({ onNavigate }) => {
           }).addTo(leafletMapRef.current);
           
           window.tempMarker.bindPopup("📍 New smell location selected!").openPopup();
-        };
-        
-        leafletMapRef.current.on('click', handleMapClick);
-      }
+        } else {
+          // Reset view when clicking on empty map area
+          setSelectedSmell(null);
+          setSelectedSmellIds(new Set());
+          setCurrentSmellList(allSmells);
+          if (leafletMapRef.current) {
+            leafletMapRef.current.setView([31.2304, 121.4737], 11, { animate: true });
+          }
+        }
+      };
+      
+      leafletMapRef.current.on('click', handleMapClick);
       
       // Clean up temp marker when upload form closes
       if (!showUploadForm && window.tempMarker) {
@@ -323,7 +333,7 @@ const SubPage1 = ({ onNavigate }) => {
         window.tempMarker = null;
       }
     }
-  }, [showUploadForm]);
+  }, [showUploadForm, allSmells]);
 
   // Update markers when smells change
   useEffect(() => {
@@ -421,7 +431,7 @@ const SubPage1 = ({ onNavigate }) => {
       const newSmellData = {
         title: uploadData.title,
         description: uploadData.description,
-        category: uploadData.category,
+        category: uploadData.category || 'nature',
         intensity: uploadData.intensity,
         location: uploadData.location,
         address: uploadData.address || `Lat: ${uploadData.location[0].toFixed(4)}, Lng: ${uploadData.location[1].toFixed(4)}`,
@@ -477,12 +487,13 @@ const SubPage1 = ({ onNavigate }) => {
     e.preventDefault();
     try {
       setIsLoading(true);
-      const updatedSmell = await smellService.updateSmell(editingSmell.id, editForm);
-      setAllSmells(prevSmells => 
-        prevSmells.map(smell => 
-          smell.id === updatedSmell.id ? updatedSmell : smell
-        )
-      );
+      await smellService.updateSmell(editingSmell.id, editForm);
+      // Fetch fresh data from the server
+      const updatedSmells = await smellService.getAllSmells();
+      setAllSmells(updatedSmells);
+      setCurrentSmellList(updatedSmells);
+      setSelectedSmell(null);
+      setSelectedSmellIds(new Set());
       setEditingSmell(null);
       setEditForm({
         title: '',
@@ -506,8 +517,11 @@ const SubPage1 = ({ onNavigate }) => {
       try {
         setIsLoading(true);
         await smellService.deleteSmell(id);
-        setAllSmells(prevSmells => prevSmells.filter(smell => smell.id !== id));
+        const updatedSmells = await smellService.getAllSmells();
+        setAllSmells(updatedSmells);
+        setCurrentSmellList(updatedSmells);
         setSelectedSmell(null);
+        setSelectedSmellIds(new Set());
       } catch (error) {
         console.error('Error deleting smell:', error);
         setError('Failed to delete smell. Please try again.');
@@ -673,7 +687,7 @@ const SubPage1 = ({ onNavigate }) => {
                   setUploadData({
                     title: '',
                     description: '',
-                    category: 'floral',
+                    category: 'nature',
                     intensity: 5,
                     location: null,
                     address: ''
