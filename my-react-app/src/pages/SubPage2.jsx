@@ -508,9 +508,7 @@ const SubPage2 = ({ onNavigate }) => {
                     <div>
                       <h3 className="text-xl font-semibold mb-3">Our Story</h3>
                       <p className="text-gray-600 leading-relaxed">
-                        Our platform was born from a passion to explore and document the fascinating world of scents. 
-                        Our journey began in 2024 when a group of scent enthusiasts, scientists, and writers came 
-                        together to create a space dedicated to sharing the stories and science behind everyday smells.
+                        In today's digital age, our lives are flooded with visual and auditory information, leaving the sense of smell largely overlooked. Also we often forget how scents carry emotions and memories. That's why we built a website dedicated to documenting and sharing olfactory experiences.​
                       </p>
                     </div>
                     
@@ -518,10 +516,10 @@ const SubPage2 = ({ onNavigate }) => {
                       <h3 className="text-xl font-semibold mb-3">Our Mission</h3>
                       <ul className="space-y-2">
                         {[
-                          'Share knowledge about scents to help people understand olfactory experiences',
-                          'Document unique scent cultures and traditions from around the world',
-                          'Connect people passionate about scents to build a community',
-                          'Awaken attention to life\'s beautiful details through scent'
+                          'Share scent knowledge for better olfactory understanding',
+                          'Document unique global scent cultures and traditions',
+                          'Awaken awareness of life\'s beautiful details through scent',
+                          'Restore our perception of the world to write about it better'
                         ].map((mission, index) => (
                           <li key={index} className="flex items-start">
                             <span className="text-green-500 mr-2 mt-1">🌿</span>
@@ -566,54 +564,56 @@ const SubPage2 = ({ onNavigate }) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden relative">
             {/* Action buttons */}
-            <div className="absolute top-4 right-4 flex space-x-2 z-10">
-              <button
-                onClick={() => {
-                  setIsEditing(true);
-                  setEditForm({
-                    title: activeArticle.title,
-                    category: activeArticle.category,
-                    content: activeArticle.content,
-                    image: activeArticle.image
-                  });
-                }}
-                className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-              </button>
-              <button
-                onClick={async () => {
-                  if (window.confirm('Are you sure you want to delete this article?')) {
-                    try {
-                      setIsLoading(true);
-                      await articleService.deleteArticle(activeArticle.id);
-                      setArticles(articles.filter(a => a.id !== activeArticle.id));
-                      setShowArticleModal(false);
-                    } catch (err) {
-                      alert('Failed to delete article');
-                      console.error(err);
-                    } finally {
-                      setIsLoading(false);
+            {!isEditing && (
+              <div className="absolute top-4 right-4 flex space-x-2 z-10">
+                <button
+                  onClick={() => {
+                    setIsEditing(true);
+                    setEditForm({
+                      title: activeArticle.title,
+                      category: activeArticle.category,
+                      content: activeArticle.content,
+                      image: activeArticle.image
+                    });
+                  }}
+                  className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </button>
+                <button
+                  onClick={async () => {
+                    if (window.confirm('Are you sure you want to delete this article?')) {
+                      try {
+                        setIsLoading(true);
+                        await articleService.deleteArticle(activeArticle.id);
+                        setArticles(articles.filter(a => a.id !== activeArticle.id));
+                        setShowArticleModal(false);
+                      } catch (err) {
+                        alert('Failed to delete article');
+                        console.error(err);
+                      } finally {
+                        setIsLoading(false);
+                      }
                     }
-                  }
-                }}
-                className="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </button>
-              <button
-                onClick={() => setShowArticleModal(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
+                  }}
+                  className="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setShowArticleModal(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            )}
 
             <div className="overflow-y-auto max-h-[90vh]">
               {isEditing ? (
@@ -623,10 +623,15 @@ const SubPage2 = ({ onNavigate }) => {
                     e.preventDefault();
                     try {
                       setIsLoading(true);
-                      const updatedArticle = await articleService.editArticle(activeArticle.id, editForm);
-                      setArticles(articles.map(a => a.id === updatedArticle.id ? updatedArticle : a));
+                      const updatedArticle = await articleService.updateArticle(activeArticle.id, editForm);
+                      setArticles(prevArticles => 
+                        prevArticles.map(article => 
+                          article.id === updatedArticle.id ? updatedArticle : article
+                        )
+                      );
                       setActiveArticle(updatedArticle);
                       setIsEditing(false);
+                      alert('Article updated successfully!');
                     } catch (err) {
                       alert('Failed to update article');
                       console.error(err);
