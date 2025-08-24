@@ -743,11 +743,6 @@ const SubPage2 = ({ onNavigate }) => {
                         <div>
                           Written by <span className="font-medium">{activeArticle.author_name}</span>
                         </div>
-                        <div className="flex items-center space-x-4">
-                          <span>{activeArticle.reads || 0} reads</span>
-                          <span>•</span>
-                          <span>{activeArticle.likes || 0} likes</span>
-                        </div>
                       </div>
                     </div>
                   </div>
